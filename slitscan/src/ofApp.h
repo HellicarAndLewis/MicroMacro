@@ -29,6 +29,10 @@ public:
     };
     Mode mode;
     
+    ofFbo aberrationFbo;
+    ofShader aberrationShader;
+    ofVec2f aberrationROffset;
+    
     void setup();
     void update();
     void draw();

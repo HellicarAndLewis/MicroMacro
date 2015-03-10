@@ -43,6 +43,12 @@ void ofApp::setup(){
     // give slicer a width and height to work with
     slicer.setup(width, height);
     
+    aberrationShader.load("shaders/aberration.vert", "shaders/aberration.frag");
+    aberrationFbo.allocate(width, height);
+    aberrationFbo.begin();
+    ofClear(0, 0, 0);
+    aberrationFbo.end();
+    
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // optionaly specify port here, otherwise random
 	RUI_SETUP();
@@ -58,6 +64,10 @@ void ofApp::setup(){
 	RUI_SHARE_PARAM(slitScanTimeWidth, 0, 120);
 	RUI_SHARE_PARAM(slitScanTimeDelay, 0, 120);
     RUI_SHARE_PARAM(currentSampleMapIndex, 0, sampleMapStrings.size()-1);
+    
+    RUI_NEW_GROUP("Aberration");
+	RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
+    
 }
 
 
@@ -75,11 +85,8 @@ void ofApp::update(){
         slitScan.getOutputImage().draw(0, 0);
         slicer.end();
     }
-}
-
-
-void ofApp::draw(){
-    //cam.drawFlow(ofGetWidth(), ofGetHeight());
+    
+    aberrationFbo.begin();
     switch (mode) {
         case 0:
             cam.draw(0, 0);
@@ -98,6 +105,36 @@ void ofApp::draw(){
         default:
             break;
     }
+    aberrationFbo.end();
+}
+
+
+void ofApp::draw(){
+    //cam.drawFlow(ofGetWidth(), ofGetHeight());
+    
+    aberrationShader.begin();
+    aberrationFbo.getTextureReference().bind();
+    //shader.setUniformTexture("maskTex", maskFbo.getTextureReference(), 1 );
+    //aberrationShader.setUniform1i("tex0", 0);
+    aberrationShader.setUniform2f("rOffset", aberrationROffset.x, 0.0);
+    aberrationShader.setUniform2f("gOffset", 0.0, 0.0);
+    aberrationShader.setUniform2f("bOffset", 0.0, 0.0);
+    float w = 640;
+    float h = 480;
+	// draw quads
+	glBegin(GL_QUADS);
+	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, h);
+	glVertex3f(0, h, 0);
+	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 0.0f);
+	glVertex3f(0, 0, 0);
+	glMultiTexCoord2f(GL_TEXTURE0, w, 0.0f);
+	glVertex3f(w, 0, 0);
+	glMultiTexCoord2f(GL_TEXTURE0, w, h);
+	glVertex3f(w, h, 0);
+	glEnd();
+	// unbind the textures
+    aberrationFbo.getTextureReference().unbind();
+    aberrationShader.end();
     
     stringstream ss;
     ss << "MODE: " << mode;
