@@ -4,6 +4,7 @@
 #include "Cam.h"
 #include "ofxSlitScan.h"
 #include "Slicer.h"
+#include "ofxRemoteUIServer.h"
 
 class ofApp : public ofBaseApp{
     
@@ -13,10 +14,17 @@ public:
     Cam cam;
     // slit scan effect addon
     ofxSlitScan slitScan;
+    int slitScanTimeWidth;
+    
     // Slicer chops up an image/texture into vertical strips and draw the output into an FBO
     Slicer slicer;
-    // quick thing to toggle modes: will be replaced by GUI
-    int mode;
+    int sliceThickness, sliceOffset;
+    
+    // Simple mode switcher whilst testing
+    enum Mode {
+        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE
+    };
+    Mode mode;
     
     void setup();
     void update();
@@ -32,4 +40,5 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    void clientDidSomething(RemoteUIServerCallBackArg & arg);
 };

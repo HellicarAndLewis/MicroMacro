@@ -79,39 +79,44 @@ void Slicer::setup(int w, int h){
     fbo.begin();
     ofClear(0,0,0,255);
     fbo.end();
+    setThickness();
 }
 
 
-void Slicer::update(){
-    
-    int sliceWidth = 20;
-    int width = 0;
-    // Mask FBO: draw white to generate the mask
-    maskFbo.begin();
-    while (width < maskFbo.getWidth()) {
-        ofRect(width, 0, sliceWidth, maskFbo.getHeight());
-        width += sliceWidth * 2;
-    }
-    maskFbo.end();
-    
-    // mask using the shader
+void Slicer::update(){}
+
+
+void Slicer::begin() {
+    // mask using the shader passing in the mask FBO texture
     fbo.begin();
     ofClear(0, 0, 0, 0);
     shader.begin();
     shader.setUniformTexture("maskTex", maskFbo.getTextureReference(), 1 );
-    // draw the img: this gets set externally using a video frame: need to optimise this bit
-    srcImg.draw(0,0, fbo.getWidth(), fbo.getHeight());
+}
+
+void Slicer::end() {
     shader.end();
     fbo.end();
-    
 }
 
 
 void Slicer::draw(int x, int y){
-    ofSetColor(255,255);
     fbo.draw(x, y);
 }
 
+
+void Slicer::setThickness(int thickness){
+    // sets thickness of slits by drawing white into the mask FBO
+    // mask FBO is used to mask a given texture using being() and end()
+    int width = 0;
+    maskFbo.begin();
+    ofClear(0,0,0,255);
+    while (width < maskFbo.getWidth()) {
+        ofRect(width, 0, thickness, maskFbo.getHeight());
+        width += thickness * 2;
+    }
+    maskFbo.end();
+}
 
 void Slicer::keyPressed(int key){
 }

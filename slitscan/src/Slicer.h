@@ -10,13 +10,17 @@
 #include "ofMain.h"
 
 // Slicer chops up an image/texture into vertical strips and draw the output into an FBO
-// TODO: hook up to GUI controls, add horizontal
+// Basic usage: call begin() draw any texture and call end() and then draw()
+// TODO: hook up to more GUI controls, add horizontal
 class Slicer {
 public:
     
     void setup(int w=0, int h=0);
     void update();
     void draw(int x=0, int y=0);
+    void setThickness(int thickness=20);
+    void begin();
+    void end();
     
     void keyPressed  (int key);
     void keyReleased(int key);
@@ -28,7 +32,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 	
-    ofImage     srcImg;
     ofFbo       maskFbo;
     ofFbo       fbo;
     ofShader    shader;
