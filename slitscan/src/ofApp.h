@@ -14,7 +14,10 @@ public:
     Cam cam;
     // slit scan effect addon
     ofxSlitScan slitScan;
-    int slitScanTimeWidth;
+    int slitScanTimeWidth, slitScanTimeDelay;
+    vector<string> sampleMapStrings;
+	vector<ofImage*> sampleMaps;
+	int currentSampleMapIndex;
     
     // Slicer chops up an image/texture into vertical strips and draw the output into an FBO
     Slicer slicer;
