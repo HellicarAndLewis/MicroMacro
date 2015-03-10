@@ -10,11 +10,13 @@
 #include "Cam.h"
 
 Cam::Cam() {
+    // defaults
     isCapturing = false;
     useBlackmagic = false;
-    defaultBlackmagic = true;
+    useVideoPlayer = false;
     doHMirror = true;
-    doDrawGrey = doDrawFlow = false;
+    doDrawGrey = false;
+    doDrawFlow = false;
     doFlowLk = false;
     isFrameNew = false;
     camWidth = 1920;
@@ -28,7 +30,6 @@ Cam::Cam() {
     opticalFlowSensitivity = .99;
     opticalFlowSmoothing = .5;
     vidGrabberDeviceId = 0;
-    useVideoPlayer = false;
 }
 Cam::~Cam() {
     blackmagic.close();
@@ -36,10 +37,8 @@ Cam::~Cam() {
 
 void Cam::startCapture(){
     bool success = false;
-    if (defaultBlackmagic) {
-        // try the blackmagic first
-        success = blackmagic.setup(camWidth, camHeight, 30);
-    }
+    // try the blackmagic first
+    success = blackmagic.setup(camWidth, camHeight, 30);
     if (success) {
         ofLogNotice() << "\n\nUsing blackmagic!";
         useBlackmagic = true;
@@ -60,7 +59,6 @@ void Cam::stopCapture(){
     colorImage.clear();
     thisGrayImage.clear();
     lastGrayImage.clear();
-    //opticalFlow.reset();
     opticalFlowLk.reset();
     flowX.clear();
     flowY.clear();
@@ -70,7 +68,7 @@ void Cam::stopCapture(){
 }
 
 void Cam::setup(){
-    ofLogNotice() << "Setting up camera with h:" << camWidth << " h:" << camHeight << " cvRatio:" << cvRatio << " use bm: " << defaultBlackmagic;
+    ofLogNotice() << "Setting up camera with h:" << camWidth << " h:" << camHeight << " cvRatio:" << cvRatio << " using black magic: " << useBlackmagic;
     
     cvWidth = camWidth*cvRatio;
     cvHeight = camHeight*cvRatio;
@@ -106,6 +104,9 @@ void Cam::update() {
     if (useVideoPlayer) {
         if (!videoPlayer.isLoaded()) {
             videoPlayer.loadMovie("test.mp4");
+            camWidth = videoPlayer.getWidth();
+            camHeight = videoPlayer.getHeight();
+            setup();
             videoPlayer.play();
         }
         videoPlayer.update();

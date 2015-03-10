@@ -100,7 +100,7 @@ void Slicer::update(){
     shader.begin();
     shader.setUniformTexture("maskTex", maskFbo.getTextureReference(), 1 );
     // draw the img: this gets set externally using a video frame: need to optimise this bit
-    srcImg.draw(0,0);
+    srcImg.draw(0,0, fbo.getWidth(), fbo.getHeight());
     shader.end();
     fbo.end();
     

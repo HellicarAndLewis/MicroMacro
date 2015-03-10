@@ -40,7 +40,6 @@ public:
     
     // Blackmagic grabber
     ofxBlackMagic blackmagic;
-    bool defaultBlackmagic;
     
     // Standard oF video grabber
     ofVideoGrabber vidGrabber;
