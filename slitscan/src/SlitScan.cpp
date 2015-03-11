@@ -58,6 +58,7 @@ void SlitScan::setup(){
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // share controls
+	ofAddListener(RUI_GET_OF_EVENT(), this, &SlitScan::clientDidSomething);
     RUI_NEW_GROUP("Slit Scan");
     string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE"};
 	RUI_SHARE_ENUM_PARAM(mode, CAM, SLICE_DOUBLE, modeLabels);
@@ -67,6 +68,7 @@ void SlitScan::setup(){
 	RUI_NEW_GROUP("Slicer (slice modes)");
 	RUI_SHARE_PARAM(sliceThickness, 0, 30 );
 	RUI_SHARE_PARAM(sliceOffset, 0, 30 );
+    RUI_SHARE_PARAM(sliceVertical);
     RUI_NEW_GROUP("Aberration");
 	RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
     
@@ -101,8 +103,14 @@ void SlitScan::update(){
             slicer.draw(0);
             break;
         case 3:
-            slicer.draw(-sliceOffset);
-            slicer.draw(sliceOffset);
+            if (sliceVertical) {
+                slicer.draw(-sliceOffset);
+                slicer.draw(sliceOffset);
+            }
+            else {
+                slicer.draw(0, -sliceOffset);
+                slicer.draw(0, sliceOffset);
+            }
             break;
         default:
             break;
@@ -116,8 +124,6 @@ void SlitScan::draw(){
     
     aberrationShader.begin();
     aberrationFbo.getTextureReference().bind();
-    //shader.setUniformTexture("maskTex", maskFbo.getTextureReference(), 1 );
-    //aberrationShader.setUniform1i("tex0", 0);
     aberrationShader.setUniform2f("rOffset", aberrationROffset.x, 0.0);
     aberrationShader.setUniform2f("gOffset", 0.0, 0.0);
     aberrationShader.setUniform2f("bOffset", 0.0, 0.0);
@@ -145,12 +151,13 @@ void SlitScan::keyPressed(int key){
 }
 
 void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
-	switch (arg.action) {
+    switch (arg.action) {
 		case CLIENT_UPDATED_PARAM:
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
             if (arg.paramName == "slitScanTimeWidth") slitScan.setTimeWidth(slitScanTimeWidth);
             if (arg.paramName == "slitScanTimeDelay") slitScan.setTimeDelay(slitScanTimeDelay);
             if (arg.paramName == "sliceThickness") slicer.setThickness(sliceThickness);
+            if (arg.paramName == "sliceVertical") slicer.setVertical(sliceVertical);
             if (arg.paramName == "currentSampleMapIndex") slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
 			break;
 		default:

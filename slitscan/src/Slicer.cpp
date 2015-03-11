@@ -10,6 +10,7 @@
 
 
 void Slicer::setup(int w, int h){
+    
     ofEnableAlphaBlending();
     maskFbo.allocate(w,h);
     fbo.allocate(w,h);
@@ -79,7 +80,11 @@ void Slicer::setup(int w, int h){
     fbo.begin();
     ofClear(0,0,0,255);
     fbo.end();
-    setThickness();
+    
+    // defaults
+    thickness = 20;
+    isVertical = true;
+    refresh();
 }
 
 
@@ -106,14 +111,34 @@ void Slicer::draw(int x, int y){
 
 
 void Slicer::setThickness(int thickness){
+    this->thickness = thickness;
+    refresh();
+}
+
+void Slicer::setVertical(bool isVertical){
+    this->isVertical = isVertical;
+    refresh();
+}
+
+void Slicer::refresh(){
     // sets thickness of slits by drawing white into the mask FBO
     // mask FBO is used to mask a given texture using being() and end()
     int width = 0;
+    int height = 0;
+    
     maskFbo.begin();
     ofClear(0,0,0,255);
-    while (width < maskFbo.getWidth()) {
-        ofRect(width, 0, thickness, maskFbo.getHeight());
-        width += thickness * 2;
+    if (isVertical) {
+        while (width < maskFbo.getWidth()) {
+            ofRect(width, 0, thickness, maskFbo.getHeight());
+            width += thickness * 2;
+        }
+    }
+    else {
+        while (height < maskFbo.getHeight()) {
+            ofRect(0, height, maskFbo.getWidth(), thickness);
+            height += thickness * 2;
+        }
     }
     maskFbo.end();
 }

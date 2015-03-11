@@ -18,7 +18,9 @@ public:
     void setup(int w=0, int h=0);
     void update();
     void draw(int x=0, int y=0);
-    void setThickness(int thickness=20);
+    void setThickness(int thickness);
+    void setVertical(bool isVertical);
+    void refresh();
     void begin();
     void end();
     
@@ -35,5 +37,7 @@ public:
     ofFbo       maskFbo;
     ofFbo       fbo;
     ofShader    shader;
+    int thickness;
+    bool isVertical;
     
 };

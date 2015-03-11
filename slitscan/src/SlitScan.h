@@ -30,6 +30,7 @@ public:
     // Slicer chops up an image/texture into vertical strips and draw the output into an FBO
     Slicer slicer;
     int sliceThickness, sliceOffset;
+    bool sliceVertical;
     
     // Simple mode switcher whilst testing
     enum Mode {
