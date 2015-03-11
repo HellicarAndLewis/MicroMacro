@@ -1,41 +1,27 @@
 #pragma once
 
 #include "ofMain.h"
-#include "Cam.h"
-#include "ofxSlitScan.h"
-#include "Slicer.h"
+#include "SlitScan.h"
 #include "ofxRemoteUIServer.h"
 
 class ofApp : public ofBaseApp{
     
 public:
-    // Cam class handles switching between blackmagic input and standard video grabber
-    // It also generates optical flow textures and data
-    Cam cam;
-    // slit scan effect addon
-    ofxSlitScan slitScan;
-    int slitScanTimeWidth, slitScanTimeDelay;
-    vector<string> sampleMapStrings;
-	vector<ofImage*> sampleMaps;
-	int currentSampleMapIndex;
     
-    // Slicer chops up an image/texture into vertical strips and draw the output into an FBO
-    Slicer slicer;
-    int sliceThickness, sliceOffset;
+    SlitScan slitScan;
     
-    // Simple mode switcher whilst testing
     enum Mode {
-        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE
+        SLIT_SCAN, AUDIO_MAP
     };
     Mode mode;
     
-    ofFbo aberrationFbo;
-    ofShader aberrationShader;
-    ofVec2f aberrationROffset;
+    ofFbo sceneFbos[2];
     
     void setup();
     void update();
     void draw();
+    
+    void allocateScenes();
     
     void keyPressed(int key);
     void keyReleased(int key);

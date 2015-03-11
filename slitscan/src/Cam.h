@@ -11,6 +11,9 @@
 #include "ofxCvOpticalFlowLK.h"
 #include "ofxOpenCv.h"
 
+#define BLACKMAGIC_W 1920
+#define BLACKMAGIC_H 1080
+
 // Cam class handles switching between blackmagic input and standard video grabber
 // It also generates optical flow textures and data
 // TODO: extend and tidy optical flow stuff, test blackmagic!

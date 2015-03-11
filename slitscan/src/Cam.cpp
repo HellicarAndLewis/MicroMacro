@@ -37,17 +37,18 @@ Cam::~Cam() {
 
 void Cam::startCapture(){
     bool success = false;
-    // try the blackmagic first
-    success = blackmagic.setup(camWidth, camHeight, 30);
+    // try the blackmagic first, always grab in HD
+    success = blackmagic.setup(BLACKMAGIC_W, BLACKMAGIC_H, 30);
     if (success) {
         ofLogNotice() << "\n\nUsing blackmagic!";
         useBlackmagic = true;
+        camWidth = BLACKMAGIC_W;
+        camHeight = BLACKMAGIC_H;
     }
     else {
         useBlackmagic = false;
         ofLogNotice() << "\n\nBlackmagic not present, using ofVideoGrabber instead";
         vidGrabber.setDeviceID(int(vidGrabberDeviceId));
-        //vidGrabber.setVerbose(true);
         success = vidGrabber.initGrabber(camWidth,camHeight);
     }
     isCapturing = true;

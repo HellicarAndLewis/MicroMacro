@@ -62,6 +62,7 @@
 		E88C6D721AAE222D008218D3 /* Cam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88C6D711AAE222D008218D3 /* Cam.cpp */; };
 		E88C6D771AAE242B008218D3 /* ofxCvOpticalFlowLK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88C6D751AAE242B008218D3 /* ofxCvOpticalFlowLK.cpp */; };
 		E88C6D7B1AAE4492008218D3 /* Slicer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88C6D7A1AAE4492008218D3 /* Slicer.cpp */; };
+		E8C0D3341AB06E520097FBC0 /* SlitScan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C0D3331AB06E520097FBC0 /* SlitScan.cpp */; };
 		E8C66A5A1AAF090600F145CB /* ofxRemoteUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C66A4C1AAF090600F145CB /* ofxRemoteUI.cpp */; };
 		E8C66A5B1AAF090600F145CB /* ofxRemoteUIClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C66A4E1AAF090600F145CB /* ofxRemoteUIClient.cpp */; };
 		E8C66A5C1AAF090600F145CB /* ofxRemoteUINeigbors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C66A501AAF090600F145CB /* ofxRemoteUINeigbors.cpp */; };
@@ -279,6 +280,8 @@
 		E88C6D791AAE4474008218D3 /* Slicer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Slicer.h; sourceTree = "<group>"; };
 		E88C6D7A1AAE4492008218D3 /* Slicer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Slicer.cpp; sourceTree = "<group>"; };
 		E8AF1E9150AD818FA9D9195D /* version.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = version.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/version.hpp; sourceTree = SOURCE_ROOT; };
+		E8C0D3311AB06E420097FBC0 /* SlitScan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlitScan.h; sourceTree = "<group>"; };
+		E8C0D3331AB06E520097FBC0 /* SlitScan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SlitScan.cpp; sourceTree = "<group>"; };
 		E8C66A4B1AAF090600F145CB /* dirent_vs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dirent_vs.h; sourceTree = "<group>"; };
 		E8C66A4C1AAF090600F145CB /* ofxRemoteUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxRemoteUI.cpp; sourceTree = "<group>"; };
 		E8C66A4D1AAF090600F145CB /* ofxRemoteUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxRemoteUI.h; sourceTree = "<group>"; };
@@ -882,12 +885,11 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E8C0D3351AB070EC0097FBC0 /* slitscan */,
 				E88C6D6F1AAE21F8008218D3 /* input */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
-				E88C6D791AAE4474008218D3 /* Slicer.h */,
-				E88C6D7A1AAE4492008218D3 /* Slicer.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -935,6 +937,17 @@
 			);
 			name = src;
 			path = ../../../addons/ofxCvOpticalFlowLK/src;
+			sourceTree = "<group>";
+		};
+		E8C0D3351AB070EC0097FBC0 /* slitscan */ = {
+			isa = PBXGroup;
+			children = (
+				E88C6D791AAE4474008218D3 /* Slicer.h */,
+				E88C6D7A1AAE4492008218D3 /* Slicer.cpp */,
+				E8C0D3311AB06E420097FBC0 /* SlitScan.h */,
+				E8C0D3331AB06E520097FBC0 /* SlitScan.cpp */,
+			);
+			name = slitscan;
 			sourceTree = "<group>";
 		};
 		E8C66A491AAF08F300F145CB /* ofxRemoteUI */ = {
@@ -1117,6 +1130,7 @@
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
 				E6ADFAF5B64F107FD970E6E7 /* ColorConversion.cpp in Sources */,
 				DD6B7D26B640FE59CC56C615 /* DeckLinkController.cpp in Sources */,
+				E8C0D3341AB06E520097FBC0 /* SlitScan.cpp in Sources */,
 				0FC43B3D38A4D41A1AD95D39 /* ofxBlackMagic.cpp in Sources */,
 				E8C66A5C1AAF090600F145CB /* ofxRemoteUINeigbors.cpp in Sources */,
 				E8C66A5D1AAF090600F145CB /* ofxRemoteUIServer.cpp in Sources */,
