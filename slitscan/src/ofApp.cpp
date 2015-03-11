@@ -7,22 +7,40 @@ void ofApp::setup(){
 	RUI_SETUP();
 	ofAddListener(RUI_GET_OF_EVENT(), this, &ofApp::clientDidSomething);
 	RUI_GET_INSTANCE()->setVerbose(true);
+    RUI_NEW_GROUP("App");
+    string modeLabels[] = {"SLIT_SCAN", "AUDIO_MAP"};
+	RUI_SHARE_ENUM_PARAM(appMode, SLIT_SCAN, AUDIO_MAP, modeLabels);
     
+    appMode == SLIT_SCAN;
     slitScan.setup();
+    audioMapper.setup();
     allocateScenes();
+    
+    RUI_LOAD_FROM_XML();
 }
 
 
 void ofApp::update(){
-    slitScan.update();
-    sceneFbos[0].begin();
-    slitScan.draw();
-    sceneFbos[0].end();
+    if (appMode == SLIT_SCAN) {
+        slitScan.update();
+        sceneFbos[0].begin();
+        slitScan.draw();
+        sceneFbos[0].end();
+    }
+    else {
+        audioMapper.update();
+        sceneFbos[0].begin();
+        ofClear(0,0,0,0);
+        audioMapper.draw();
+        sceneFbos[0].end();
+    }
 }
 
 
 void ofApp::draw(){
+    ofBackground(30);
     sceneFbos[0].draw(0, 0, ofGetWidth(), ofGetHeight());
+    
     stringstream ss;
     //ss << "MODE: " << mode;
     ss << ofToString(ofGetFrameRate()) << " FPS";
@@ -56,6 +74,7 @@ void ofApp::clientDidSomething(RemoteUIServerCallBackArg &arg){
 		case CLIENT_CONNECTED: ofLogNotice() << "CLIENT_CONNECTED" << endl; break;
 		case CLIENT_DISCONNECTED: ofLogNotice() << "CLIENT_DISCONNECTED" << endl; break;
 		case CLIENT_UPDATED_PARAM: ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
+            
 			break;
 		case CLIENT_DID_SET_PRESET: ofLogNotice() << "CLIENT_DID_SET_PRESET" << endl; break;
 		case CLIENT_SAVED_PRESET: ofLogNotice() << "CLIENT_SAVED_PRESET" << endl; break;

@@ -63,6 +63,8 @@
 		E88C6D771AAE242B008218D3 /* ofxCvOpticalFlowLK.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88C6D751AAE242B008218D3 /* ofxCvOpticalFlowLK.cpp */; };
 		E88C6D7B1AAE4492008218D3 /* Slicer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E88C6D7A1AAE4492008218D3 /* Slicer.cpp */; };
 		E8C0D3341AB06E520097FBC0 /* SlitScan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C0D3331AB06E520097FBC0 /* SlitScan.cpp */; };
+		E8C0D3391AB082470097FBC0 /* AudioMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C0D3381AB082470097FBC0 /* AudioMapper.cpp */; };
+		E8C0D33C1AB083F50097FBC0 /* Mic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C0D33B1AB083F50097FBC0 /* Mic.cpp */; };
 		E8C66A5A1AAF090600F145CB /* ofxRemoteUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C66A4C1AAF090600F145CB /* ofxRemoteUI.cpp */; };
 		E8C66A5B1AAF090600F145CB /* ofxRemoteUIClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C66A4E1AAF090600F145CB /* ofxRemoteUIClient.cpp */; };
 		E8C66A5C1AAF090600F145CB /* ofxRemoteUINeigbors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C66A501AAF090600F145CB /* ofxRemoteUINeigbors.cpp */; };
@@ -282,6 +284,10 @@
 		E8AF1E9150AD818FA9D9195D /* version.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = version.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/version.hpp; sourceTree = SOURCE_ROOT; };
 		E8C0D3311AB06E420097FBC0 /* SlitScan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlitScan.h; sourceTree = "<group>"; };
 		E8C0D3331AB06E520097FBC0 /* SlitScan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SlitScan.cpp; sourceTree = "<group>"; };
+		E8C0D3371AB0823C0097FBC0 /* AudioMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioMapper.h; sourceTree = "<group>"; };
+		E8C0D3381AB082470097FBC0 /* AudioMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioMapper.cpp; sourceTree = "<group>"; };
+		E8C0D33A1AB083EC0097FBC0 /* Mic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mic.h; sourceTree = "<group>"; };
+		E8C0D33B1AB083F50097FBC0 /* Mic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mic.cpp; sourceTree = "<group>"; };
 		E8C66A4B1AAF090600F145CB /* dirent_vs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dirent_vs.h; sourceTree = "<group>"; };
 		E8C66A4C1AAF090600F145CB /* ofxRemoteUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxRemoteUI.cpp; sourceTree = "<group>"; };
 		E8C66A4D1AAF090600F145CB /* ofxRemoteUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxRemoteUI.h; sourceTree = "<group>"; };
@@ -885,6 +891,7 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E8C0D3361AB082110097FBC0 /* audiomap */,
 				E8C0D3351AB070EC0097FBC0 /* slitscan */,
 				E88C6D6F1AAE21F8008218D3 /* input */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
@@ -917,6 +924,8 @@
 			children = (
 				E88C6D701AAE2218008218D3 /* Cam.h */,
 				E88C6D711AAE222D008218D3 /* Cam.cpp */,
+				E8C0D33A1AB083EC0097FBC0 /* Mic.h */,
+				E8C0D33B1AB083F50097FBC0 /* Mic.cpp */,
 			);
 			name = input;
 			sourceTree = "<group>";
@@ -948,6 +957,15 @@
 				E8C0D3331AB06E520097FBC0 /* SlitScan.cpp */,
 			);
 			name = slitscan;
+			sourceTree = "<group>";
+		};
+		E8C0D3361AB082110097FBC0 /* audiomap */ = {
+			isa = PBXGroup;
+			children = (
+				E8C0D3371AB0823C0097FBC0 /* AudioMapper.h */,
+				E8C0D3381AB082470097FBC0 /* AudioMapper.cpp */,
+			);
+			name = audiomap;
 			sourceTree = "<group>";
 		};
 		E8C66A491AAF08F300F145CB /* ofxRemoteUI */ = {
@@ -1093,6 +1111,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				E8C0D3391AB082470097FBC0 /* AudioMapper.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				960D20B191346612D5C05A6A /* ofxTCPClient.cpp in Sources */,
 				125506CD3E5F428AAFE5CC65 /* ofxTCPManager.cpp in Sources */,
@@ -1119,6 +1138,7 @@
 				510CAFE035E576A4E1502D52 /* UdpSocket.cpp in Sources */,
 				A29D8C96AE042ECEAA1BD4F3 /* NetworkingUtilsWin.cpp in Sources */,
 				28090DEB5109115003E8F1C5 /* UdpSocketWin.cpp in Sources */,
+				E8C0D33C1AB083F50097FBC0 /* Mic.cpp in Sources */,
 				62545D179C94265CA1389D4A /* OscOutboundPacketStream.cpp in Sources */,
 				C4782ECC372420ACE0615B74 /* OscPrintReceivedElements.cpp in Sources */,
 				0546D1A38E13BD319CC9755B /* OscReceivedElements.cpp in Sources */,

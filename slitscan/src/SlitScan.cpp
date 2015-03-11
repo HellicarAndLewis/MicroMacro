@@ -57,21 +57,16 @@ void SlitScan::setup(){
     aberrationFbo.end();
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
-    // optionaly specify port here, otherwise random
-	RUI_SETUP();
-	ofAddListener(RUI_GET_OF_EVENT(), this, &SlitScan::clientDidSomething);
-	RUI_GET_INSTANCE()->setVerbose(true);
     // share controls
+    RUI_NEW_GROUP("Slit Scan");
     string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE"};
 	RUI_SHARE_ENUM_PARAM(mode, CAM, SLICE_DOUBLE, modeLabels);
-	RUI_NEW_GROUP("Slicer");
-	RUI_SHARE_PARAM(sliceThickness, 0, 30 );
-	RUI_SHARE_PARAM(sliceOffset, 0, 30 );
-    RUI_NEW_GROUP("Slit Scan");
+    RUI_SHARE_PARAM(currentSampleMapIndex, 0, sampleMapStrings.size()-1);
 	RUI_SHARE_PARAM(slitScanTimeWidth, 0, 120);
 	RUI_SHARE_PARAM(slitScanTimeDelay, 0, 120);
-    RUI_SHARE_PARAM(currentSampleMapIndex, 0, sampleMapStrings.size()-1);
-    
+	RUI_NEW_GROUP("Slicer (slice modes)");
+	RUI_SHARE_PARAM(sliceThickness, 0, 30 );
+	RUI_SHARE_PARAM(sliceOffset, 0, 30 );
     RUI_NEW_GROUP("Aberration");
 	RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
     
@@ -143,12 +138,6 @@ void SlitScan::draw(){
     aberrationFbo.getTextureReference().unbind();
     aberrationShader.end();
     
-    stringstream ss;
-    ss << "MODE: " << mode;
-    ss << "\n" << ofToString(ofGetFrameRate()) << " FPS";
-    ofSetColor(0, 0, 200);
-    ofDrawBitmapString(ss.str(), ofGetWidth() - 100, ofGetHeight() - 20);
-    ofSetColor(255);
 }
 
 
