@@ -16,6 +16,7 @@ void SlitScan::setup(){
     slitScanTimeWidth = 30;
     slitScanTimeDelay = 0;
     sliceVertical = true;
+    sliceWeave = false;
     
     cam.setup(0.3);
     width = cam.camWidth;
@@ -50,7 +51,8 @@ void SlitScan::setup(){
     slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex = 0]));
     
     // give slicer a width and height to work with
-    slicer.setup(width, height);
+    slicer[0].setup(width, height);
+    slicer[1].setup(width, height);
     
     aberrationShader.load("shaders/aberration.vert", "shaders/aberration.frag");
     aberrationFbo.allocate(width, height);
@@ -71,6 +73,7 @@ void SlitScan::setup(){
 	RUI_SHARE_PARAM(sliceThickness, 0, 30 );
 	RUI_SHARE_PARAM(sliceOffset, 0, 30 );
     RUI_SHARE_PARAM(sliceVertical);
+    RUI_SHARE_PARAM(sliceWeave);
     RUI_NEW_GROUP("Aberration");
 	RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
     
@@ -87,31 +90,44 @@ void SlitScan::update(){
     }
     if (mode > 1) {
         // all modes above 1 use slicer
-        slicer.begin();
+        slicer[0].begin();
         slitScan.getOutputImage().draw(0, 0);
-        slicer.end();
+        slicer[0].end();
+        slicer[1].begin();
+        slitScan.getOutputImage().draw(0, 0);
+        slicer[1].end();
     }
     
     aberrationFbo.begin();
+    ofClear(0, 0, 0, 0);
     switch (mode) {
-        case 0:
+        case CAM:
             cam.draw(0, 0);
             break;
-        case 1:
+        case SLIT_SCAN:
             slitScan.getOutputImage().draw(0, 0);
             break;
-        case 2:
+        case SLICE_SINGLE:
+            // single slice
             cam.draw(0, 0);
-            slicer.draw(0);
+            slicer[0].draw(0);
             break;
-        case 3:
-            if (sliceVertical) {
-                slicer.draw(-sliceOffset);
-                slicer.draw(sliceOffset);
+        case SLICE_DOUBLE:
+            cam.draw(0, 0);
+            if (sliceWeave) {
+                //ofSetColor(255, 0, 0);
+                slicer[0].draw(sliceOffset, 0);
+                //ofSetColor(0, 0, 255);
+                slicer[1].draw(0, sliceOffset);
+                //ofSetColor(255);
+            }
+            else if (sliceVertical) {
+                slicer[0].draw(-sliceOffset);
+                slicer[0].draw(sliceOffset);
             }
             else {
-                slicer.draw(0, -sliceOffset);
-                slicer.draw(0, sliceOffset);
+                slicer[0].draw(0, -sliceOffset);
+                slicer[0].draw(0, sliceOffset);
             }
             break;
         default:
@@ -157,10 +173,20 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
 		case CLIENT_UPDATED_PARAM:
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
             if (arg.paramName == "slitScanTimeWidth") slitScan.setTimeWidth(slitScanTimeWidth);
-            if (arg.paramName == "slitScanTimeDelay") slitScan.setTimeDelay(slitScanTimeDelay);
-            if (arg.paramName == "sliceThickness") slicer.setThickness(sliceThickness);
-            if (arg.paramName == "sliceVertical") slicer.setVertical(sliceVertical);
-            if (arg.paramName == "currentSampleMapIndex") slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
+            else if (arg.paramName == "slitScanTimeDelay") slitScan.setTimeDelay(slitScanTimeDelay);
+            else if (arg.paramName == "sliceThickness") {
+                slicer[0].setThickness(sliceThickness);
+                slicer[1].setThickness(sliceThickness);
+            }
+            else if (arg.paramName == "sliceVertical") {
+                slicer[0].setVertical(sliceVertical);
+                slicer[1].setVertical(sliceVertical);
+            }
+            else if (arg.paramName == "sliceWeave" && sliceWeave) {
+                slicer[0].setVertical(true);
+                slicer[1].setVertical(false);
+            }
+            else if (arg.paramName == "currentSampleMapIndex") slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
 			break;
 		default:
 			break;

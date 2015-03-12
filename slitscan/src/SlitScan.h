@@ -28,9 +28,10 @@ public:
 	int currentSampleMapIndex;
     
     // Slicer chops up an image/texture into vertical strips and draw the output into an FBO
-    Slicer slicer;
+    Slicer slicer[2];
     int sliceThickness, sliceOffset;
     bool sliceVertical;
+    bool sliceWeave;
     
     // Simple mode switcher whilst testing
     enum Mode {

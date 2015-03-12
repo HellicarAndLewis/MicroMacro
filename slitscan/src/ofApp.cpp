@@ -5,7 +5,7 @@ void ofApp::setup(){
     isDebug = true;
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // optionaly specify port here, otherwise random
-	RUI_SETUP();
+	RUI_SETUP(4000);
 	ofAddListener(RUI_GET_OF_EVENT(), this, &ofApp::clientDidSomething);
 	RUI_GET_INSTANCE()->setVerbose(isDebug);
     RUI_NEW_GROUP("App");
