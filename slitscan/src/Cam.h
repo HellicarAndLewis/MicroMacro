@@ -13,6 +13,8 @@
 
 #define BLACKMAGIC_W 1920
 #define BLACKMAGIC_H 1080
+#define WEBCAM_W 640
+#define WEBCAM_H 480
 
 // Cam class handles switching between blackmagic input and standard video grabber
 // It also generates optical flow textures and data
@@ -23,7 +25,7 @@ public:
     Cam();
     ~Cam();
     
-	void setup();
+	void setup(float cvRatio=0.3);
 	void setup(int w, int h, float cvRatio);
 	void update();
 	void draw(int x=0, int y=0);

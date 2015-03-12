@@ -46,7 +46,7 @@ public:
     
     void setup();
     void update();
-    void draw();
+    void draw(int w, int h);
     
     void keyPressed(int key);
     void keyReleased(int key);

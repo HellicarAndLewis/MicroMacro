@@ -19,8 +19,8 @@ Cam::Cam() {
     doDrawFlow = false;
     doFlowLk = false;
     isFrameNew = false;
-    camWidth = 1920;
-	camHeight = 1080;
+    camWidth = BLACKMAGIC_W;
+	camHeight = BLACKMAGIC_H;
     cvRatio = .3;
     threshold = 80;
     minBlob = 20;
@@ -49,7 +49,9 @@ void Cam::startCapture(){
         useBlackmagic = false;
         ofLogNotice() << "\n\nBlackmagic not present, using ofVideoGrabber instead";
         vidGrabber.setDeviceID(int(vidGrabberDeviceId));
-        success = vidGrabber.initGrabber(camWidth,camHeight);
+        camWidth = WEBCAM_W;
+        camHeight = WEBCAM_H;
+        success = vidGrabber.initGrabber(WEBCAM_W, WEBCAM_H);
     }
     isCapturing = true;
 }
@@ -68,9 +70,15 @@ void Cam::stopCapture(){
     greyDiff.clear();
 }
 
-void Cam::setup(){
+void Cam::setup(float cvRatio){
+    
+    // Start capturing first to work out camera resultion
+    startCapture();
+    
+    
     ofLogNotice() << "Setting up camera with h:" << camWidth << " h:" << camHeight << " cvRatio:" << cvRatio << " using black magic: " << useBlackmagic;
     
+    this->cvRatio = cvRatio;
     cvWidth = camWidth*cvRatio;
     cvHeight = camHeight*cvRatio;
     
@@ -94,8 +102,7 @@ void Cam::setup(){
 void Cam::setup(int w, int h, float cvRatio) {
     this->camWidth = w;
 	this->camHeight = h;
-    this->cvRatio = cvRatio;
-    setup();
+    setup(cvRatio);
 }
 
 void Cam::update() {
@@ -127,7 +134,7 @@ void Cam::update() {
         else if (useBlackmagic) colorImage.setFromPixels(blackmagic.getColorPixels());
         else colorImage.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight);
         
-        if (doHMirror) colorImage.mirror(false, true);
+        colorImage.mirror(false, true);
 		lastGrayImage = thisGrayImage;
 		thisGrayImage = colorImage;
         ofxCvGrayscaleImage tempGrey = thisGrayImage;
@@ -199,7 +206,10 @@ void Cam::update() {
 
 void Cam::draw(int x, int y) {
     if (doDrawGrey) thisGrayImage.draw(x, y);
-    else colorImage.draw(x, y);
+    else {
+        colorImage.draw(x, y);
+    }
+    
     if (doDrawFlow) drawFlow();
     if (doDrawContour) contourFinder.draw(x, y);
 }

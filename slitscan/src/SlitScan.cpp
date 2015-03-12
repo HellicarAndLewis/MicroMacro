@@ -15,11 +15,12 @@ void SlitScan::setup(){
     sliceOffset = 10;
     slitScanTimeWidth = 30;
     slitScanTimeDelay = 0;
+    sliceVertical = true;
     
-    // test res using iSight
-    int width = 640;
-    int height = 480;
-    cam.setup(width, height, 0.3);
+    cam.setup(0.3);
+    width = cam.camWidth;
+    height = cam.camHeight;
+    
     //cam.useVideoPlayer = true;
     cam.startCapture();
     
@@ -33,12 +34,13 @@ void SlitScan::setup(){
     // note that the delay cannot be more than the total capacity"
     slitScan.setTimeDelayAndWidth(slitScanTimeDelay, slitScanTimeWidth);
     // delay maps
-	sampleMapStrings.push_back("maps/down_to_up.png");
-    sampleMapStrings.push_back("maps/left_to_right.png");
-	sampleMapStrings.push_back("maps/soft_noise.png");
-	sampleMapStrings.push_back("maps/random_grid.png");
-	sampleMapStrings.push_back("maps/up_to_down.png");
-	sampleMapStrings.push_back("maps/right_to_left.png");
+    string dir = (width == 640) ? "maps" : "mapsHD";
+	sampleMapStrings.push_back(dir+"/down_to_up.png");
+    sampleMapStrings.push_back(dir+"/left_to_right.png");
+	sampleMapStrings.push_back(dir+"/soft_noise.png");
+	sampleMapStrings.push_back(dir+"/random_grid.png");
+	sampleMapStrings.push_back(dir+"/up_to_down.png");
+	sampleMapStrings.push_back(dir+"/right_to_left.png");
 	for(int i = 0; i < sampleMapStrings.size(); i++){
 		ofImage* map = new ofImage();
 		map->allocate(width, height, OF_IMAGE_GRAYSCALE);
@@ -119,7 +121,7 @@ void SlitScan::update(){
 }
 
 
-void SlitScan::draw(){
+void SlitScan::draw(int w, int h){
     //cam.drawFlow(ofGetWidth(), ofGetHeight());
     
     aberrationShader.begin();
@@ -127,17 +129,17 @@ void SlitScan::draw(){
     aberrationShader.setUniform2f("rOffset", aberrationROffset.x, 0.0);
     aberrationShader.setUniform2f("gOffset", 0.0, 0.0);
     aberrationShader.setUniform2f("bOffset", 0.0, 0.0);
-    float w = cam.camWidth;
-    float h = cam.camHeight;
+    //float w = cam.camWidth;
+    //float h = cam.camHeight;
 	// draw quads
 	glBegin(GL_QUADS);
-	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, h);
+	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, cam.camHeight);
 	glVertex3f(0, h, 0);
 	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 0.0f);
 	glVertex3f(0, 0, 0);
-	glMultiTexCoord2f(GL_TEXTURE0, w, 0.0f);
+	glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, 0.0f);
 	glVertex3f(w, 0, 0);
-	glMultiTexCoord2f(GL_TEXTURE0, w, h);
+	glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, cam.camHeight);
 	glVertex3f(w, h, 0);
 	glEnd();
 	// unbind the textures

@@ -18,12 +18,14 @@ public:
     Mode appMode;
     
     ofFbo sceneFbos[2];
+    bool isDebug;
     
     void setup();
     void update();
     void draw();
     
     void allocateScenes();
+    void enableDebug(bool isDebug);
     
     void keyPressed(int key);
     void keyReleased(int key);
