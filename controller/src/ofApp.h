@@ -4,7 +4,7 @@
 #include "ofxOsc.h"
 
 // Use network broadcast address
-#define HOST "192.168.11.255"
+#define DEFAULT_ADDRESS "192.168.1.255"
 #define PORT 12345
 
 struct Client {
@@ -34,4 +34,6 @@ public:
     
     vector<Client> clients;
     ofxOscSender sender;
+    string address;
+    int port;
 };

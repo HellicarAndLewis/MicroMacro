@@ -26,6 +26,6 @@ sleep $initial_wait_time
 echo "Launching application"
 open ./unit1.command
 open ./unit2.command
-../controller/bin/controller.app/Contents/MacOS/controller
+../controller/bin/controller.app/Contents/MacOS/controller --args -address="192.168.11.255"
 
 exit 0

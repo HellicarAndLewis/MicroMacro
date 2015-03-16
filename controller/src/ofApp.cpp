@@ -3,9 +3,11 @@
 
 void ofApp::setup(){
     ofBackground(30,30,30);
-    // open an outgoing connection to HOST:PORT
-    sender.setup(HOST, PORT);
-    
+    // open an outgoing connection to address:PORT
+    // see if an address has been specified in the app arguments
+    if (address == "") address = DEFAULT_ADDRESS;
+    sender.setup(address, PORT);
+    // setup clients
     clients.assign(4, Client());
     for( int i = 0; i < clients.size(); i++){
         clients[i].id = i+1;
@@ -33,12 +35,13 @@ void ofApp::draw(){
     }
     
     ofSetColor(255);
+    
     // display instructions
     string buf;
-    buf = "Broadcasting on " + string(HOST) + ":" + ofToString(PORT);
+    buf = "Broadcasting on " + string(address) + ":" + ofToString(PORT);
     ofDrawBitmapString(buf, 10, 20);
-    ofDrawBitmapString("Use numeric keys to toggle selected clients", 10, 50);
-    ofDrawBitmapString("press m to broadcast new mode", 10, 80);
+    ofDrawBitmapString("Use numeric keys to toggle selected clients (1-9)", 10, 50);
+    ofDrawBitmapString("press m to broadcast mode change", 10, 80);
     
 }
 

@@ -1,13 +1,19 @@
 #include "ofMain.h"
 #include "ofApp.h"
+#include "ofxArgs.h"
 
-//========================================================================
-int main( ){
-	ofSetupOpenGL(640,480,OF_WINDOW);			// <-------- setup the GL context
 
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
-	ofRunApp(new ofApp());
-
+int main(int argc, char *argv[]){
+    // read in arguments
+    ofxArgs* args = new ofxArgs(argc, argv);
+    string address = args->getString("-address", "");
+    
+    // setup window
+    ofSetupOpenGL(640, 480, OF_WINDOW);
+    
+    // run app
+    ofApp* app = new ofApp();
+    app->address = address;
+    ofRunApp(app);
+    delete args;
 }
