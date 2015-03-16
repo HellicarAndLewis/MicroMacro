@@ -27,11 +27,14 @@ public:
     void update();
     void draw();
     void resetLevels();
+    bool getIsLayoutVertical();
     void clientDidSomething(RemoteUIServerCallBackArg & arg);
     
     Mic mic;
     int bufferSize;
     vector<float> levels;
+    int levelCount;
+    bool useLevelCount;
     int width;
     int height;
     float thick;

@@ -9,9 +9,12 @@
 #include "AudioMapper.h"
 
 void AudioMapper::setup(){
+    
     layout = DOWN_UP;
     thick = 20;
     gap = 20;
+    levelCount = 20;
+    useLevelCount = false;
     easeIn = 0.9;
     easeOut = 0.1;
     mapMin = 0.001;
@@ -23,10 +26,15 @@ void AudioMapper::setup(){
     // share controls
     string modeLabels[] = {"LEFT_RIGHT", "RIGHT_LEFT", "UP_DOWN", "DOWN_UP", "MIRROR_SIDE_V", "MIRROR_SIDE_H", "MIRROR_CENTRE_V", "MIRROR_CENTRE_H", "SOLID_V", "SOLID_H"};
 	RUI_NEW_GROUP("Audio Mapper");
+    ofAddListener(RUI_GET_OF_EVENT(), this, &AudioMapper::clientDidSomething);
 	RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isFadeOn);
+    
     RUI_SHARE_PARAM(mapMin, 0, 1);
     RUI_SHARE_PARAM(mapMax, 0, 1);
+    
+    RUI_SHARE_PARAM(useLevelCount);
+    RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
     RUI_SHARE_PARAM(gap, 0, 100);
 	RUI_SHARE_PARAM(easeIn, 0.0, 1.0);
@@ -122,21 +130,42 @@ void AudioMapper::resetLevels(){
     width = ofGetWidth();
     height = ofGetHeight();
     int n;
-    if (layout == UP_DOWN || layout == DOWN_UP) {
-        n = width / int(thick + gap);
+    if (useLevelCount) {
+        int max = height;
+        if (getIsLayoutVertical()) max = width;
+        n = levelCount;
+        float thickDouble = (float)max/(float)n;
+        ofLogNotice() << "Use levels " << levelCount << " thick: " << thick;
+        thick = thickDouble * 0.5;
+        gap = thickDouble * 0.5;
+        if (levelCount == 1) thick = thickDouble;
     }
     else {
-        n = height / int(thick + gap);
+        if (layout == UP_DOWN || layout == DOWN_UP) {
+            n = width / int(thick + gap);
+        }
+        else {
+            n = height / int(thick + gap);
+        }
     }
     levels.clear();
     levels.assign(n, 0.0);
+}
+
+bool AudioMapper::getIsLayoutVertical(){
+    if (layout==SOLID_V || layout==UP_DOWN || layout==DOWN_UP || layout==MIRROR_CENTRE_V || layout==MIRROR_SIDE_V) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void AudioMapper::clientDidSomething(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
 		case CLIENT_UPDATED_PARAM:
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
-            if (arg.paramName == "layout" || arg.paramName == "thick" || arg.paramName == "gap")
+            if (arg.paramName == "layout" || arg.paramName == "thick" || arg.paramName == "gap" || arg.paramName=="useLevelCount" || arg.paramName=="levelCount")
                 resetLevels();
 			break;
 		default:
