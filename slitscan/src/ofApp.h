@@ -4,10 +4,12 @@
 #include "SlitScan.h"
 #include "AudioMapper.h"
 #include "ofxRemoteUIServer.h"
+#include "OscReceiver.h"
 
 class ofApp : public ofBaseApp{
     
 public:
+    int id;
     
     SlitScan slitScan;
     AudioMapper audioMapper;
@@ -19,6 +21,9 @@ public:
     
     ofFbo sceneFbos[2];
     bool isDebug;
+    
+    OscReceiver oscReceiver;
+    void onRemoteEvent(RemoteEvent& e);
     
     void setup();
     void update();

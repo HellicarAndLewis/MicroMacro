@@ -25,6 +25,9 @@
 		66CA411C5A9664E27326BF36 /* ofxTCPServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C085E327DAB912CFA2A443D /* ofxTCPServer.cpp */; };
 		67FE4C7B15C2F0478C8126C2 /* NetworkingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3B361208CD4107E479F04E7B /* NetworkingUtils.cpp */; };
 		72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65EEFA3DA3526E9CDD9C21F9 /* ofxOscBundle.cpp */; };
+		83FAAF0B1AB6DD59003C0759 /* OscReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */; };
+		83FAAF141AB6E0FF003C0759 /* RemoteEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */; };
+		83FAAF1F1AB6FA7E003C0759 /* ofxArgs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF1D1AB6FA7E003C0759 /* ofxArgs.cpp */; };
 		879A251454401BC0B6E4F238 /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9BFFBBF4CC43DEE890B3C3E /* OscTypes.cpp */; };
 		8F5205AEF8861EF234F0651A /* ofxOscSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 81967292BFC87A0144BD32C6 /* ofxOscSender.cpp */; };
 		933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */; };
@@ -179,6 +182,12 @@
 		7E57AAE3FAB29F87D19451BC /* sampling.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = sampling.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/sampling.h; sourceTree = SOURCE_ROOT; };
 		81967292BFC87A0144BD32C6 /* ofxOscSender.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxOscSender.cpp; path = ../../../addons/ofxOsc/src/ofxOscSender.cpp; sourceTree = SOURCE_ROOT; };
 		832BDC407620CDBA568B713D /* tinyxmlerror.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxmlerror.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxmlerror.cpp; sourceTree = SOURCE_ROOT; };
+		83FAAF091AB6DD1F003C0759 /* OscReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscReceiver.h; sourceTree = "<group>"; };
+		83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscReceiver.cpp; sourceTree = "<group>"; };
+		83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteEvent.cpp; sourceTree = "<group>"; };
+		83FAAF131AB6E0FF003C0759 /* RemoteEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteEvent.h; sourceTree = "<group>"; };
+		83FAAF1D1AB6FA7E003C0759 /* ofxArgs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxArgs.cpp; sourceTree = "<group>"; };
+		83FAAF1E1AB6FA7E003C0759 /* ofxArgs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxArgs.h; sourceTree = "<group>"; };
 		8530EAD600CD792B81B2E79D /* legacy.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = legacy.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/legacy/legacy.hpp; sourceTree = SOURCE_ROOT; };
 		8A22BD0CAF62A2716F682577 /* DeckLinkController.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = DeckLinkController.cpp; path = ../../../addons/ofxBlackmagic/src/DeckLinkController.cpp; sourceTree = SOURCE_ROOT; };
 		8A4DD23693DFAB8EC05FAA5D /* ofxCvShortImage.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxCvShortImage.cpp; path = ../../../addons/ofxOpenCv/src/ofxCvShortImage.cpp; sourceTree = SOURCE_ROOT; };
@@ -625,6 +634,35 @@
 			name = opencv;
 			sourceTree = "<group>";
 		};
+		83FAAF081AB6DCED003C0759 /* comms */ = {
+			isa = PBXGroup;
+			children = (
+				83FAAF091AB6DD1F003C0759 /* OscReceiver.h */,
+				83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */,
+				83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */,
+				83FAAF131AB6E0FF003C0759 /* RemoteEvent.h */,
+			);
+			name = comms;
+			sourceTree = "<group>";
+		};
+		83FAAF1B1AB6FA71003C0759 /* ofxArgs */ = {
+			isa = PBXGroup;
+			children = (
+				83FAAF1C1AB6FA7E003C0759 /* src */,
+			);
+			name = ofxArgs;
+			sourceTree = "<group>";
+		};
+		83FAAF1C1AB6FA7E003C0759 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				83FAAF1D1AB6FA7E003C0759 /* ofxArgs.cpp */,
+				83FAAF1E1AB6FA7E003C0759 /* ofxArgs.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxArgs/src;
+			sourceTree = "<group>";
+		};
 		86D2677079A3AF4A5A88E29A /* oscpack */ = {
 			isa = PBXGroup;
 			children = (
@@ -714,6 +752,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				83FAAF1B1AB6FA71003C0759 /* ofxArgs */,
 				E8C66A491AAF08F300F145CB /* ofxRemoteUI */,
 				E88C6D731AAE240B008218D3 /* ofxOpticalFlowLK */,
 				18240ECCE4076FB0833A8578 /* ofxNetwork */,
@@ -891,6 +930,7 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				83FAAF081AB6DCED003C0759 /* comms */,
 				E8C0D3361AB082110097FBC0 /* audiomap */,
 				E8C0D3351AB070EC0097FBC0 /* slitscan */,
 				E88C6D6F1AAE21F8008218D3 /* input */,
@@ -1110,7 +1150,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				83FAAF141AB6E0FF003C0759 /* RemoteEvent.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				83FAAF1F1AB6FA7E003C0759 /* ofxArgs.cpp in Sources */,
 				E8C0D3391AB082470097FBC0 /* AudioMapper.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				960D20B191346612D5C05A6A /* ofxTCPClient.cpp in Sources */,
@@ -1120,6 +1162,7 @@
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,
 				1D5F3298C2FA073628012944 /* ofxCvContourFinder.cpp in Sources */,
 				E8C66A5E1AAF090600F145CB /* uriencode.cpp in Sources */,
+				83FAAF0B1AB6DD59003C0759 /* OscReceiver.cpp in Sources */,
 				E8C66A5B1AAF090600F145CB /* ofxRemoteUIClient.cpp in Sources */,
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,

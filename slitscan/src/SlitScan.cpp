@@ -22,9 +22,6 @@ void SlitScan::setup(){
     width = cam.camWidth;
     height = cam.camHeight;
     
-    //cam.useVideoPlayer = true;
-    cam.startCapture();
-    
     // slit scan setup
     // setup slitscan, specify max buffer size
     slitScan.setup(width, height, 120);

@@ -2,6 +2,9 @@
 
 
 void ofApp::setup(){
+    
+    ofLogNotice() << "App " << id << " setup";
+    
     isDebug = true;
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // optionaly specify port here, otherwise random
@@ -18,11 +21,15 @@ void ofApp::setup(){
     audioMapper.setup();
     allocateScenes();
     
+    oscReceiver.setup();
+    ofAddListener(RemoteEvent::events, this, &ofApp::onRemoteEvent);
+    
     RUI_LOAD_FROM_XML();
 }
 
 
 void ofApp::update(){
+    oscReceiver.update();
     if (appMode == SLIT_SCAN) {
         slitScan.update();
         sceneFbos[0].begin();
@@ -44,8 +51,9 @@ void ofApp::draw(){
     sceneFbos[0].draw(0, 0);
     if (isDebug) {
         stringstream ss;
-        ss << ofToString(ofGetFrameRate()) << " FPS";
-        ofSetColor(0, 0, 200);
+        ss << "ID:" << id << " " << ofToString(ofGetFrameRate()) << " FPS";
+        ofSetColor(160, 160, 255);
+        oscReceiver.draw();
         ofDrawBitmapString(ss.str(), ofGetWidth() - 100, ofGetHeight() - 20);
     }
     ofSetColor(255);
@@ -64,6 +72,7 @@ void ofApp::keyPressed(int key){
 }
 
 void ofApp::allocateScenes() {
+    // Allocates scene FBO to current app width/height, used when window is resized
     sceneFbos[0].allocate(ofGetWidth(), ofGetHeight());
     sceneFbos[0].begin();
     ofClear(0, 0, 0);
@@ -73,6 +82,29 @@ void ofApp::allocateScenes() {
 void ofApp::enableDebug(bool isDebug){
     RUI_GET_INSTANCE()->setVerbose(isDebug);
     RUI_GET_INSTANCE()->setDrawsNotificationsAutomaticallly(isDebug);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////
+// custom event handlers
+//////////////////////////////////////////////////////////////////////////////////
+void ofApp::onRemoteEvent(RemoteEvent& e){
+    if(e.type == RemoteEvent::SWITCH_MODE ) {
+        bool idMatch = false;
+        ofLogNotice() << "Switch mode for IDs " << e.groupIdsString;
+        if (e.groupIdsString != "") {
+            vector<string> ids = ofSplitString(e.groupIdsString, "|");
+            for (int i=0; i<ids.size(); i++) {
+                if (ofToInt(ids[i]) == id) idMatch = true;
+            }
+        }
+        if (idMatch) {
+            // do something! just toggle mode for now
+            if (appMode == SLIT_SCAN) appMode = AUDIO_MAP;
+            else appMode = SLIT_SCAN;
+        }
+        
+    }
 }
 
 void ofApp::clientDidSomething(RemoteUIServerCallBackArg &arg){

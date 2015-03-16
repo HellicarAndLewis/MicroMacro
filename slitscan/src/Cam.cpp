@@ -48,6 +48,16 @@ void Cam::startCapture(){
     else {
         useBlackmagic = false;
         ofLogNotice() << "\n\nBlackmagic not present, using ofVideoGrabber instead";
+        vector<ofVideoDevice> devices = vidGrabber.listDevices();
+        for (int i = 0; i < devices.size(); i++) {
+            ofLogNotice() << devices[i].id << ": " << devices[i].deviceName;
+            if ( devices[i].bAvailable ) {
+                ofLogNotice() << endl;
+            }
+            else {
+                ofLogNotice() << " - unavailable " << endl;
+            }
+        }
         vidGrabber.setDeviceID(int(vidGrabberDeviceId));
         camWidth = WEBCAM_W;
         camHeight = WEBCAM_H;
