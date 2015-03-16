@@ -17,9 +17,11 @@ class AudioMapper {
 public:
     
     enum Layout {
-        LEFT_RIGHT, RIGHT_LEFT, UP_DOWN, DOWN_UP
+        LEFT_RIGHT, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
     };
     Layout layout;
+    
+    bool isFadeOn;
     
 	void setup();
     void update();
@@ -37,5 +39,7 @@ public:
     float easeIn;
     float easeOut;
     ofColor colour;
+    
+    float mapMin, mapMax;
     
 };

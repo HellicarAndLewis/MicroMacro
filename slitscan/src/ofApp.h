@@ -10,6 +10,7 @@ class ofApp : public ofBaseApp{
     
 public:
     int id;
+    ofColor bgColour;
     
     SlitScan slitScan;
     AudioMapper audioMapper;

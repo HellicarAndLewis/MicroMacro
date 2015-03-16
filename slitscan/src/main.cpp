@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
     bool fullScreen = args->getBool("-fullScreen", false);
     bool logToFile  = args->getInt("-logToFile", false);
     bool appendToLog  = args->getInt("-appendToLog", false);
-    int logLevel = args->getInt("-logLevel", 0); //OF_LOG_VERBOSE,OF_LOG_NOTICE,OF_LOG_WARNING,OF_LOG_ERROR,OF_LOG_FATAL_ERROR,OF_LOG_SILENT
+    int logLevel = args->getInt("-logLevel", 1); //OF_LOG_VERBOSE,OF_LOG_NOTICE,OF_LOG_WARNING,OF_LOG_ERROR,OF_LOG_FATAL_ERROR,OF_LOG_SILENT
     int id = args->getInt("-id", 0);
     
     // setup window

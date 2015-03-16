@@ -6,6 +6,8 @@ void ofApp::setup(){
     ofLogNotice() << "App " << id << " setup";
     
     isDebug = true;
+    bgColour.set(0);
+    
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // optionaly specify port here, otherwise random
 	RUI_SETUP(4000);
@@ -15,12 +17,15 @@ void ofApp::setup(){
     string modeLabels[] = {"SLIT_SCAN", "AUDIO_MAP"};
 	RUI_SHARE_ENUM_PARAM(appMode, SLIT_SCAN, AUDIO_MAP, modeLabels);
     RUI_SHARE_PARAM(isDebug);
+    RUI_SHARE_COLOR_PARAM(bgColour);
     
     appMode == SLIT_SCAN;
     slitScan.setup();
     audioMapper.setup();
     allocateScenes();
     
+    // OSC Receiver listens for remote control events
+    // unlike granular ofxRemoteUI settings, these control high level mode/state changes across multiple clients
     oscReceiver.setup();
     ofAddListener(RemoteEvent::events, this, &ofApp::onRemoteEvent);
     
@@ -47,7 +52,7 @@ void ofApp::update(){
 
 
 void ofApp::draw(){
-    ofBackground(30);
+    ofBackground(bgColour);
     sceneFbos[0].draw(0, 0);
     if (isDebug) {
         stringstream ss;
@@ -72,6 +77,7 @@ void ofApp::keyPressed(int key){
 }
 
 void ofApp::allocateScenes() {
+    audioMapper.resetLevels();
     // Allocates scene FBO to current app width/height, used when window is resized
     sceneFbos[0].allocate(ofGetWidth(), ofGetHeight());
     sceneFbos[0].begin();
