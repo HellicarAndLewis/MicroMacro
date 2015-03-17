@@ -1,3 +1,7 @@
+# project specific
+slitscan/bin/data/logs
+ofxRemoteUISettings.xml
+
 # IDE-specific ignore patterns
 #XCode
 *.pbxuser
