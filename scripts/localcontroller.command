@@ -24,8 +24,6 @@ echo "Waiting to start script..."
 sleep $initial_wait_time
 # start master application
 echo "Launching application"
-open ./unit1.command
-open ./unit2.command
 ../controller/bin/controller.app/Contents/MacOS/controller --args -address="10.41.14.255"
 
 exit 0

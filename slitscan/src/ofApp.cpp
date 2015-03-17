@@ -3,10 +3,10 @@
 
 void ofApp::setup(){
     
-    ofLogNotice() << "App " << id << " setup";
-    
+    // defaults, overriden by any saved ofxRemoteUI settings
     isDebug = true;
     bgColour.set(0);
+    appMode == SLIT_SCAN;
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // optionaly specify port here, otherwise random
@@ -19,7 +19,6 @@ void ofApp::setup(){
     RUI_SHARE_PARAM(isDebug);
     RUI_SHARE_COLOR_PARAM(bgColour);
     
-    appMode == SLIT_SCAN;
     slitScan.setup();
     audioMapper.setup();
     allocateScenes();
@@ -29,31 +28,39 @@ void ofApp::setup(){
     oscReceiver.setup();
     ofAddListener(RemoteEvent::events, this, &ofApp::onRemoteEvent);
     
+    // load ofxRemoteUI saved settings, these will override defaults
     RUI_LOAD_FROM_XML();
+    
+    // show the current mode once loaded from XML
+    changeMode(appMode);
 }
 
 
 void ofApp::update(){
     oscReceiver.update();
-    if (appMode == SLIT_SCAN) {
+    // update each scene and draw it if its visible
+    scenes[0].update();
+    if (scenes[0].isVisible) {
         slitScan.update();
-        sceneFbos[0].begin();
-        slitScan.draw(sceneFbos[0].getWidth(), sceneFbos[0].getHeight());
-        sceneFbos[0].end();
+        scenes[0].begin();
+        slitScan.draw(scenes[0].fbo.getWidth(), scenes[0].fbo.getHeight());
+        scenes[0].end();
     }
-    else {
+    scenes[1].update();
+    if (scenes[1].isVisible) {
         audioMapper.update();
-        sceneFbos[0].begin();
-        ofClear(0,0,0,0);
+        scenes[1].begin();
         audioMapper.draw();
-        sceneFbos[0].end();
+        scenes[1].end();
     }
 }
 
 
 void ofApp::draw(){
     ofBackground(bgColour);
-    sceneFbos[0].draw(0, 0);
+    // draw both scenes to allow for cross fade transitions
+    scenes[0].draw();
+    scenes[1].draw();
     if (isDebug) {
         stringstream ss;
         ss << "ID:" << id << " " << ofToString(ofGetFrameRate()) << " FPS";
@@ -79,15 +86,26 @@ void ofApp::keyPressed(int key){
 void ofApp::allocateScenes() {
     audioMapper.resetLevels();
     // Allocates scene FBO to current app width/height, used when window is resized
-    sceneFbos[0].allocate(ofGetWidth(), ofGetHeight());
-    sceneFbos[0].begin();
-    ofClear(0, 0, 0);
-    sceneFbos[0].end();
+    scenes[0].resize(ofGetWidth(), ofGetHeight());
+    scenes[1].resize(ofGetWidth(), ofGetHeight());
 }
 
 void ofApp::enableDebug(bool isDebug){
     RUI_GET_INSTANCE()->setVerbose(isDebug);
     RUI_GET_INSTANCE()->setDrawsNotificationsAutomaticallly(isDebug);
+}
+
+void ofApp::changeMode(Mode mode){
+    ofLogNotice() << "ofApp::changeMode " << mode;
+    appMode = mode;
+    if (appMode == SLIT_SCAN) {
+        scenes[0].open();
+        scenes[1].close();
+    }
+    else {
+        scenes[1].open();
+        scenes[0].close();
+    }
 }
 
 
@@ -106,8 +124,8 @@ void ofApp::onRemoteEvent(RemoteEvent& e){
         }
         if (idMatch) {
             // do something! just toggle mode for now
-            if (appMode == SLIT_SCAN) appMode = AUDIO_MAP;
-            else appMode = SLIT_SCAN;
+            if (appMode == SLIT_SCAN) changeMode(AUDIO_MAP);
+            else changeMode(SLIT_SCAN);
         }
         
     }
@@ -121,6 +139,7 @@ void ofApp::clientDidSomething(RemoteUIServerCallBackArg &arg){
 		case CLIENT_UPDATED_PARAM:
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
             if (arg.paramName == "isDebug") enableDebug(isDebug);
+            else if (arg.paramName == "appMode") changeMode(appMode);
 			break;
 		case CLIENT_DID_SET_PRESET: ofLogNotice() << "CLIENT_DID_SET_PRESET" << endl; break;
 		case CLIENT_SAVED_PRESET: ofLogNotice() << "CLIENT_SAVED_PRESET" << endl; break;

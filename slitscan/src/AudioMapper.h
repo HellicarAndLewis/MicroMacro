@@ -12,7 +12,6 @@
 
 // Takes audio input and visualises it in different ways
 // so far using left channel buffer to draw bars horizontally or vertically
-// TODO: add debug draws full rects, add colour setting, add mode using mic volume instead of left channel?
 class AudioMapper {
 public:
     
