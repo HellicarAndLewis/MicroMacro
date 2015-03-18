@@ -141,13 +141,14 @@ void Cam::update() {
         isFrameNew = vidGrabber.isFrameNew();
     }
 	
-	if (isFrameNew){
+    
+	if (doFlow && isFrameNew){
         
         if (useVideoPlayer) colorImage.setFromPixels(videoPlayer.getPixels(), camWidth, camHeight);
         else if (useBlackmagic) colorImage.setFromPixels(blackmagic.getColorPixels());
         else colorImage.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight);
         
-        colorImage.mirror(false, true);
+        //colorImage.mirror(false, true);
 		lastGrayImage = thisGrayImage;
 		thisGrayImage = colorImage;
         ofxCvGrayscaleImage tempGrey = thisGrayImage;
@@ -220,7 +221,8 @@ void Cam::update() {
 void Cam::draw(int x, int y) {
     if (doDrawGrey) thisGrayImage.draw(x, y);
     else {
-        colorImage.draw(x, y);
+        //colorImage.draw(x, y);
+        blackmagic.drawColor();
     }
     
     if (doDrawFlow) drawFlow();
