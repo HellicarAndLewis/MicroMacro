@@ -221,8 +221,8 @@ void Cam::update() {
 void Cam::draw(int x, int y) {
     if (doDrawGrey) thisGrayImage.draw(x, y);
     else {
-        //colorImage.draw(x, y);
-        blackmagic.drawColor();
+        if (useBlackmagic) blackmagic.drawColor();
+        else vidGrabber.draw(x, y);
     }
     
     if (doDrawFlow) drawFlow();
@@ -272,6 +272,16 @@ void Cam::drawDebug(){
 //    s << "Auto-exposure: " << uvcControl.getAutoExposure() << "\nAuto-focus: " << uvcControl.getAutoFocus() <<
 //    "\nAbsolute focus: " << uvcControl.getAbsoluteFocus() << "\n";
     ofDrawBitmapString(s.str(), ofGetWidth()-300, 80);
+}
+
+
+ofPixels& Cam::getImage(){
+    if (useBlackmagic) {
+        return blackmagic.getColorPixels();
+    }
+    else {
+        return vidGrabber.getPixelsRef();
+    }
 }
 
 ofColor Cam::getColourAt(int x, int y){

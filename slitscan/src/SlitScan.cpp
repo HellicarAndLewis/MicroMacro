@@ -83,7 +83,7 @@ void SlitScan::update(){
     if (mode > 0) {
         // all modes above 0 use slitscan
         if (cam.isFrameNew) {
-            slitScan.addImage(cam.blackmagic.getColorPixels());
+            slitScan.addImage(cam.getImage());
         }
     }
     if (mode > 1) {
