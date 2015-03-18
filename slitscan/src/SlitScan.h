@@ -44,6 +44,7 @@ public:
     ofVec2f aberrationROffset;
     
     int width, height;
+    bool isCapture720;
     
     void setup();
     void update();

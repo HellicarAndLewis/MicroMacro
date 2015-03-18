@@ -13,6 +13,8 @@
 
 #define BLACKMAGIC_W 1920
 #define BLACKMAGIC_H 1080
+#define BLACKMAGIC720_W 1280
+#define BLACKMAGIC720_H 720
 #define WEBCAM_W 640
 #define WEBCAM_H 480
 
@@ -25,8 +27,7 @@ public:
     Cam();
     ~Cam();
     
-	void setup(float cvRatio=0.3);
-	void setup(int w, int h, float cvRatio);
+	void setup(bool isCapture720=false, float cvRatio=0.3);
 	void update();
 	void draw(int x=0, int y=0);
 	void draw(int x, int y, int w, int h);
@@ -51,6 +52,7 @@ public:
     float vidGrabberDeviceId;
     
     // grab paramters
+    bool isCapture720;
     float camWidth, camHeight, cvWidth, cvHeight, cvRatio;
     bool doDrawGrey, doDrawFlow, doDrawDebug;
     bool isCapturing, useBlackmagic, doHMirror;

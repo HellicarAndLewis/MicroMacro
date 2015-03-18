@@ -38,12 +38,19 @@ Cam::~Cam() {
 void Cam::startCapture(){
     bool success = false;
     // try the blackmagic first, always grab in HD
-    success = blackmagic.setup(BLACKMAGIC_W, BLACKMAGIC_H, 30);
+    if (isCapture720) {
+        success = blackmagic.setup(BLACKMAGIC720_W, BLACKMAGIC720_H, 60);
+        camWidth = BLACKMAGIC720_W;
+        camHeight = BLACKMAGIC720_H;
+    }
+    else {
+        success = blackmagic.setup(BLACKMAGIC_W, BLACKMAGIC_H, 30);
+        camWidth = BLACKMAGIC_W;
+        camHeight = BLACKMAGIC_H;
+    }
     if (success) {
         ofLogNotice() << "\n\nUsing blackmagic!";
         useBlackmagic = true;
-        camWidth = BLACKMAGIC_W;
-        camHeight = BLACKMAGIC_H;
     }
     else {
         useBlackmagic = false;
@@ -80,7 +87,9 @@ void Cam::stopCapture(){
     greyDiff.clear();
 }
 
-void Cam::setup(float cvRatio){
+void Cam::setup(bool isCapture720, float cvRatio){
+    
+    this->isCapture720 = isCapture720;
     
     // Start capturing first to work out camera resultion
     startCapture();
@@ -107,12 +116,6 @@ void Cam::setup(float cvRatio){
     greyDiff.allocate(cvWidth, cvHeight);
     
 	firstFrame = true;
-}
-
-void Cam::setup(int w, int h, float cvRatio) {
-    this->camWidth = w;
-	this->camHeight = h;
-    setup(cvRatio);
 }
 
 void Cam::update() {

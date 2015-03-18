@@ -18,7 +18,7 @@ void SlitScan::setup(){
     sliceVertical = true;
     sliceWeave = false;
     
-    cam.setup(0.3);
+    cam.setup(isCapture720, 0.3);
     width = cam.camWidth;
     height = cam.camHeight;
     
@@ -33,6 +33,7 @@ void SlitScan::setup(){
     slitScan.setTimeDelayAndWidth(slitScanTimeDelay, slitScanTimeWidth);
     // delay maps
     string dir = (width == 640) ? "maps" : "mapsHD";
+    if (width == 1280) dir = "maps720";
 	sampleMapStrings.push_back(dir+"/down_to_up.png");
     sampleMapStrings.push_back(dir+"/left_to_right.png");
 	sampleMapStrings.push_back(dir+"/soft_noise.png");
