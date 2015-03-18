@@ -142,11 +142,12 @@ void Cam::update() {
     }
 	
     
-	if (doFlow && isFrameNew){
+	if ((doFlow || doFlowLk) && isFrameNew){
         
         if (useVideoPlayer) colorImage.setFromPixels(videoPlayer.getPixels(), camWidth, camHeight);
         else if (useBlackmagic) colorImage.setFromPixels(blackmagic.getColorPixels());
         else colorImage.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight);
+        
         
         //colorImage.mirror(false, true);
 		lastGrayImage = thisGrayImage;
