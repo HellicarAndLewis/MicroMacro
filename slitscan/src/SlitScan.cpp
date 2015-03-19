@@ -84,6 +84,13 @@ void SlitScan::setup(){
     RUI_SHARE_PARAM(aberrationBOffset.x, 0.0, 50.0);
     RUI_SHARE_PARAM(aberrationBOffset.y, 0.0, 50.0);
     
+    RUI_NEW_GROUP("Flow");
+    RUI_SHARE_PARAM(cam.doFlow);
+    RUI_SHARE_PARAM(cam.flowSize, 0, 10);
+    RUI_SHARE_PARAM(cam.blur, 0, 9);
+    RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
+    RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
+    
 }
 
 
@@ -92,6 +99,7 @@ void SlitScan::update(){
     if (mode > 0) {
         // all modes above 0 use slitscan
         if (cam.isFrameNew) {
+            if (cam.doFlow) slitScan.setDelayMap(cam.delayMap);
             slitScan.addImage(cam.getImage());
         }
     }
@@ -145,7 +153,7 @@ void SlitScan::update(){
             break;
     }
     // flow
-    //cam.drawFlow(cam.camWidth, cam.camHeight);
+    //if (cam.doFlow) cam.drawFlow();
     ofPopMatrix();
     aberrationFbo.end();
 }
@@ -200,6 +208,7 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
                 slicer[1].setVertical(false);
             }
             else if (arg.paramName == "currentSampleMapIndex") slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
+            else if (arg.paramName == "cam.doFlow" && !cam.doFlow) slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
 			break;
 		default:
 			break;

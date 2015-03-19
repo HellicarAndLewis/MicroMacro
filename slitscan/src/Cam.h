@@ -15,8 +15,8 @@
 #define BLACKMAGIC_H 1080
 #define BLACKMAGIC720_W 1280
 #define BLACKMAGIC720_H 720
-#define WEBCAM_W 640
-#define WEBCAM_H 480
+#define WEBCAM_W 1280
+#define WEBCAM_H 720
 
 // Cam class handles switching between blackmagic input and standard video grabber
 // It also generates optical flow textures and data
@@ -30,9 +30,8 @@ public:
 	void setup(bool isCapture720=false, float cvRatio=0.3);
 	void update();
 	void draw(int x=0, int y=0);
-	void draw(int x, int y, int w, int h);
     void drawFlow();
-    void drawFlow(int w, int h);
+    void drawFlowDebug(int w, int h);
     void drawGrey();
     void drawDebug();
 	void keyPressed(int key);
@@ -55,8 +54,7 @@ public:
     // grab paramters
     bool isCapture720;
     float camWidth, camHeight, cvWidth, cvHeight, cvRatio;
-    bool doDrawGrey, doDrawFlow, doDrawDebug;
-    bool isCapturing, useBlackmagic, doHMirror;
+    bool isCapturing, useBlackmagic;
     
     
     // Open CV / Optical flow
@@ -69,20 +67,15 @@ public:
     ofxCvFloatImage flowCombined;
     ofFbo flow;
 	ofxCvColorImage colorImage;
-    float flowSize, blur, opticalFlowSensitivity, opticalFlowSmoothing;
-	bool firstFrame;
-    bool doFlow, doFlowLk;
+    bool doFlow;
     bool isFrameNew;
     
+    // optical flow settings
+    int flowSize, blur;
+    float opticalFlowSensitivity, opticalFlowSmoothing;
     
-    // Open CV / countour analysis
-    ofxCvContourFinder 	contourFinder;
-    ofxCvGrayscaleImage greyBG;
-    ofxCvGrayscaleImage greyDiff;
-    float threshold, minBlob, maxBlob;
-    bool doContour;
-    bool bLearnBakground;
-    bool doDrawContour, doDrawBg;
+    ofxCvGrayscaleImage delayMap;
+    
     
     ofVideoPlayer videoPlayer;
     bool useVideoPlayer;
