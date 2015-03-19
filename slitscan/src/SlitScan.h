@@ -42,6 +42,8 @@ public:
     ofFbo aberrationFbo;
     ofShader aberrationShader;
     ofVec2f aberrationROffset;
+    ofVec2f aberrationGOffset;
+    ofVec2f aberrationBOffset;
     
     int width, height;
     bool isCapture720;

@@ -52,11 +52,15 @@ void SlitScan::setup(){
     slicer[0].setup(width, height);
     slicer[1].setup(width, height);
     
+    // aberration
     aberrationShader.load("shaders/aberration.vert", "shaders/aberration.frag");
     aberrationFbo.allocate(width, height);
     aberrationFbo.begin();
     ofClear(0, 0, 0);
     aberrationFbo.end();
+    aberrationROffset.set(0);
+    aberrationGOffset.set(0);
+    aberrationBOffset.set(0);
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // share controls
@@ -73,7 +77,12 @@ void SlitScan::setup(){
     RUI_SHARE_PARAM(sliceVertical);
     RUI_SHARE_PARAM(sliceWeave);
     RUI_NEW_GROUP("Aberration");
-	RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
+    RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
+    RUI_SHARE_PARAM(aberrationROffset.y, 0.0, 50.0);
+    RUI_SHARE_PARAM(aberrationGOffset.x, 0.0, 50.0);
+    RUI_SHARE_PARAM(aberrationGOffset.y, 0.0, 50.0);
+    RUI_SHARE_PARAM(aberrationBOffset.x, 0.0, 50.0);
+    RUI_SHARE_PARAM(aberrationBOffset.y, 0.0, 50.0);
     
 }
 
@@ -146,9 +155,9 @@ void SlitScan::draw(int w, int h){
     // Use shader to draw whole scene with aberation effect
     aberrationShader.begin();
     aberrationFbo.getTextureReference().bind();
-    aberrationShader.setUniform2f("rOffset", aberrationROffset.x, 0.0);
-    aberrationShader.setUniform2f("gOffset", 0.0, 0.0);
-    aberrationShader.setUniform2f("bOffset", 0.0, 0.0);
+    aberrationShader.setUniform2f("rOffset", aberrationROffset.x, aberrationROffset.y);
+    aberrationShader.setUniform2f("gOffset", aberrationGOffset.x, aberrationGOffset.y);
+    aberrationShader.setUniform2f("bOffset", aberrationBOffset.x, aberrationBOffset.y);
     //float w = cam.camWidth;
     //float h = cam.camHeight;
 	// draw quads
