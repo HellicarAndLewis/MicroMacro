@@ -141,13 +141,15 @@ void Cam::update() {
         isFrameNew = vidGrabber.isFrameNew();
     }
 	
-	if (isFrameNew){
+    
+	if ((doFlow || doFlowLk) && isFrameNew){
         
         if (useVideoPlayer) colorImage.setFromPixels(videoPlayer.getPixels(), camWidth, camHeight);
         else if (useBlackmagic) colorImage.setFromPixels(blackmagic.getColorPixels());
         else colorImage.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight);
         
-        colorImage.mirror(false, true);
+        
+        //colorImage.mirror(false, true);
 		lastGrayImage = thisGrayImage;
 		thisGrayImage = colorImage;
         ofxCvGrayscaleImage tempGrey = thisGrayImage;
@@ -220,7 +222,8 @@ void Cam::update() {
 void Cam::draw(int x, int y) {
     if (doDrawGrey) thisGrayImage.draw(x, y);
     else {
-        colorImage.draw(x, y);
+        if (useBlackmagic) blackmagic.drawColor();
+        else vidGrabber.draw(x, y);
     }
     
     if (doDrawFlow) drawFlow();
@@ -270,6 +273,16 @@ void Cam::drawDebug(){
 //    s << "Auto-exposure: " << uvcControl.getAutoExposure() << "\nAuto-focus: " << uvcControl.getAutoFocus() <<
 //    "\nAbsolute focus: " << uvcControl.getAbsoluteFocus() << "\n";
     ofDrawBitmapString(s.str(), ofGetWidth()-300, 80);
+}
+
+
+ofPixels& Cam::getImage(){
+    if (useBlackmagic) {
+        return blackmagic.getColorPixels();
+    }
+    else {
+        return vidGrabber.getPixelsRef();
+    }
 }
 
 ofColor Cam::getColourAt(int x, int y){

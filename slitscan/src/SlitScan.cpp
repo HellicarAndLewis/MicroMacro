@@ -83,7 +83,7 @@ void SlitScan::update(){
     if (mode > 0) {
         // all modes above 0 use slitscan
         if (cam.isFrameNew) {
-            slitScan.addImage(cam.colorImage);
+            slitScan.addImage(cam.getImage());
         }
     }
     if (mode > 1) {
@@ -98,6 +98,10 @@ void SlitScan::update(){
     
     aberrationFbo.begin();
     ofClear(0, 0, 0, 0);
+    // Flip the whole scene to mirror camera input
+    ofPushMatrix();
+    ofScale(-1, 1);
+    ofTranslate(-aberrationFbo.getWidth(), 0, 0 );
     switch (mode) {
         case CAM:
             cam.draw(0, 0);
@@ -131,13 +135,15 @@ void SlitScan::update(){
         default:
             break;
     }
+    // flow
+    //cam.drawFlow(cam.camWidth, cam.camHeight);
+    ofPopMatrix();
     aberrationFbo.end();
 }
 
 
 void SlitScan::draw(int w, int h){
-    //cam.drawFlow(ofGetWidth(), ofGetHeight());
-    
+    // Use shader to draw whole scene with aberation effect
     aberrationShader.begin();
     aberrationFbo.getTextureReference().bind();
     aberrationShader.setUniform2f("rOffset", aberrationROffset.x, 0.0);
