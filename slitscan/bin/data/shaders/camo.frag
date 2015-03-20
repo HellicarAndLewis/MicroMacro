@@ -17,18 +17,18 @@ void main () {
     vec4 camo = texture2DRect(camoText, gl_TexCoord[0].st);
     // brown default
     vec4 tone = vec4(73.0/255, 44.0/255, 50.0/255, 1.0);
-    if (camo.r > 0.5) {
+    if (camo.r > 0.6) {
         tone = vec4(115.0/255, 115.0/255, 51.0/255, 1.0);
     }
     if (camo.r > 0.7) {
         tone = vec4(92.0/255, 105.0/255, 50.0/255, 1.0);
     }
-    if (camo.r > 0.8) {
+    if (camo.r > 0.9) {
         tone = vec4(169.0/255, 147.0/255, 30.0/255, 1.0);
     }
     
-    if (camo.r > 0.4) {
-        //gl_FragColor = colour * tone;
+    if (camo.r > 0.4 && camo.r < 0.99) {
+        //gl_FragColor = vec4(colour.rgb, 1.0) * tone;
         gl_FragColor = tone;
     }
     else {

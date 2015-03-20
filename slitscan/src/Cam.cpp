@@ -186,6 +186,7 @@ void Cam::update() {
         // update textures for drawing
         colorImage.updateTexture();
         thisGrayImage.updateTexture();
+        delayMap.updateTexture();
 	}
     
 }

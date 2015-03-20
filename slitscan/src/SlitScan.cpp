@@ -65,6 +65,8 @@ void SlitScan::setup(){
     
     // camo
     camoShader.load("shaders/camo.vert", "shaders/camo.frag");
+    camoImage.loadImage("camo/camo.jpg");
+    camoMask.setup(width, height);
     
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
@@ -164,12 +166,25 @@ void SlitScan::update(){
                 slitScan.getOutputImage().draw(0, 0);
             }
             else {
-                camoShader.begin();
-                //camoShader.setUniformTexture("text0", slitScan.getOutputImage(), 0);
-                camoShader.setUniformTexture("camoText", slitScan.getDelayMap(), 1);
-                // draw quads
+                // camo pattern mask?
+                /*
                 slitScan.getOutputImage().draw(0, 0);
-                //drawQuad(cam.camWidth, cam.camHeight);
+                camoMask.beginMask();
+                // use flow direct or delay map for mask?
+                cam.drawFlow();
+                //slitScan.getDelayMap().draw(0, 0);
+                camoMask.endMask();
+                camoMask.begin();
+                camoImage.draw(0, 0);
+                camoMask.end();
+                camoMask.draw();
+                 */
+                
+                // or use camo shader
+                camoShader.begin();
+                camoShader.setUniformTexture("camoText", slitScan.getDelayMap(), 1);
+                //camoShader.setUniformTexture("camoText", cam.delayMap, 1);
+                slitScan.getOutputImage().draw(0, 0);
                 camoShader.end();
             }
             break;

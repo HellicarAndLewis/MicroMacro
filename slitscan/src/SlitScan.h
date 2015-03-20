@@ -12,6 +12,7 @@
 #include "Cam.h"
 #include "ofxSlitScan.h"
 #include "Slicer.h"
+#include "AlphaMask.h"
 #include "ofxRemoteUIServer.h"
 
 class SlitScan {
@@ -46,6 +47,8 @@ public:
     ofVec2f aberrationBOffset;
     
     ofShader camoShader;
+    AlphaMask camoMask;
+    ofImage camoImage;
     bool useOptimCamo;
     
     int width, height;
