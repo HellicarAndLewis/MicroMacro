@@ -1,8 +1,8 @@
 //
-//  Slicer.h
+//  AlphaMask.h
 //  slitscan
 //
-//  Created by Chris on 09/03/2015.
+//  Created by Chris Mullany on 20/03/2015.
 //
 //
 
@@ -10,20 +10,17 @@
 #include "ofMain.h"
 #include "AlphaMask.h"
 
-// Slicer chops up an image/texture into vertical strips and draw the output into an FBO
-// Basic usage: call begin() draw any texture and call end() and then draw()
-// TODO: hook up to more GUI controls, add horizontal
-class Slicer {
+class AlphaMask {
 public:
     
     void setup(int w=0, int h=0);
     void update();
     void draw(int x=0, int y=0);
-    void setThickness(int thickness);
-    void setVertical(bool isVertical);
     void refresh();
     void begin();
     void end();
+    void beginMask();
+    void endMask();
     
     void keyPressed  (int key);
     void keyReleased(int key);
@@ -34,9 +31,9 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-	
-    AlphaMask mask;
-    int thickness;
-    bool isVertical;
+    
+    ofFbo       maskFbo;
+    ofFbo       fbo;
+    ofShader    shader;
     
 };
