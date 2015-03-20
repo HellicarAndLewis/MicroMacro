@@ -17,6 +17,8 @@ echo "Cloning writable"
 fi
 
 # git clone specific revision of the addons
+# this ensures that things won't break if repositories are updated
+
 ${CLONE}kylemcdonald/ofxBlackmagic
 cd ofxBlackmagic
 git checkout bef9cb5547198fe842fce9d631b05d2be28a2322
@@ -27,9 +29,11 @@ cd ofxSlitScan
 git checkout 78cdd0dc9fff4eac93406c13057064e5a3abb8b3
 cd ..
 
-${CLONE}Flightphase/ofxCvOpticalFlowLK
+# Remove old version before cloning new one!
+rm -rf ofxCvOpticalFlowLK
+${CLONE}outsidecontext/ofxCvOpticalFlowLK
 cd ofxCvOpticalFlowLK
-git checkout f918ed5379b9b060a80f4c4c93d40aa96d8bdb1f
+git checkout cbbf63e14e87133769fa183d1dd64133ef6e9fa2
 cd ..
 
 ${CLONE}armadillu/ofxRemoteUI
@@ -43,16 +47,10 @@ git checkout 13eb17852016e9aa2c2eaac0d20613709b609a10
 cd ..
 
 ${CLONE}outsidecontext/ofxArgs
+cd ofxArgs
+git checkout 9dfbf491591ebe0f8a83fb4ab675116b9d1040ce
+cd ..
 
-
-# potentially useful:
-# ${CLONE}rezaali/ofxUI
-# ${CLONE}neilmendoza/ofxPostProcessing
-# ${CLONE}obviousjim/ofxMSATimer
-# ${CLONE}arturoc/ofxTween
-# ${CLONE}satoruhiga/ofxFastFboReader
-# ${CLONE}kylemcdonald/ofxCameraFilter
-# ${CLONE}kylemcdonald/ofxCv
 
 # final step is to cd back to the start dir
 cd ../apps/MicroMacro
