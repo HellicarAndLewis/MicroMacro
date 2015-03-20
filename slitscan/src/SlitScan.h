@@ -49,7 +49,12 @@ public:
     ofShader camoShader;
     AlphaMask camoMask;
     ofImage camoImage;
+    bool useCamo;
     bool useOptimCamo;
+    bool isDrawFlowDebugOn;
+    
+    ofFbo camoPatternFbo;
+    void updateCamoPattern();
     
     int width, height;
     bool isCapture720;
@@ -58,6 +63,7 @@ public:
     void update();
     void drawQuad(int w, int h);
     void draw(int w, int h);
+    void drawSlitScan();
     
     void keyPressed(int key);
     void keyReleased(int key);

@@ -17,7 +17,9 @@ void SlitScan::setup(){
     slitScanTimeDelay = 0;
     sliceVertical = true;
     sliceWeave = false;
+    useCamo = false;
     useOptimCamo = true;
+    isDrawFlowDebugOn = false;
     
     cam.setup(isCapture720, 0.3);
     width = cam.camWidth;
@@ -67,6 +69,7 @@ void SlitScan::setup(){
     camoShader.load("shaders/camo.vert", "shaders/camo.frag");
     camoImage.loadImage("camo/camo.jpg");
     camoMask.setup(width, height);
+    camoPatternFbo.allocate(width, height);
     
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
@@ -95,13 +98,13 @@ void SlitScan::setup(){
     RUI_SHARE_PARAM(aberrationBOffset.y, 0.0, 50.0);
     
     RUI_NEW_GROUP("Flow");
-    RUI_SHARE_PARAM(cam.doFlow);
+    RUI_SHARE_PARAM(useCamo);
+    RUI_SHARE_PARAM(useOptimCamo);
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
     RUI_SHARE_PARAM(cam.blur, 0, 9);
     RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
     RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
-    RUI_SHARE_PARAM(useOptimCamo);
-    
+    RUI_SHARE_PARAM(isDrawFlowDebugOn);
     
 }
 
@@ -111,17 +114,21 @@ void SlitScan::update(){
     if (mode > 0) {
         // all modes above 0 use slitscan
         if (cam.isFrameNew) {
-            if (cam.doFlow) slitScan.setDelayMap(cam.delayMap);
+            cam.doFlow = useCamo;
+            if (useCamo) {
+                updateCamoPattern();
+                slitScan.setDelayMap(cam.delayMap);
+            }
             slitScan.addImage(cam.getImage());
         }
     }
     if (mode > 1) {
         // all modes above 1 use slicer
         slicer[0].begin();
-        slitScan.getOutputImage().draw(0, 0);
+        drawSlitScan();
         slicer[0].end();
         slicer[1].begin();
-        slitScan.getOutputImage().draw(0, 0);
+        drawSlitScan();
         slicer[1].end();
     }
     
@@ -136,21 +143,17 @@ void SlitScan::update(){
             cam.draw(0, 0);
             break;
         case SLIT_SCAN:
-            slitScan.getOutputImage().draw(0, 0);
+            drawSlitScan();
             break;
         case SLICE_SINGLE:
-            // single slice
             cam.draw(0, 0);
             slicer[0].draw(0);
             break;
         case SLICE_DOUBLE:
             cam.draw(0, 0);
             if (sliceWeave) {
-                //ofSetColor(255, 0, 0);
                 slicer[0].draw(sliceOffset, 0);
-                //ofSetColor(0, 0, 255);
                 slicer[1].draw(0, sliceOffset);
-                //ofSetColor(255);
             }
             else if (sliceVertical) {
                 slicer[0].draw(-sliceOffset);
@@ -161,40 +164,60 @@ void SlitScan::update(){
                 slicer[0].draw(0, sliceOffset);
             }
             break;
-        case CAMO:
-            if (useOptimCamo) {
-                slitScan.getOutputImage().draw(0, 0);
-            }
-            else {
-                // camo pattern mask?
-                /*
-                slitScan.getOutputImage().draw(0, 0);
-                camoMask.beginMask();
-                // use flow direct or delay map for mask?
-                cam.drawFlow();
-                //slitScan.getDelayMap().draw(0, 0);
-                camoMask.endMask();
-                camoMask.begin();
-                camoImage.draw(0, 0);
-                camoMask.end();
-                camoMask.draw();
-                 */
-                
-                // or use camo shader
-                camoShader.begin();
-                camoShader.setUniformTexture("camoText", slitScan.getDelayMap(), 1);
-                //camoShader.setUniformTexture("camoText", cam.delayMap, 1);
-                slitScan.getOutputImage().draw(0, 0);
-                camoShader.end();
-            }
-            break;
         default:
             break;
     }
-    // flow
-    //if (cam.doFlow) cam.drawFlow();
     ofPopMatrix();
     aberrationFbo.end();
+}
+
+void SlitScan::updateCamoPattern() {
+    // Turn this off for now, needs more work!
+    bool doDrawCamo = false;
+    // Draw custom shapes based on flow at point?
+    if (doDrawCamo) {
+        // optical flow from cam
+        float xratio = cam.camWidth / cam.cvWidth;
+        float yratio = cam.camHeight / cam.cvHeight;
+        ofVec2f pos;
+        float hitRadius = 50;
+        // store flow
+        ofVec2f totalFlow;
+        int combinedFlow = 0;
+        int gridSize = 2;
+        float minVec = 9;
+        // draw into FBO
+        camoPatternFbo.begin();
+        cam.drawFlow();
+        //ofSetColor(0,0,0, 5);
+        //ofRect(0,0,camoPatternFbo.getWidth(),camoPatternFbo.getHeight());
+        if (true) {
+            int x, y;
+            for ( y = 0; y < cam.cvHeight; y+=gridSize ){
+                for ( x = 0; x < cam.cvWidth; x+=gridSize ){
+                    ofVec2f vec = cam.opticalFlowLk.flowAtPoint(x, y);
+                    totalFlow += vec;
+                    if (vec.length() > minVec) {
+                        int grey = ofMap(vec.length(), minVec, 15, 153, 255, true);
+                        // do something
+                        ofPoint p = ofPoint(x*xratio, y*yratio);
+                        ofSetColor(grey);
+                        int size = ofMap(vec.length(), minVec, 15, 10, 3, true);
+                        ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
+                        //ofRect(p, size, size);
+                    }
+                }
+            }
+        }
+        ofSetColor(255);
+        camoPatternFbo.end();
+    }
+    else {
+        camoPatternFbo.begin();
+        ofClear(0);
+        cam.drawFlow();
+        camoPatternFbo.end();
+    }
 }
 
 
@@ -211,6 +234,38 @@ void SlitScan::draw(int w, int h){
     aberrationFbo.getTextureReference().unbind();
     aberrationShader.end();
     
+    if (isDrawFlowDebugOn) {
+        cam.drawFlowDebug(cam.camWidth, cam.camHeight);
+        camoPatternFbo.draw(0,0, w, h);
+    }
+    
+}
+
+void SlitScan::drawSlitScan(){
+    if (useCamo && !useOptimCamo) {
+        // camo pattern mask?
+        /*
+         slitScan.getOutputImage().draw(0, 0);
+         camoMask.beginMask();
+         // use flow direct or delay map for mask?
+         cam.drawFlow();
+         //slitScan.getDelayMap().draw(0, 0);
+         camoMask.endMask();
+         camoMask.begin();
+         camoImage.draw(0, 0);
+         camoMask.end();
+         camoMask.draw();
+         */
+        // or use camo shader
+        camoShader.begin();
+        //camoShader.setUniformTexture("camoText", cam.delayMap, 1);
+        camoShader.setUniformTexture("camoText", camoPatternFbo.getTextureReference(), 1);
+        slitScan.getOutputImage().draw(0, 0);
+        camoShader.end();
+    }
+    else {
+        slitScan.getOutputImage().draw(0, 0);
+    }
 }
 
 void SlitScan::drawQuad(int w, int h){
@@ -249,7 +304,7 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
                 slicer[1].setVertical(false);
             }
             else if (arg.paramName == "currentSampleMapIndex") slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
-            else if (arg.paramName == "cam.doFlow" && !cam.doFlow) slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
+            else if (arg.paramName == "useCamo" && !useCamo) slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
 			break;
 		default:
 			break;

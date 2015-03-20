@@ -170,8 +170,10 @@ void Cam::update() {
                           flowY.getCvImage(), 1, 0,
                           flowCombined.getCvImage()
                           );
-            flowCombined.dilate();
+            //flowCombined.dilate();
             flowCombined.blur((int)blur);
+            //flowCombined.erode();
+            //flowCombined.erode();
             flowCombined.flagImageChanged();
             
             flow.begin();
