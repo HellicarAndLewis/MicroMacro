@@ -35,7 +35,7 @@ public:
     
     // Simple mode switcher whilst testing
     enum Mode {
-        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE
+        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE, CAMO
     };
     Mode mode;
     
@@ -45,11 +45,15 @@ public:
     ofVec2f aberrationGOffset;
     ofVec2f aberrationBOffset;
     
+    ofShader camoShader;
+    bool useOptimCamo;
+    
     int width, height;
     bool isCapture720;
     
     void setup();
     void update();
+    void drawQuad(int w, int h);
     void draw(int w, int h);
     
     void keyPressed(int key);

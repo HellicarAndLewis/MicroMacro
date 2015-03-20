@@ -12,7 +12,7 @@ int main(int argc, char *argv[]){
     bool appendToLog  = args->getInt("-appendToLog", false);
     int logLevel = args->getInt("-logLevel", 1); //OF_LOG_VERBOSE,OF_LOG_NOTICE,OF_LOG_WARNING,OF_LOG_ERROR,OF_LOG_FATAL_ERROR,OF_LOG_SILENT
     int id = args->getInt("-id", 1);
-    bool isCapture720 = args->getBool("-capture720", false);
+    bool isCapture720 = args->getBool("-capture720", true);
     
     // setup window
     if (fullScreen) ofSetupOpenGL(640, 480, OF_FULLSCREEN);

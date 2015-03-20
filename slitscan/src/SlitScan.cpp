@@ -17,6 +17,7 @@ void SlitScan::setup(){
     slitScanTimeDelay = 0;
     sliceVertical = true;
     sliceWeave = false;
+    useOptimCamo = true;
     
     cam.setup(isCapture720, 0.3);
     width = cam.camWidth;
@@ -62,20 +63,27 @@ void SlitScan::setup(){
     aberrationGOffset.set(0);
     aberrationBOffset.set(0);
     
+    // camo
+    camoShader.load("shaders/camo.vert", "shaders/camo.frag");
+    
+    
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // share controls
 	ofAddListener(RUI_GET_OF_EVENT(), this, &SlitScan::clientDidSomething);
+    
     RUI_NEW_GROUP("Slit Scan");
-    string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE"};
-	RUI_SHARE_ENUM_PARAM(mode, CAM, SLICE_DOUBLE, modeLabels);
+    string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE", "CAMO"};
+	RUI_SHARE_ENUM_PARAM(mode, CAM, CAMO, modeLabels);
     RUI_SHARE_PARAM(currentSampleMapIndex, 0, sampleMapStrings.size()-1);
 	RUI_SHARE_PARAM(slitScanTimeWidth, 0, 120);
 	RUI_SHARE_PARAM(slitScanTimeDelay, 0, 120);
+    
 	RUI_NEW_GROUP("Slicer (slice modes)");
 	RUI_SHARE_PARAM(sliceThickness, 0, 30 );
 	RUI_SHARE_PARAM(sliceOffset, 0, 30 );
     RUI_SHARE_PARAM(sliceVertical);
     RUI_SHARE_PARAM(sliceWeave);
+    
     RUI_NEW_GROUP("Aberration");
     RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
     RUI_SHARE_PARAM(aberrationROffset.y, 0.0, 50.0);
@@ -90,6 +98,8 @@ void SlitScan::setup(){
     RUI_SHARE_PARAM(cam.blur, 0, 9);
     RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
     RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
+    RUI_SHARE_PARAM(useOptimCamo);
+    
     
 }
 
@@ -149,6 +159,20 @@ void SlitScan::update(){
                 slicer[0].draw(0, sliceOffset);
             }
             break;
+        case CAMO:
+            if (useOptimCamo) {
+                slitScan.getOutputImage().draw(0, 0);
+            }
+            else {
+                camoShader.begin();
+                //camoShader.setUniformTexture("text0", slitScan.getOutputImage(), 0);
+                camoShader.setUniformTexture("camoText", slitScan.getDelayMap(), 1);
+                // draw quads
+                slitScan.getOutputImage().draw(0, 0);
+                //drawQuad(cam.camWidth, cam.camHeight);
+                camoShader.end();
+            }
+            break;
         default:
             break;
     }
@@ -166,23 +190,25 @@ void SlitScan::draw(int w, int h){
     aberrationShader.setUniform2f("rOffset", aberrationROffset.x, aberrationROffset.y);
     aberrationShader.setUniform2f("gOffset", aberrationGOffset.x, aberrationGOffset.y);
     aberrationShader.setUniform2f("bOffset", aberrationBOffset.x, aberrationBOffset.y);
-    //float w = cam.camWidth;
-    //float h = cam.camHeight;
 	// draw quads
-	glBegin(GL_QUADS);
-	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, cam.camHeight);
-	glVertex3f(0, h, 0);
-	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 0.0f);
-	glVertex3f(0, 0, 0);
-	glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, 0.0f);
-	glVertex3f(w, 0, 0);
-	glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, cam.camHeight);
-	glVertex3f(w, h, 0);
-	glEnd();
+    drawQuad(w, h);
 	// unbind the textures
     aberrationFbo.getTextureReference().unbind();
     aberrationShader.end();
     
+}
+
+void SlitScan::drawQuad(int w, int h){
+    glBegin(GL_QUADS);
+    glMultiTexCoord2f(GL_TEXTURE0, 0.0f, cam.camHeight);
+    glVertex3f(0, h, 0);
+    glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 0.0f);
+    glVertex3f(0, 0, 0);
+    glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, 0.0f);
+    glVertex3f(w, 0, 0);
+    glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, cam.camHeight);
+    glVertex3f(w, h, 0);
+    glEnd();
 }
 
 
