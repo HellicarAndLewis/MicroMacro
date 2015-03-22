@@ -73,6 +73,7 @@ void SlitScan::setup(){
     camoMinFlow = 9;
     camoMaxFlow = 15;
     isCamoSquare = false;
+    isCamoImage = true;
     
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
@@ -104,6 +105,7 @@ void SlitScan::setup(){
     RUI_SHARE_PARAM(useCamo);
     RUI_SHARE_PARAM(useOptimCamo);
     RUI_SHARE_PARAM(isCamoSquare);
+    RUI_SHARE_PARAM(isCamoImage);
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
     RUI_SHARE_PARAM(cam.blur, 0, 9);
     RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
@@ -201,11 +203,11 @@ void SlitScan::updateCamoPattern() {
                     ofVec2f vec = cam.opticalFlowLk.flowAtPoint(x, y);
                     totalFlow += vec;
                     if (vec.length() > camoMinFlow) {
-                        int grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 154, 251, true);
+                        float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 160, 255, true);
                         // do something
                         ofPoint p = ofPoint(x*xratio, y*yratio);
                         ofSetColor(grey);
-                        int size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 30, 8, true);
+                        float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 25, 8, true);
                         //p.z = ofMap(size, 40, 5, -10, 10);
                         //ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
                         ofRect(p, size, size);
@@ -248,24 +250,25 @@ void SlitScan::draw(int w, int h){
 void SlitScan::drawSlitScan(){
     if (useCamo && !useOptimCamo) {
         // camo pattern mask?
-        /*
-         slitScan.getOutputImage().draw(0, 0);
-         camoMask.beginMask();
-         // use flow direct or delay map for mask?
-         cam.drawFlow();
-         //slitScan.getDelayMap().draw(0, 0);
-         camoMask.endMask();
-         camoMask.begin();
-         camoImage.draw(0, 0);
-         camoMask.end();
-         camoMask.draw();
-         */
-        // or use camo shader
-        camoShader.begin();
-        //camoShader.setUniformTexture("camoText", cam.delayMap, 1);
-        camoShader.setUniformTexture("camoText", camoPatternFbo.getTextureReference(), 1);
-        slitScan.getOutputImage().draw(0, 0);
-        camoShader.end();
+        if (isCamoImage) {
+            slitScan.getOutputImage().draw(0, 0);
+            camoMask.beginMask();
+            // use flow direct or delay map for mask?
+            camoPatternFbo.draw(0,0);
+            camoMask.endMask();
+            camoMask.begin();
+            camoImage.draw(0, 0);
+            camoMask.end();
+            camoMask.draw();
+        }
+        else {
+            // or use camo shader
+            camoShader.begin();
+            //camoShader.setUniformTexture("camoText", cam.delayMap, 1);
+            camoShader.setUniformTexture("camoText", camoPatternFbo.getTextureReference(), 1);
+            slitScan.getOutputImage().draw(0, 0);
+            camoShader.end();
+        }
     }
     else {
         slitScan.getOutputImage().draw(0, 0);

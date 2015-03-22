@@ -58,6 +58,7 @@ public:
     float camoMinFlow;
     float camoMaxFlow;
     bool isCamoSquare;
+    bool isCamoImage;
     
     int width, height;
     bool isCapture720;
