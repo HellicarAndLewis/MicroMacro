@@ -50,7 +50,7 @@ public:
     AlphaMask camoMask;
     ofImage camoImage;
     bool useCamo;
-    bool useOptimCamo;
+    bool useOpticCamo;
     bool isDrawFlowDebugOn;
     
     ofFbo camoPatternFbo;

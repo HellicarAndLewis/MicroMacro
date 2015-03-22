@@ -18,7 +18,7 @@ void SlitScan::setup(){
     sliceVertical = true;
     sliceWeave = false;
     useCamo = false;
-    useOptimCamo = true;
+    useOpticCamo = true;
     isDrawFlowDebugOn = false;
     
     cam.setup(isCapture720, 0.3);
@@ -103,7 +103,7 @@ void SlitScan::setup(){
     
     RUI_NEW_GROUP("Flow");
     RUI_SHARE_PARAM(useCamo);
-    RUI_SHARE_PARAM(useOptimCamo);
+    RUI_SHARE_PARAM(useOpticCamo);
     RUI_SHARE_PARAM(isCamoSquare);
     RUI_SHARE_PARAM(isCamoImage);
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
@@ -223,18 +223,14 @@ void SlitScan::updateCamoPattern() {
 
 
 void SlitScan::draw(int w, int h){
-    // Use shader to draw whole scene with aberation effect
+    // Use shader to draw whole scene with aberration effect
     aberrationShader.begin();
-    aberrationFbo.getTextureReference().bind();
     aberrationShader.setUniform2f("rOffset", aberrationROffset.x, aberrationROffset.y);
     aberrationShader.setUniform2f("gOffset", aberrationGOffset.x, aberrationGOffset.y);
     aberrationShader.setUniform2f("bOffset", aberrationBOffset.x, aberrationBOffset.y);
-	// draw quads
-    drawQuad(w, h);
-	// unbind the textures
-    aberrationFbo.getTextureReference().unbind();
+    aberrationFbo.draw(0, 0, w, h);
     aberrationShader.end();
-    
+    // draw debug over the top if its on
     if (isDrawFlowDebugOn) {
         cam.drawFlowDebug(cam.camWidth, cam.camHeight);
         camoPatternFbo.draw(0,0, w, h);
@@ -243,14 +239,18 @@ void SlitScan::draw(int w, int h){
 }
 
 void SlitScan::drawSlitScan(){
-    if (useCamo && !useOptimCamo) {
-        // camo pattern mask?
+    if (useCamo && !useOpticCamo) {
+        // This draws actual camo colours
+        // either by mask revealing an image
+        // or by using a shader
         if (isCamoImage) {
+            // draw output direcly on the bottom
             slitScan.getOutputImage().draw(0, 0);
+            // mask is contents of camoPatternFbo which can be optical flow image or custom shapes
             camoMask.beginMask();
-            // use flow direct or delay map for mask?
             camoPatternFbo.draw(0,0);
             camoMask.endMask();
+            // masking off camoImage
             camoMask.begin();
             camoImage.draw(0, 0);
             camoMask.end();
@@ -258,14 +258,17 @@ void SlitScan::drawSlitScan(){
         }
         else {
             // or use camo shader
+            // converts greyscale texture into camo colours
             camoShader.begin();
-            //camoShader.setUniformTexture("camoText", cam.delayMap, 1);
             camoShader.setUniformTexture("camoText", camoPatternFbo.getTextureReference(), 1);
             slitScan.getOutputImage().draw(0, 0);
             camoShader.end();
         }
     }
     else {
+        // If useCamo is on AND useOpticCamo is on, this creates a warped camo effect
+        // by using the optical flow image as the slit scan distort map
+        // otherwise this just draws slit scan with the selected distort map
         slitScan.getOutputImage().draw(0, 0);
     }
 }
