@@ -186,35 +186,30 @@ void SlitScan::updateCamoPattern() {
         float xratio = cam.camWidth / cam.cvWidth;
         float yratio = cam.camHeight / cam.cvHeight;
         ofVec2f pos;
-        float hitRadius = 50;
-        // store flow
-        ofVec2f totalFlow;
-        int combinedFlow = 0;
         int gridSize = 3;
         // draw into FBO
         camoPatternFbo.begin();
-        ofSetColor(0, 0, 0, 6);
+        ofSetColor(0, 0, 0, 120);
         ofRect(0,0,camoPatternFbo.getWidth(),camoPatternFbo.getHeight());
-        if (true) {
-            // shader range = 0.6 - 1.0
-            int x, y;
-            for ( y = 0; y < cam.cvHeight; y+=gridSize ){
-                for ( x = 0; x < cam.cvWidth; x+=gridSize ){
-                    ofVec2f vec = cam.opticalFlowLk.flowAtPoint(x, y);
-                    totalFlow += vec;
-                    if (vec.length() > camoMinFlow) {
-                        float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 160, 255, true);
-                        // do something
-                        ofPoint p = ofPoint(x*xratio, y*yratio);
-                        ofSetColor(grey);
-                        float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 25, 8, true);
-                        //p.z = ofMap(size, 40, 5, -10, 10);
-                        //ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
-                        ofRect(p, size, size);
-                    }
+        // shader range = 0.6 - 1.0
+        int x, y;
+        for ( y = 0; y < cam.cvHeight; y+=gridSize ){
+            for ( x = 0; x < cam.cvWidth; x+=gridSize ){
+                ofVec2f vec = cam.opticalFlowLk.flowAtPoint(x, y);
+                if (vec.length() > camoMinFlow) {
+                    float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 160, 255, true);
+                    // do something
+                    ofPoint p = ofPoint(x*xratio, y*yratio);
+                    ofSetColor(grey);
+                    float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 15, 4, true);
+                    //ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
+                    ofRect(p, size, size);
+                    //ofSetLineWidth(6);
+                    //ofLine(x*xratio,y*yratio,((x*xratio)+vec.x),((y*yratio)+vec.y));
                 }
             }
         }
+        ofSetLineWidth(1);
         ofSetColor(255);
         camoPatternFbo.end();
     }

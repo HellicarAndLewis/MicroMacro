@@ -199,6 +199,7 @@ void Cam::draw(int x, int y) {
 }
 
 void Cam::drawFlow(){
+    //opticalFlowLk.draw(camWidth, camHeight);
     flow.draw(0, 0);
 }
 
