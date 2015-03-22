@@ -70,6 +70,9 @@ void SlitScan::setup(){
     camoImage.loadImage("camo/camo.jpg");
     camoMask.setup(width, height);
     camoPatternFbo.allocate(width, height);
+    camoMinFlow = 9;
+    camoMaxFlow = 15;
+    isCamoSquare = false;
     
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
@@ -100,10 +103,13 @@ void SlitScan::setup(){
     RUI_NEW_GROUP("Flow");
     RUI_SHARE_PARAM(useCamo);
     RUI_SHARE_PARAM(useOptimCamo);
+    RUI_SHARE_PARAM(isCamoSquare);
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
     RUI_SHARE_PARAM(cam.blur, 0, 9);
     RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
     RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
+    RUI_SHARE_PARAM(camoMinFlow, 0.00, 20.00);
+    RUI_SHARE_PARAM(camoMaxFlow, 0.00, 20.00);
     RUI_SHARE_PARAM(isDrawFlowDebugOn);
     
 }
@@ -172,10 +178,8 @@ void SlitScan::update(){
 }
 
 void SlitScan::updateCamoPattern() {
-    // Turn this off for now, needs more work!
-    bool doDrawCamo = false;
     // Draw custom shapes based on flow at point?
-    if (doDrawCamo) {
+    if (isCamoSquare) {
         // optical flow from cam
         float xratio = cam.camWidth / cam.cvWidth;
         float yratio = cam.camHeight / cam.cvHeight;
@@ -184,27 +188,27 @@ void SlitScan::updateCamoPattern() {
         // store flow
         ofVec2f totalFlow;
         int combinedFlow = 0;
-        int gridSize = 2;
-        float minVec = 9;
+        int gridSize = 3;
         // draw into FBO
         camoPatternFbo.begin();
-        cam.drawFlow();
-        //ofSetColor(0,0,0, 5);
-        //ofRect(0,0,camoPatternFbo.getWidth(),camoPatternFbo.getHeight());
+        ofSetColor(0, 0, 0, 6);
+        ofRect(0,0,camoPatternFbo.getWidth(),camoPatternFbo.getHeight());
         if (true) {
+            // shader range = 0.6 - 1.0
             int x, y;
             for ( y = 0; y < cam.cvHeight; y+=gridSize ){
                 for ( x = 0; x < cam.cvWidth; x+=gridSize ){
                     ofVec2f vec = cam.opticalFlowLk.flowAtPoint(x, y);
                     totalFlow += vec;
-                    if (vec.length() > minVec) {
-                        int grey = ofMap(vec.length(), minVec, 15, 153, 255, true);
+                    if (vec.length() > camoMinFlow) {
+                        int grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 154, 251, true);
                         // do something
                         ofPoint p = ofPoint(x*xratio, y*yratio);
                         ofSetColor(grey);
-                        int size = ofMap(vec.length(), minVec, 15, 10, 3, true);
-                        ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
-                        //ofRect(p, size, size);
+                        int size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 30, 8, true);
+                        //p.z = ofMap(size, 40, 5, -10, 10);
+                        //ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
+                        ofRect(p, size, size);
                     }
                 }
             }

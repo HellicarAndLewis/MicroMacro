@@ -55,6 +55,9 @@ public:
     
     ofFbo camoPatternFbo;
     void updateCamoPattern();
+    float camoMinFlow;
+    float camoMaxFlow;
+    bool isCamoSquare;
     
     int width, height;
     bool isCapture720;
