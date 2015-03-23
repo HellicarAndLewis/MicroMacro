@@ -13,7 +13,7 @@ Cam::Cam() {
     // defaults
     isCapturing = false;
     useBlackmagic = false;
-    useVideoPlayer = false;
+    useVideoPlayer = true;
     isFrameNew = false;
     doFlow = true;
     camWidth = BLACKMAGIC_W;
@@ -31,38 +31,48 @@ Cam::~Cam() {
 
 void Cam::startCapture(){
     bool success = false;
-    // try the blackmagic first, always grab in HD
-    if (isCapture720) {
-        success = blackmagic.setup(BLACKMAGIC720_W, BLACKMAGIC720_H, 60);
-        camWidth = BLACKMAGIC720_W;
-        camHeight = BLACKMAGIC720_H;
-    }
-    else {
-        success = blackmagic.setup(BLACKMAGIC_W, BLACKMAGIC_H, 30);
-        camWidth = BLACKMAGIC_W;
-        camHeight = BLACKMAGIC_H;
-    }
-    if (success) {
-        ofLogNotice() << "\n\nUsing blackmagic!";
-        useBlackmagic = true;
-    }
-    else {
-        useBlackmagic = false;
-        ofLogNotice() << "\n\nBlackmagic not present, using ofVideoGrabber instead";
-        vector<ofVideoDevice> devices = vidGrabber.listDevices();
-        for (int i = 0; i < devices.size(); i++) {
-            ofLogNotice() << devices[i].id << ": " << devices[i].deviceName;
-            if ( devices[i].bAvailable ) {
-                ofLogNotice() << endl;
-            }
-            else {
-                ofLogNotice() << " - unavailable " << endl;
-            }
+    if (useVideoPlayer) {
+        if (!videoPlayer.isLoaded()) {
+            videoPlayer.loadMovie("test.mp4");
+            camWidth = videoPlayer.getWidth();
+            camHeight = videoPlayer.getHeight();
+            videoPlayer.play();
         }
-        vidGrabber.setDeviceID(int(vidGrabberDeviceId));
-        camWidth = WEBCAM_W;
-        camHeight = WEBCAM_H;
-        success = vidGrabber.initGrabber(WEBCAM_W, WEBCAM_H);
+    }
+    else {
+        // try the blackmagic first, always grab in HD
+        if (isCapture720) {
+            success = blackmagic.setup(BLACKMAGIC720_W, BLACKMAGIC720_H, 60);
+            camWidth = BLACKMAGIC720_W;
+            camHeight = BLACKMAGIC720_H;
+        }
+        else {
+            success = blackmagic.setup(BLACKMAGIC_W, BLACKMAGIC_H, 30);
+            camWidth = BLACKMAGIC_W;
+            camHeight = BLACKMAGIC_H;
+        }
+        if (success) {
+            ofLogNotice() << "\n\nUsing blackmagic!";
+            useBlackmagic = true;
+        }
+        else {
+            useBlackmagic = false;
+            ofLogNotice() << "\n\nBlackmagic not present, using ofVideoGrabber instead";
+            vector<ofVideoDevice> devices = vidGrabber.listDevices();
+            for (int i = 0; i < devices.size(); i++) {
+                ofLogNotice() << devices[i].id << ": " << devices[i].deviceName;
+                if ( devices[i].bAvailable ) {
+                    ofLogNotice() << endl;
+                }
+                else {
+                    ofLogNotice() << " - unavailable " << endl;
+                }
+            }
+            vidGrabber.setDeviceID(int(vidGrabberDeviceId));
+            camWidth = WEBCAM_W;
+            camHeight = WEBCAM_H;
+            success = vidGrabber.initGrabber(WEBCAM_W, WEBCAM_H);
+        }
     }
     isCapturing = true;
 }
@@ -114,13 +124,6 @@ void Cam::update() {
     if (!isCapturing) return;
     
     if (useVideoPlayer) {
-        if (!videoPlayer.isLoaded()) {
-            videoPlayer.loadMovie("test.mp4");
-            camWidth = videoPlayer.getWidth();
-            camHeight = videoPlayer.getHeight();
-            setup();
-            videoPlayer.play();
-        }
         videoPlayer.update();
         isFrameNew = videoPlayer.isFrameNew();
     }
@@ -194,7 +197,8 @@ void Cam::update() {
 }
 
 void Cam::draw(int x, int y) {
-    if (useBlackmagic) blackmagic.drawColor();
+    if (useVideoPlayer) videoPlayer.draw(0, 0);
+    else if (useBlackmagic) blackmagic.drawColor();
     else vidGrabber.draw(x, y);
 }
 
@@ -223,7 +227,10 @@ void Cam::drawDebug(){
 
 
 ofPixels& Cam::getImage(){
-    if (useBlackmagic) {
+    if (useVideoPlayer) {
+        return videoPlayer.getPixelsRef();
+    }
+    else if (useBlackmagic) {
         return blackmagic.getColorPixels();
     }
     else {

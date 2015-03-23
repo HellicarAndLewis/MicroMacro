@@ -7,7 +7,8 @@
 #include "OscReceiver.h"
 
 // TODO: add quad warper to match projection surface?
-
+// TODO: add portrait mode support
+// TODO: more complexity in audio reactive mode
 class Scene {
 public:
     ofFbo fbo;

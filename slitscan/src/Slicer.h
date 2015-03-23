@@ -12,7 +12,6 @@
 
 // Slicer chops up an image/texture into vertical strips and draw the output into an FBO
 // Basic usage: call begin() draw any texture and call end() and then draw()
-// TODO: hook up to more GUI controls, add horizontal
 class Slicer {
 public:
     

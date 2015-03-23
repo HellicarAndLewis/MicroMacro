@@ -20,7 +20,6 @@
 
 // Cam class handles switching between blackmagic input and standard video grabber
 // It also generates optical flow textures and data
-// TODO: extend and tidy optical flow stuff, test blackmagic!
 class Cam {
 public:
     
@@ -75,7 +74,6 @@ public:
     float opticalFlowSensitivity, opticalFlowSmoothing;
     
     ofxCvGrayscaleImage delayMap;
-    
     
     ofVideoPlayer videoPlayer;
     bool useVideoPlayer;
