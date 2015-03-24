@@ -43,5 +43,10 @@ public:
     ofColor colour;
     
     float mapMin, mapMax;
+    float audioThreshold;
+    float audioPeakDecay;
+    float audioMaxDecay;
+    
+    
     
 };

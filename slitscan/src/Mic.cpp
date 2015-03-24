@@ -31,7 +31,19 @@ void Mic::setup(){
 	drawCounter = 0;
 	smoothedVol = 0.0;
 	scaledVol = 0.0;
-	soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+	//soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
+    
+    
+    fftLive.setMirrorData(false);
+    fftLive.setup();
+    
+    fftFile.setMirrorData(false);
+    fftFile.setup();
+    
+    soundPlayer.loadSound("sound/1085.mp3");
+    soundPlayer.setLoop(true);
+    soundPlayer.play();
+    meshOriginal = meshWarped = ofMesh::sphere(200, 30);
     
 }
 
@@ -43,10 +55,40 @@ void Mic::update(){
 	if( volHistory.size() >= 400 ){
 		volHistory.erase(volHistory.begin(), volHistory.begin()+1);
 	}
+    
+    fftLive.update();
+    fftFile.update();
+    
+    //---------------------------------------------------------- dispacing mesh using audio.
+    vector<ofVec3f> & vertsOriginal = meshOriginal.getVertices();
+    vector<ofVec3f> & vertsWarped = meshWarped.getVertices();
+    int numOfVerts = meshOriginal.getNumVertices();
+    
+    float * audioData = new float[numOfVerts];
+    fftFile.getFftPeakData(audioData, numOfVerts);
+    
+    float meshDisplacement = 100;
+    
+    for(int i=0; i<numOfVerts; i++) {
+        float audioValue = audioData[i];
+        ofVec3f & vertOriginal = vertsOriginal[i];
+        ofVec3f & vertWarped = vertsWarped[i];
+        
+        ofVec3f direction = vertOriginal.getNormalized();
+        vertWarped = vertOriginal + direction * meshDisplacement * audioValue;
+    }
+    
+    delete[] audioData;
 }
 
 
 void Mic::draw(){
+    ofSetColor(255);
+    ofDrawBitmapString("AUDIO FROM MIC (LIVE)", 10, 20);
+    ofDrawBitmapString("AUDIO FROM FILE (SOUND/1085.MP3)", 10, 310);
+    
+    fftLive.draw(10, 30);
+    fftFile.draw(10, 320);
 }
 
 

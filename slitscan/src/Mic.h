@@ -8,6 +8,8 @@
 
 #pragma once
 #include "ofMain.h"
+#include "ofxFFTLive.h"
+#include "ofxFFTFile.h"
 
 class Mic : public ofBaseApp{
 	
@@ -42,4 +44,11 @@ public:
     float scaledVol;
     
     ofSoundStream soundStream;
+    
+    ofSoundPlayer soundPlayer;
+    ofxFFTLive fftLive;
+    ofxFFTFile fftFile;
+    ofMesh meshOriginal;
+    ofMesh meshWarped;
+    ofEasyCam cam;
 };

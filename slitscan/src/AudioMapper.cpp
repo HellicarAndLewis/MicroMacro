@@ -30,18 +30,27 @@ void AudioMapper::setup(){
 	RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isFadeOn);
     
-    RUI_SHARE_PARAM(mapMin, 0, 1);
-    RUI_SHARE_PARAM(mapMax, 0, 1);
+    //RUI_SHARE_PARAM(mapMin, 0, 1);
+    //RUI_SHARE_PARAM(mapMax, 0, 1);
     
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
     RUI_SHARE_PARAM(gap, 0, 100);
-	RUI_SHARE_PARAM(easeIn, 0.0, 1.0);
-	RUI_SHARE_PARAM(easeOut, 0.0, 1.0);
+    
+    
+    RUI_SHARE_PARAM(audioThreshold, 0.0, 1.0);
+    RUI_SHARE_PARAM(audioPeakDecay, 0.0, 1.0);
+    RUI_SHARE_PARAM(audioMaxDecay, 0.0, 1.0);
+    
+	//RUI_SHARE_PARAM(easeIn, 0.0, 1.0);
+	//RUI_SHARE_PARAM(easeOut, 0.0, 1.0);
     RUI_SHARE_COLOR_PARAM(colour);
 }
 void AudioMapper::update(){
+    //mic.fftFile.setThreshold(audioThreshold);
+    //mic.fftFile.setPeakDecay(audioPeakDecay);
+    //mic.fftFile.setMaxDecay(audioMaxDecay);
     mic.update();
     for (unsigned int i = 0; i < levels.size(); i++){
         int index = ofMap(i, 0, levels.size(), 0, mic.left.size());
@@ -49,6 +58,16 @@ void AudioMapper::update(){
         float level = ofMap(mic.left[index], mapMin, mapMax, 0, 1);
         levels[i] = ofLerp(levels[i], level, rate);
     }
+    
+    int n  = levels.size();
+    float * audioData = new float[n];
+    mic.fftFile.getFftPeakData(audioData, n);
+    //mic.fftLive.getFftPeakData(audioData, n);
+    for(int i=0; i<n; i++) {
+        float audioValue = audioData[i];
+        levels[i] = audioValue;
+    }
+    delete[] audioData;
 }
 void AudioMapper::draw(){
     int x = 0;
@@ -124,6 +143,8 @@ void AudioMapper::draw(){
         
     }
     ofSetColor(255);
+    
+    //mic.draw();
 }
 
 void AudioMapper::resetLevels(){
