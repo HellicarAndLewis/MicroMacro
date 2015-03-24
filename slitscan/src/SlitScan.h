@@ -12,7 +12,7 @@
 #include "Cam.h"
 #include "ofxSlitScan.h"
 #include "Slicer.h"
-#include "AlphaMask.h"
+#include "Camo.h"
 #include "ofxRemoteUIServer.h"
 
 class SlitScan {
@@ -46,23 +46,7 @@ public:
     ofVec2f aberrationGOffset;
     ofVec2f aberrationBOffset;
     
-    ofShader camoShader;
-    AlphaMask camoMask;
-    vector <ofImage> camoImages;
-    int camoImageIndex;
-    bool useCamo;
-    bool useOpticCamo;
-    bool isDrawFlowDebugOn;
-    
-    ofFbo camoPatternFbo;
-    void updateCamoPattern();
-    float camoMinFlow;
-    float camoMaxFlow;
-    bool isCamoSquare;
-    bool isCamoImage;
-    int camoFlowRes;
-    int camoBlockMin, camoBlockMax;
-    int camoFade;
+    Camo camo;
     
     int width, height;
     bool isCapture720;

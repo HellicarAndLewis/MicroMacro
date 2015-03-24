@@ -17,9 +17,6 @@ void SlitScan::setup(){
     slitScanTimeDelay = 0;
     sliceVertical = true;
     sliceWeave = false;
-    useCamo = true;
-    useOpticCamo = false;
-    isDrawFlowDebugOn = false;
     
     cam.setup(isCapture720, 0.4);
     width = cam.camWidth;
@@ -65,34 +62,6 @@ void SlitScan::setup(){
     aberrationGOffset.set(0);
     aberrationBOffset.set(0);
     
-    // camo images
-    camoShader.load("shaders/camo.vert", "shaders/camo.frag");
-    ofDirectory camoImageDir;
-    int nFiles = camoImageDir.listDir("camo");
-    if(nFiles) {
-        for(int i=0; i<camoImageDir.numFiles(); i++) {
-            // add the image to the vector
-            string filePath = camoImageDir.getPath(i);
-            camoImages.push_back(ofImage());
-            camoImages.back().loadImage(filePath);
-            
-        }
-    }
-    else ofLogError("Couldn't find camo images folder");
-    camoImageIndex = 0;
-    
-    
-    camoMask.setup(width, height);
-    camoPatternFbo.allocate(width, height);
-    camoMinFlow = 9;
-    camoMaxFlow = 15;
-    isCamoSquare = true;
-    isCamoImage = true;
-    camoFlowRes = 2;
-    camoBlockMin = 4;
-    camoBlockMax = 15;
-    camoFade = 20;
-    
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // share controls
@@ -119,23 +88,15 @@ void SlitScan::setup(){
     RUI_SHARE_PARAM(aberrationBOffset.x, 0.0, 50.0);
     RUI_SHARE_PARAM(aberrationBOffset.y, 0.0, 50.0);
     
-    RUI_NEW_GROUP("Flow");
-    RUI_SHARE_PARAM(useCamo);
-    //RUI_SHARE_PARAM(useOpticCamo);
-    //RUI_SHARE_PARAM(isCamoSquare);
-    //RUI_SHARE_PARAM(isCamoImage);
+    RUI_NEW_GROUP("Camo");
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
     RUI_SHARE_PARAM(cam.blur, 0, 9);
     //RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
     //RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
-    RUI_SHARE_PARAM(camoMinFlow, 0.00, 20.00);
-    RUI_SHARE_PARAM(camoMaxFlow, 0.00, 20.00);
-    RUI_SHARE_PARAM(camoFlowRes, 1, 10);
-    RUI_SHARE_PARAM(camoBlockMin, 1, 10);
-    RUI_SHARE_PARAM(camoBlockMax, 2, 40);
-    RUI_SHARE_PARAM(camoFade, 2, 255);
-    RUI_SHARE_PARAM(camoImageIndex, 0, nFiles-1);
-    RUI_SHARE_PARAM(isDrawFlowDebugOn);
+    
+    
+    // camo
+    camo.setup(&cam, width, height);
     
 }
 
@@ -145,9 +106,11 @@ void SlitScan::update(){
     if (mode > 0) {
         // all modes above 0 use slitscan
         if (cam.isFrameNew) {
-            cam.doFlow = useCamo;
-            if (useCamo) {
-                updateCamoPattern();
+            // if camo is enabled, force the camera to do flow calculations
+            // and force slitscan delay map to use the flow image
+            cam.doFlow = camo.isCamoEnabled;
+            if (camo.isCamoEnabled) {
+                camo.update();
                 slitScan.setDelayMap(cam.delayMap);
             }
             slitScan.addImage(cam.getImage());
@@ -202,47 +165,6 @@ void SlitScan::update(){
     aberrationFbo.end();
 }
 
-void SlitScan::updateCamoPattern() {
-    // Draw custom shapes based on flow at point?
-    if (isCamoSquare) {
-        // optical flow from cam
-        float xratio = cam.camWidth / cam.cvWidth;
-        float yratio = cam.camHeight / cam.cvHeight;
-        ofVec2f pos;
-        // draw into FBO
-        camoPatternFbo.begin();
-        //ofClear(0);
-        // FBO fade trick
-        ofSetColor(0, 0, 0, camoFade);
-        ofRect(0,0,camoPatternFbo.getWidth(),camoPatternFbo.getHeight());
-        int x, y;
-        for ( y = 0; y < cam.cvHeight; y+=camoFlowRes ){
-            for ( x = 0; x < cam.cvWidth; x+=camoFlowRes ){
-                ofVec2f vec = cam.opticalFlowLk.flowAtPoint(x, y);
-                if (vec.length() > camoMinFlow) {
-                    float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 220, 255, true);
-                    // do something
-                    ofPoint p = ofPoint(x*xratio, y*yratio);
-                    ofSetColor(grey);
-                    float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, camoBlockMax, camoBlockMin, true);
-                    p.z = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 0, -20, true);
-                    //ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
-                    ofRect(p, size, size);
-                }
-            }
-        }
-        ofSetColor(255);
-        camoPatternFbo.end();
-    }
-    else {
-        camoPatternFbo.begin();
-        ofClear(0);
-        cam.drawFlow();
-        camoPatternFbo.end();
-    }
-}
-
-
 void SlitScan::draw(int w, int h){
     // Use shader to draw whole scene with aberration effect
     aberrationShader.begin();
@@ -252,44 +174,21 @@ void SlitScan::draw(int w, int h){
     aberrationFbo.draw(0, 0, w, h);
     aberrationShader.end();
     // draw debug over the top if its on
-    if (isDrawFlowDebugOn) {
+    if (camo.isDrawFlowDebugOn) {
         cam.drawFlowDebug(cam.camWidth, cam.camHeight);
-        camoPatternFbo.draw(0,0, w, h);
+        camo.drawFlow();
     }
     
 }
 
 void SlitScan::drawSlitScan(){
-    if (useCamo && !useOpticCamo) {
-        // This draws actual camo colours
-        // either by mask revealing an image
-        // or by using a shader
-        if (isCamoImage) {
-            // draw output direcly on the bottom
-            slitScan.getOutputImage().draw(0, 0);
-            // mask is contents of camoPatternFbo which can be optical flow image or custom shapes
-            camoMask.beginMask();
-            camoPatternFbo.draw(0,0);
-            camoMask.endMask();
-            // masking off camoImage
-            camoMask.begin();
-            camoImages[camoImageIndex].draw(0, 0);
-            camoMask.end();
-            camoMask.draw();
-        }
-        else {
-            // or use camo shader
-            // converts greyscale texture into camo colours
-            camoShader.begin();
-            camoShader.setUniformTexture("camoText", camoPatternFbo.getTextureReference(), 1);
-            slitScan.getOutputImage().draw(0, 0);
-            camoShader.end();
-        }
+    if (camo.isCamoEnabled) {
+        camo.begin();
+        slitScan.getOutputImage().draw(0, 0);
+        camo.end();
+        camo.draw();
     }
     else {
-        // If useCamo is on AND useOpticCamo is on, this creates a warped camo effect
-        // by using the optical flow image as the slit scan distort map
-        // otherwise this just draws slit scan with the selected distort map
         slitScan.getOutputImage().draw(0, 0);
     }
 }
@@ -326,7 +225,8 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
                 slicer[1].setVertical(false);
             }
             else if (arg.paramName == "currentSampleMapIndex") slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
-            else if (arg.paramName == "useCamo" && !useCamo) slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
+            // Slight hack, listen to the isCamoEnabled param from Camo
+            else if (arg.paramName == "isCamoEnabled" && !camo.isCamoEnabled) slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
 			break;
 		default:
 			break;
@@ -334,17 +234,7 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
 }
 
 void SlitScan::keyPressed(int key){
-    switch (key) {
-        case 'c':
-            camoImageIndex++;
-            if (camoImageIndex > camoImages.size()-1) {
-                camoImageIndex = 0;
-            }
-            break;
-            
-        default:
-            break;
-    }
+    camo.keyPressed(key);
 }
 
 void SlitScan::keyReleased(int key){
