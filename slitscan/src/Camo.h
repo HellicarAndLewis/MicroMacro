@@ -13,6 +13,7 @@
 #include "AlphaMask.h"
 #include "ofxRemoteUIServer.h"
 
+// Uses optical flow from Cam to draw camo effects over the slitscan output
 class Camo {
     
 public:

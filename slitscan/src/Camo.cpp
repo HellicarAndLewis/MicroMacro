@@ -26,7 +26,7 @@ void Camo::setup(Cam* cam, int w, int h){
     camoBlockMax = 15;
     camoFade = 20;
     
-    // camo images
+    // camo images for when isCamoImage is true
     camoShader.load("shaders/camo.vert", "shaders/camo.frag");
     ofDirectory camoImageDir;
     int nFiles = camoImageDir.listDir("camo");
@@ -42,23 +42,14 @@ void Camo::setup(Cam* cam, int w, int h){
     else ofLogError("Couldn't find camo images folder");
     camoImageIndex = 0;
     
-    
     camoMask.setup(width, height);
     camoPatternFbo.allocate(width, height);
     
-    
-    
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
-    // share controls
     ofAddListener(RUI_GET_OF_EVENT(), this, &Camo::clientDidSomething);
-    
     RUI_SHARE_PARAM(isCamoEnabled);
     RUI_SHARE_PARAM(isCamoSquare);
     RUI_SHARE_PARAM(isCamoImage);
-    //RUI_SHARE_PARAM(cam.flowSize, 0, 10);
-    //RUI_SHARE_PARAM(cam.blur, 0, 9);
-    //RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
-    //RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
     RUI_SHARE_PARAM(camoMinFlow, 0.00, 20.00);
     RUI_SHARE_PARAM(camoMaxFlow, 0.00, 20.00);
     RUI_SHARE_PARAM(camoFlowRes, 1, 10);
@@ -88,13 +79,13 @@ void Camo::update(){
             for ( x = 0; x < cam->cvWidth; x+=camoFlowRes ){
                 ofVec2f vec = cam->opticalFlowLk.flowAtPoint(x, y);
                 if (vec.length() > camoMinFlow) {
+                    // movement detected, draw a square here
                     float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 220, 255, true);
-                    // do something
-                    ofPoint p = ofPoint(x*xratio, y*yratio);
                     ofSetColor(grey);
-                    float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, camoBlockMax, camoBlockMin, true);
+                    // offset the z to force smaller squares to the front
+                    ofPoint p = ofPoint(x*xratio, y*yratio);
                     p.z = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 0, -20, true);
-                    //ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
+                    float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, camoBlockMax, camoBlockMin, true);
                     ofRect(p, size, size);
                 }
             }
@@ -134,10 +125,12 @@ void Camo::drawFlow(){
 
 void Camo::begin(){
     if (!isCamoImage) {
-        // or use camo shader
+        // Not using image masking means use shader
+        // this needs to be wrapped in begin and end so that SlitScan can draw into the shader
         // converts greyscale texture into camo colours
         camoShader.begin();
         camoShader.setUniformTexture("camoText", camoPatternFbo.getTextureReference(), 1);
+        // now slit scan should draw before calling end()
     }
 }
 void Camo::end(){

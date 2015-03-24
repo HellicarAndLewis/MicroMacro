@@ -34,20 +34,25 @@ public:
     bool sliceVertical;
     bool sliceWeave;
     
-    // Simple mode switcher whilst testing
+    // mode state
+    // SLIT_SCAN is output from ofxSlitScan which can be camo if enabled
+    // SLICE_SINGLE and SLICE_DOUBLE use 1 or 2 layered Slicers
     enum Mode {
-        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE, CAMO
+        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE
     };
     Mode mode;
     
+    // aberration for colour glitching (RGB H and V)
     ofFbo aberrationFbo;
     ofShader aberrationShader;
     ofVec2f aberrationROffset;
     ofVec2f aberrationGOffset;
     ofVec2f aberrationBOffset;
     
+    // Camo mode draws camo colours
     Camo camo;
     
+    // dimensions
     int width, height;
     bool isCapture720;
     

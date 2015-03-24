@@ -64,12 +64,11 @@ void SlitScan::setup(){
     
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
-    // share controls
 	ofAddListener(RUI_GET_OF_EVENT(), this, &SlitScan::clientDidSomething);
     
     RUI_NEW_GROUP("Slit Scan");
-    string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE", "CAMO"};
-	RUI_SHARE_ENUM_PARAM(mode, CAM, CAMO, modeLabels);
+    string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE"};
+	RUI_SHARE_ENUM_PARAM(mode, CAM, SLICE_DOUBLE, modeLabels);
     RUI_SHARE_PARAM(currentSampleMapIndex, 0, sampleMapStrings.size()-1);
 	RUI_SHARE_PARAM(slitScanTimeWidth, 0, 120);
 	RUI_SHARE_PARAM(slitScanTimeDelay, 0, 120);
@@ -91,6 +90,7 @@ void SlitScan::setup(){
     RUI_NEW_GROUP("Camo");
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
     RUI_SHARE_PARAM(cam.blur, 0, 9);
+    // not needed for custom squares pattern
     //RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
     //RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
     
@@ -183,6 +183,8 @@ void SlitScan::draw(int w, int h){
 
 void SlitScan::drawSlitScan(){
     if (camo.isCamoEnabled) {
+        // depending on camo settings, it's either drawn on top of slit scan or blended with it
+        // hence the use of a begin() and end() before drawing
         camo.begin();
         slitScan.getOutputImage().draw(0, 0);
         camo.end();
