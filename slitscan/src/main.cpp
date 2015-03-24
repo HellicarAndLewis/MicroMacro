@@ -21,8 +21,7 @@ int main(int argc, char *argv[]){
     // logging
     ofSetLogLevel((ofLogLevel)logLevel);
     string toFileString = (logToFile) ? "log to file" : "log to cout";
-    args->printArgs();
-    ofLogNotice() << "Setting log level " << logLevel << ", " << toFileString << ", args count " << args->getCount();
+    ofLogNotice() << "Setting log level " << logLevel << ", " << toFileString;
     if (logToFile) {
         string format = "log-%Y-%m";
         string timestamp = ofGetTimestampString(format);

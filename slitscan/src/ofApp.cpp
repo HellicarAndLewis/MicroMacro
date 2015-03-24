@@ -12,7 +12,7 @@ void ofApp::setup(){
     // optionaly specify port here, otherwise random
 	RUI_SETUP(4000);
 	ofAddListener(RUI_GET_OF_EVENT(), this, &ofApp::clientDidSomething);
-	RUI_GET_INSTANCE()->setVerbose(isDebug);
+	RUI_GET_INSTANCE()->setVerbose(false);
     RUI_NEW_GROUP("App");
     string modeLabels[] = {"SLIT_SCAN", "AUDIO_MAP"};
 	RUI_SHARE_ENUM_PARAM(appMode, SLIT_SCAN, AUDIO_MAP, modeLabels);
@@ -33,6 +33,7 @@ void ofApp::setup(){
     
     // show the current mode once loaded from XML
     changeMode(appMode);
+    enableDebug(isDebug);
 }
 
 
@@ -97,7 +98,6 @@ void ofApp::enableDebug(bool isDebug){
 }
 
 void ofApp::changeMode(Mode mode){
-    ofLogNotice() << "ofApp::changeMode " << mode;
     appMode = mode;
     if (appMode == SLIT_SCAN) {
         scenes[0].open();

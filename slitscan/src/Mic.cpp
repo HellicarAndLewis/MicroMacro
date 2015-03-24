@@ -14,7 +14,9 @@ void Mic::setup(){
 	// 2 input channels
 	// 44100 samples per second
 	// 256 samples per buffer
-	// 4 num buffers (latency)
+    // 4 num buffers (latency)
+    ofLogNotice() << "\n\n\nSound input setup";
+    ofLogNotice() << "Available devices:";
 	soundStream.listDevices();
 	
 	// Optionally specify device ID? Shouldn't need to

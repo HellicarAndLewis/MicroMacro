@@ -11,7 +11,8 @@
 
 void OscReceiver::setup(){
     // listen on the given port
-    cout << "listening for osc messages on port " << PORT << "\n";
+    ofLogNotice() << "\n\n\nOSC Receiver setup";
+    ofLogNotice() << "listening for osc messages on port " << PORT << "\n";
     receiver.setup(PORT);
     
     current_msg_string = 0;

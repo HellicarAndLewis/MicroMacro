@@ -20,6 +20,8 @@ Then go to the support page and download the [DeckLink 10.1.4 SDK](https://www.b
 ### Settings & Control
 Use the ofxRemoteUI OSX client to change app modes and settings locally for a single app. Compile your own from the [ofxRemoteUI repo](https://github.com/armadillu/ofxRemoteUI/tree/master/OSX%20Client) or use the precompiled version in this [repo's release section](https://github.com/HellicarAndLewis/MicroMacro/releases/tag/UIClientOSX).
 
+Drop a video into data named "test.mp4" to use a video for local testing. Connect a blackmgic recorder to use blackmagic. Or do neither to use an inbuilt webcam (device ID 0).
+
 Use the controller app to control multiple client apps. Clients can be started with arguments to specify unique IDs from terminal or using the scripts in /scripts. Spawn multiple clients locally with different IDs (1-9) and control them via controller. The controller uses a broadcast address which defaults to 192.168.1.255 but can be set using app arguments e.g. `{path to app} --args -address="192.168.11.255"`
 
 Slit scan can also be forced to capture from Blackmagic at 720p instead of the default 1080p by passing in the argument `-capture720=true` or by launching '720capture.command' in /scripts.

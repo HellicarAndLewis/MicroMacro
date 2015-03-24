@@ -13,7 +13,6 @@ Cam::Cam() {
     // defaults
     isCapturing = false;
     useBlackmagic = false;
-    useVideoPlayer = false;
     isFrameNew = false;
     doFlow = true;
     camWidth = BLACKMAGIC_W;
@@ -31,16 +30,18 @@ Cam::~Cam() {
 
 void Cam::startCapture(){
     bool success = false;
+    ofLogNotice() << "\n\n\nVideo input setup";
+    ofLogNotice() << "Check for test.mp4 in data...";
+    useVideoPlayer = videoPlayer.loadMovie("test.mp4");
     if (useVideoPlayer) {
-        if (!videoPlayer.isLoaded()) {
-            videoPlayer.loadMovie("test.mp4");
-            camWidth = videoPlayer.getWidth();
-            camHeight = videoPlayer.getHeight();
-            videoPlayer.play();
-        }
+        ofLogNotice() << "Using PRERECORDED TEST.MP4 VIDEO for video input.";
+        camWidth = videoPlayer.getWidth();
+        camHeight = videoPlayer.getHeight();
+        videoPlayer.play();
     }
     else {
-        // try the blackmagic first, always grab in HD
+        // try the blackmagic first
+        // Grab at 720 if specified in app args or 1080p if not
         if (isCapture720) {
             success = blackmagic.setup(BLACKMAGIC720_W, BLACKMAGIC720_H, 60);
             camWidth = BLACKMAGIC720_W;
@@ -51,13 +52,14 @@ void Cam::startCapture(){
             camWidth = BLACKMAGIC_W;
             camHeight = BLACKMAGIC_H;
         }
+        // Check for blackmagic setup success, fall back to ofVideoGrabber
         if (success) {
-            ofLogNotice() << "\n\nUsing blackmagic!";
+            ofLogNotice() << "Using BLACKMAGIC for video input.";
             useBlackmagic = true;
         }
         else {
             useBlackmagic = false;
-            ofLogNotice() << "\n\nBlackmagic not present, using ofVideoGrabber instead";
+            ofLogNotice() << "Using OFVIDEOGRABBER for video input.";
             vector<ofVideoDevice> devices = vidGrabber.listDevices();
             for (int i = 0; i < devices.size(); i++) {
                 ofLogNotice() << devices[i].id << ": " << devices[i].deviceName;
@@ -96,9 +98,7 @@ void Cam::setup(bool isCapture720, float cvRatio){
     // Start capturing first to work out camera resultion
     startCapture();
     
-    
-    ofLogNotice() << "Setting up camera with h:" << camWidth << " h:" << camHeight << " cvRatio:" << cvRatio << " using black magic: " << useBlackmagic;
-    
+    ofLogNotice() << "Setting up camera textures at " << camWidth << "x" << camHeight << ", cvRatio: " << cvRatio;
     this->cvRatio = cvRatio;
     cvWidth = camWidth*cvRatio;
     cvHeight = camHeight*cvRatio;
