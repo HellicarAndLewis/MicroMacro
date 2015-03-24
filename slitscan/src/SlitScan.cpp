@@ -17,11 +17,11 @@ void SlitScan::setup(){
     slitScanTimeDelay = 0;
     sliceVertical = true;
     sliceWeave = false;
-    useCamo = false;
-    useOpticCamo = true;
+    useCamo = true;
+    useOpticCamo = false;
     isDrawFlowDebugOn = false;
     
-    cam.setup(isCapture720, 0.3);
+    cam.setup(isCapture720, 0.4);
     width = cam.camWidth;
     height = cam.camHeight;
     
@@ -65,15 +65,33 @@ void SlitScan::setup(){
     aberrationGOffset.set(0);
     aberrationBOffset.set(0);
     
-    // camo
+    // camo images
     camoShader.load("shaders/camo.vert", "shaders/camo.frag");
-    camoImage.loadImage("camo/camo.jpg");
+    ofDirectory camoImageDir;
+    int nFiles = camoImageDir.listDir("camo");
+    if(nFiles) {
+        for(int i=0; i<camoImageDir.numFiles(); i++) {
+            // add the image to the vector
+            string filePath = camoImageDir.getPath(i);
+            camoImages.push_back(ofImage());
+            camoImages.back().loadImage(filePath);
+            
+        }
+    }
+    else ofLogError("Couldn't find camo images folder");
+    camoImageIndex = 0;
+    
+    
     camoMask.setup(width, height);
     camoPatternFbo.allocate(width, height);
     camoMinFlow = 9;
     camoMaxFlow = 15;
-    isCamoSquare = false;
+    isCamoSquare = true;
     isCamoImage = true;
+    camoFlowRes = 2;
+    camoBlockMin = 4;
+    camoBlockMax = 15;
+    camoFade = 20;
     
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
@@ -103,15 +121,20 @@ void SlitScan::setup(){
     
     RUI_NEW_GROUP("Flow");
     RUI_SHARE_PARAM(useCamo);
-    RUI_SHARE_PARAM(useOpticCamo);
-    RUI_SHARE_PARAM(isCamoSquare);
-    RUI_SHARE_PARAM(isCamoImage);
+    //RUI_SHARE_PARAM(useOpticCamo);
+    //RUI_SHARE_PARAM(isCamoSquare);
+    //RUI_SHARE_PARAM(isCamoImage);
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
     RUI_SHARE_PARAM(cam.blur, 0, 9);
-    RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
-    RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
+    //RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
+    //RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
     RUI_SHARE_PARAM(camoMinFlow, 0.00, 20.00);
     RUI_SHARE_PARAM(camoMaxFlow, 0.00, 20.00);
+    RUI_SHARE_PARAM(camoFlowRes, 1, 10);
+    RUI_SHARE_PARAM(camoBlockMin, 1, 10);
+    RUI_SHARE_PARAM(camoBlockMax, 2, 40);
+    RUI_SHARE_PARAM(camoFade, 2, 255);
+    RUI_SHARE_PARAM(camoImageIndex, 0, nFiles-1);
     RUI_SHARE_PARAM(isDrawFlowDebugOn);
     
 }
@@ -186,30 +209,28 @@ void SlitScan::updateCamoPattern() {
         float xratio = cam.camWidth / cam.cvWidth;
         float yratio = cam.camHeight / cam.cvHeight;
         ofVec2f pos;
-        int gridSize = 3;
         // draw into FBO
         camoPatternFbo.begin();
-        ofSetColor(0, 0, 0, 120);
+        //ofClear(0);
+        // FBO fade trick
+        ofSetColor(0, 0, 0, camoFade);
         ofRect(0,0,camoPatternFbo.getWidth(),camoPatternFbo.getHeight());
-        // shader range = 0.6 - 1.0
         int x, y;
-        for ( y = 0; y < cam.cvHeight; y+=gridSize ){
-            for ( x = 0; x < cam.cvWidth; x+=gridSize ){
+        for ( y = 0; y < cam.cvHeight; y+=camoFlowRes ){
+            for ( x = 0; x < cam.cvWidth; x+=camoFlowRes ){
                 ofVec2f vec = cam.opticalFlowLk.flowAtPoint(x, y);
                 if (vec.length() > camoMinFlow) {
-                    float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 160, 255, true);
+                    float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 220, 255, true);
                     // do something
                     ofPoint p = ofPoint(x*xratio, y*yratio);
                     ofSetColor(grey);
-                    float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 15, 4, true);
+                    float size = ofMap(vec.length(), camoMinFlow, camoMaxFlow, camoBlockMax, camoBlockMin, true);
+                    p.z = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 0, -20, true);
                     //ofTriangle(p + ofPoint(-size, -size), p + ofPoint(size, -size), p + ofPoint(0, size*0.5));
                     ofRect(p, size, size);
-                    //ofSetLineWidth(6);
-                    //ofLine(x*xratio,y*yratio,((x*xratio)+vec.x),((y*yratio)+vec.y));
                 }
             }
         }
-        ofSetLineWidth(1);
         ofSetColor(255);
         camoPatternFbo.end();
     }
@@ -252,7 +273,7 @@ void SlitScan::drawSlitScan(){
             camoMask.endMask();
             // masking off camoImage
             camoMask.begin();
-            camoImage.draw(0, 0);
+            camoImages[camoImageIndex].draw(0, 0);
             camoMask.end();
             camoMask.draw();
         }
@@ -286,10 +307,6 @@ void SlitScan::drawQuad(int w, int h){
     glEnd();
 }
 
-
-void SlitScan::keyPressed(int key){
-}
-
 void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
     switch (arg.action) {
 		case CLIENT_UPDATED_PARAM:
@@ -316,9 +333,21 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
 	}
 }
 
+void SlitScan::keyPressed(int key){
+    switch (key) {
+        case 'c':
+            camoImageIndex++;
+            if (camoImageIndex > camoImages.size()-1) {
+                camoImageIndex = 0;
+            }
+            break;
+            
+        default:
+            break;
+    }
+}
 
 void SlitScan::keyReleased(int key){
-    
 }
 
 

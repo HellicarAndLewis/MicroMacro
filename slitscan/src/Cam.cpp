@@ -13,7 +13,7 @@ Cam::Cam() {
     // defaults
     isCapturing = false;
     useBlackmagic = false;
-    useVideoPlayer = false;
+    useVideoPlayer = true;
     isFrameNew = false;
     doFlow = true;
     camWidth = BLACKMAGIC_W;

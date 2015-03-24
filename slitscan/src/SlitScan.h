@@ -48,7 +48,8 @@ public:
     
     ofShader camoShader;
     AlphaMask camoMask;
-    ofImage camoImage;
+    vector <ofImage> camoImages;
+    int camoImageIndex;
     bool useCamo;
     bool useOpticCamo;
     bool isDrawFlowDebugOn;
@@ -59,6 +60,9 @@ public:
     float camoMaxFlow;
     bool isCamoSquare;
     bool isCamoImage;
+    int camoFlowRes;
+    int camoBlockMin, camoBlockMax;
+    int camoFade;
     
     int width, height;
     bool isCapture720;

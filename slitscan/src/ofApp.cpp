@@ -81,6 +81,7 @@ void ofApp::keyPressed(int key){
         default:
             break;
     }
+    slitScan.keyPressed(key);
 }
 
 void ofApp::allocateScenes() {
