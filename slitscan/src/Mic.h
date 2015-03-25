@@ -8,7 +8,10 @@
 
 #pragma once
 #include "ofMain.h"
+#include "ofxFFTLive.h"
+#include "ofxFFTFile.h"
 
+// Use FFT to sample audio and provide peak data
 class Mic : public ofBaseApp{
 	
 public:
@@ -16,7 +19,6 @@ public:
     void setup();
     void update();
     void draw();
-    
     void start();
     void stop();
     
@@ -30,16 +32,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    void audioIn(float * input, int bufferSize, int nChannels);
-	
-    vector <float> left;
-    vector <float> right;
-    vector <float> volHistory;
-    
-    int bufferCounter;
-    int drawCounter;
-    float smoothedVol;
-    float scaledVol;
-    
-    ofSoundStream soundStream;
+    ofSoundPlayer soundPlayer;
+    ofxFFTLive fftLive;
+    ofxFFTFile fftFile;
 };

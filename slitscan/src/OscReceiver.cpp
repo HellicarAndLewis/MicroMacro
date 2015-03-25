@@ -99,7 +99,7 @@ void OscReceiver::update(){
 
 
 void OscReceiver::draw(){
-    
+    /*
     string buf;
     buf = "listening for osc messages on port" + ofToString(PORT);
     ofDrawBitmapString(buf, 10, 20);
@@ -117,9 +117,7 @@ void OscReceiver::draw(){
     for(int i = 0; i < NUM_MSG_STRINGS; i++){
         ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
     }
-    
-    
-    
+     */
 }
 
 

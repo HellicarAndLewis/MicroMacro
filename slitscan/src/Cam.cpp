@@ -41,6 +41,7 @@ void Cam::startCapture(){
         ofLogNotice() << "Using PRERECORDED TEST.MP4 VIDEO for video input.";
         camWidth = videoPlayer.getWidth();
         camHeight = videoPlayer.getHeight();
+        videoPlayer.setVolume(0);
         videoPlayer.play();
     }
     else {

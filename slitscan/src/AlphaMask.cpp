@@ -14,62 +14,64 @@ void AlphaMask::setup(int w, int h){
     maskFbo.allocate(w,h);
     fbo.allocate(w,h);
     
-    // Load alpha shader from ofx examples
-    if (ofGetGLProgrammableRenderer()) {
-        string vertex = "#version 150\n\
-        \n\
-        uniform mat4 projectionMatrix;\n\
-        uniform mat4 modelViewMatrix;\n\
-        uniform mat4 modelViewProjectionMatrix;\n\
-        \n\
-        \n\
-        in vec4  position;\n\
-        in vec2  texcoord;\n\
-        \n\
-        out vec2 texCoordVarying;\n\
-        \n\
-        void main()\n\
-        {\n\
-        texCoordVarying = texcoord;\
-        gl_Position = modelViewProjectionMatrix * position;\n\
-        }";
-        string fragment = "#version 150\n\
-        \n\
-        uniform sampler2DRect tex0;\
-        uniform sampler2DRect maskTex;\
-        in vec2 texCoordVarying;\n\
-        \
-        out vec4 fragColor;\n\
-        void main (void){\
-        vec2 pos = texCoordVarying;\
-        \
-        vec3 src = texture(tex0, pos).rgb;\
-        float mask = texture(maskTex, pos).r;\
-        \
-        fragColor = vec4( src , mask);\
-        }";
-        shader.setupShaderFromSource(GL_VERTEX_SHADER, vertex);
-        shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragment);
-        shader.bindDefaults();
-        shader.linkProgram();
-    }
-    else {
-        string shaderProgram = "#version 120\n \
-        #extension GL_ARB_texture_rectangle : enable\n \
-        \
-        uniform sampler2DRect tex0;\
-        uniform sampler2DRect maskTex;\
-        \
-        void main (void){\
-        vec2 pos = gl_TexCoord[0].st;\
-        \
-        vec3 src = texture2DRect(tex0, pos).rgb;\
-        float mask = texture2DRect(maskTex, pos).r;\
-        \
-        gl_FragColor = vec4( src , mask);\
-        }";
-        shader.setupShaderFromSource(GL_FRAGMENT_SHADER, shaderProgram);
-        shader.linkProgram();
+    if (!shader.isLoaded()) {
+        // Load alpha shader from ofx examples
+        if (ofGetGLProgrammableRenderer()) {
+            string vertex = "#version 150\n\
+            \n\
+            uniform mat4 projectionMatrix;\n\
+            uniform mat4 modelViewMatrix;\n\
+            uniform mat4 modelViewProjectionMatrix;\n\
+            \n\
+            \n\
+            in vec4  position;\n\
+            in vec2  texcoord;\n\
+            \n\
+            out vec2 texCoordVarying;\n\
+            \n\
+            void main()\n\
+            {\n\
+            texCoordVarying = texcoord;\
+            gl_Position = modelViewProjectionMatrix * position;\n\
+            }";
+            string fragment = "#version 150\n\
+            \n\
+            uniform sampler2DRect tex0;\
+            uniform sampler2DRect maskTex;\
+            in vec2 texCoordVarying;\n\
+            \
+            out vec4 fragColor;\n\
+            void main (void){\
+            vec2 pos = texCoordVarying;\
+            \
+            vec3 src = texture(tex0, pos).rgb;\
+            float mask = texture(maskTex, pos).r;\
+            \
+            fragColor = vec4( src , mask);\
+            }";
+            shader.setupShaderFromSource(GL_VERTEX_SHADER, vertex);
+            shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragment);
+            shader.bindDefaults();
+            shader.linkProgram();
+        }
+        else {
+            string shaderProgram = "#version 120\n \
+            #extension GL_ARB_texture_rectangle : enable\n \
+            \
+            uniform sampler2DRect tex0;\
+            uniform sampler2DRect maskTex;\
+            \
+            void main (void){\
+            vec2 pos = gl_TexCoord[0].st;\
+            \
+            vec3 src = texture2DRect(tex0, pos).rgb;\
+            float mask = texture2DRect(maskTex, pos).r;\
+            \
+            gl_FragColor = vec4( src , mask);\
+            }";
+            shader.setupShaderFromSource(GL_FRAGMENT_SHADER, shaderProgram);
+            shader.linkProgram();
+        }
     }
     
     // clear FBOs

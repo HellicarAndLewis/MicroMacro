@@ -27,6 +27,10 @@
 		72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65EEFA3DA3526E9CDD9C21F9 /* ofxOscBundle.cpp */; };
 		836A3CCF1ABC48860046B796 /* AlphaMask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 836A3CCD1ABC48860046B796 /* AlphaMask.cpp */; };
 		83877D181AC18E2200344C89 /* Camo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D161AC18E2200344C89 /* Camo.cpp */; };
+		83877D261AC1D41D00344C89 /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D1D1AC1D41D00344C89 /* fft.cpp */; };
+		83877D271AC1D41D00344C89 /* ofxFFTBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D201AC1D41D00344C89 /* ofxFFTBase.cpp */; };
+		83877D281AC1D41D00344C89 /* ofxFFTFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D221AC1D41D00344C89 /* ofxFFTFile.cpp */; };
+		83877D291AC1D41D00344C89 /* ofxFFTLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D241AC1D41D00344C89 /* ofxFFTLive.cpp */; };
 		83FAAF0B1AB6DD59003C0759 /* OscReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */; };
 		83FAAF141AB6E0FF003C0759 /* RemoteEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */; };
 		83FAAF1F1AB6FA7E003C0759 /* ofxArgs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF1D1AB6FA7E003C0759 /* ofxArgs.cpp */; };
@@ -188,6 +192,14 @@
 		836A3CCE1ABC48860046B796 /* AlphaMask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlphaMask.h; sourceTree = "<group>"; };
 		83877D161AC18E2200344C89 /* Camo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camo.cpp; sourceTree = "<group>"; };
 		83877D171AC18E2200344C89 /* Camo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camo.h; sourceTree = "<group>"; };
+		83877D1D1AC1D41D00344C89 /* fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fft.cpp; sourceTree = "<group>"; };
+		83877D1E1AC1D41D00344C89 /* fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fft.h; sourceTree = "<group>"; };
+		83877D201AC1D41D00344C89 /* ofxFFTBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTBase.cpp; sourceTree = "<group>"; };
+		83877D211AC1D41D00344C89 /* ofxFFTBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTBase.h; sourceTree = "<group>"; };
+		83877D221AC1D41D00344C89 /* ofxFFTFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTFile.cpp; sourceTree = "<group>"; };
+		83877D231AC1D41D00344C89 /* ofxFFTFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTFile.h; sourceTree = "<group>"; };
+		83877D241AC1D41D00344C89 /* ofxFFTLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTLive.cpp; sourceTree = "<group>"; };
+		83877D251AC1D41D00344C89 /* ofxFFTLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTLive.h; sourceTree = "<group>"; };
 		83FAAF091AB6DD1F003C0759 /* OscReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscReceiver.h; sourceTree = "<group>"; };
 		83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscReceiver.cpp; sourceTree = "<group>"; };
 		83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteEvent.cpp; sourceTree = "<group>"; };
@@ -649,6 +661,39 @@
 			name = util;
 			sourceTree = "<group>";
 		};
+		83877D1B1AC1D41100344C89 /* ofxFFT */ = {
+			isa = PBXGroup;
+			children = (
+				83877D1C1AC1D41D00344C89 /* libs */,
+				83877D1F1AC1D41D00344C89 /* src */,
+			);
+			name = ofxFFT;
+			sourceTree = "<group>";
+		};
+		83877D1C1AC1D41D00344C89 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				83877D1D1AC1D41D00344C89 /* fft.cpp */,
+				83877D1E1AC1D41D00344C89 /* fft.h */,
+			);
+			name = libs;
+			path = ../../../addons/ofxFFT/libs;
+			sourceTree = "<group>";
+		};
+		83877D1F1AC1D41D00344C89 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				83877D201AC1D41D00344C89 /* ofxFFTBase.cpp */,
+				83877D211AC1D41D00344C89 /* ofxFFTBase.h */,
+				83877D221AC1D41D00344C89 /* ofxFFTFile.cpp */,
+				83877D231AC1D41D00344C89 /* ofxFFTFile.h */,
+				83877D241AC1D41D00344C89 /* ofxFFTLive.cpp */,
+				83877D251AC1D41D00344C89 /* ofxFFTLive.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxFFT/src;
+			sourceTree = "<group>";
+		};
 		83FAAF081AB6DCED003C0759 /* comms */ = {
 			isa = PBXGroup;
 			children = (
@@ -767,6 +812,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				83877D1B1AC1D41100344C89 /* ofxFFT */,
 				83FAAF1B1AB6FA71003C0759 /* ofxArgs */,
 				E8C66A491AAF08F300F145CB /* ofxRemoteUI */,
 				E88C6D731AAE240B008218D3 /* ofxOpticalFlowLK */,
@@ -1185,12 +1231,14 @@
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
+				83877D261AC1D41D00344C89 /* fft.cpp in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,
 				E88C6D721AAE222D008218D3 /* Cam.cpp in Sources */,
 				5864AD82E20F15536D054EA3 /* ofxOscMessage.cpp in Sources */,
 				E88C6D771AAE242B008218D3 /* ofxCvOpticalFlowLK.cpp in Sources */,
+				83877D281AC1D41D00344C89 /* ofxFFTFile.cpp in Sources */,
 				4ADB88E2FB52E76A471065DE /* ofxOscParameterSync.cpp in Sources */,
 				640279EE111671BD026CB013 /* ofxOscReceiver.cpp in Sources */,
 				83877D181AC18E2200344C89 /* Camo.cpp in Sources */,
@@ -1210,6 +1258,7 @@
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
+				83877D271AC1D41D00344C89 /* ofxFFTBase.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
 				E6ADFAF5B64F107FD970E6E7 /* ColorConversion.cpp in Sources */,
 				DD6B7D26B640FE59CC56C615 /* DeckLinkController.cpp in Sources */,
@@ -1217,6 +1266,7 @@
 				0FC43B3D38A4D41A1AD95D39 /* ofxBlackMagic.cpp in Sources */,
 				E8C66A5C1AAF090600F145CB /* ofxRemoteUINeigbors.cpp in Sources */,
 				E8C66A5D1AAF090600F145CB /* ofxRemoteUIServer.cpp in Sources */,
+				83877D291AC1D41D00344C89 /* ofxFFTLive.cpp in Sources */,
 				C3E6B03047001AECDDBFE6D3 /* DeckLinkAPIDispatch.cpp in Sources */,
 				CAA4584E574DF68558BDE99F /* ofxSlitScan.cpp in Sources */,
 				E8C66A5A1AAF090600F145CB /* ofxRemoteUI.cpp in Sources */,

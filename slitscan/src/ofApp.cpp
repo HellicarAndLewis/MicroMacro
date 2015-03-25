@@ -34,6 +34,7 @@ void ofApp::setup(){
     // show the current mode once loaded from XML
     changeMode(appMode);
     enableDebug(isDebug);
+    audioMapper.resetLevels();
 }
 
 
@@ -49,6 +50,10 @@ void ofApp::update(){
     }
     scenes[1].update();
     if (scenes[1].isVisible) {
+        if (audioMapper.isMaskOn) {
+            slitScan.update();
+            audioMapper.bgImage = &slitScan.slitScan.getOutputImage();
+        }
         audioMapper.update();
         scenes[1].begin();
         audioMapper.draw();
@@ -83,10 +88,11 @@ void ofApp::keyPressed(int key){
             break;
     }
     slitScan.keyPressed(key);
+    audioMapper.keyPressed(key);
 }
 
 void ofApp::allocateScenes() {
-    audioMapper.resetLevels();
+    audioMapper.allocateScenes();
     // Allocates scene FBO to current app width/height, used when window is resized
     scenes[0].resize(ofGetWidth(), ofGetHeight());
     scenes[1].resize(ofGetWidth(), ofGetHeight());

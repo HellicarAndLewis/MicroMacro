@@ -51,6 +51,11 @@ cd ofxArgs
 git checkout 9dfbf491591ebe0f8a83fb4ab675116b9d1040ce
 cd ..
 
+${CLONE}julapy/ofxFFT
+cd ofxFFT
+git checkout f33c6d581b9a912eb3d24d2413c5aced866cf5b9
+cd ..
+
 
 # final step is to cd back to the start dir
 cd ../apps/MicroMacro
