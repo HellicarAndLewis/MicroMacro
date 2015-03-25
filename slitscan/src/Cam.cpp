@@ -32,7 +32,11 @@ void Cam::startCapture(){
     bool success = false;
     ofLogNotice() << "\n\n\nVideo input setup";
     ofLogNotice() << "Check for test.mp4 in data...";
-    useVideoPlayer = videoPlayer.loadMovie("test.mp4");
+    
+    bool isVideoPresent = ofFile::doesFileExist("test.mp4");
+    if (isVideoPresent) useVideoPlayer = videoPlayer.loadMovie("test.mp4");
+    else useVideoPlayer = false;
+    
     if (useVideoPlayer) {
         ofLogNotice() << "Using PRERECORDED TEST.MP4 VIDEO for video input.";
         camWidth = videoPlayer.getWidth();
