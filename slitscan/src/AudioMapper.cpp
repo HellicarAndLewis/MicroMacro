@@ -17,6 +17,8 @@ void AudioMapper::setup(){
     useLevelCount = false;
     isScaleOn = false;
     isMaskOn = false;
+    isBgSlice = false;
+    usePerlin = false;
     easeIn = 0.9;
     easeOut = 0.1;
     mapMin = 0.001;
@@ -25,6 +27,7 @@ void AudioMapper::setup(){
     audioThreshold = 0.5;
     audioPeakDecay = 0.96;
     audioMaxDecay = 0.995;
+    bgImage = NULL;
     mic.setup();
     
     ofSetCircleResolution(200);
@@ -39,6 +42,9 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(isFadeOn);
     RUI_SHARE_PARAM(isScaleOn);
     RUI_SHARE_PARAM(isMaskOn);
+    RUI_SHARE_PARAM(isBgSlice);
+    RUI_SHARE_PARAM(usePerlin);
+    
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
@@ -49,8 +55,6 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(audioPeakDecay, 0.9, 1.0);
     RUI_SHARE_PARAM(audioMaxDecay, 0.9, 1.0);
     RUI_SHARE_PARAM(audioMirror);
-    
-    alphaMask.setup(ofGetWidth(), ofGetHeight());
 }
 void AudioMapper::update(){
     
@@ -71,8 +75,8 @@ void AudioMapper::update(){
     int n  = levels.size();
     if (!audioMirror) n *= 2;
     float * audioData = new float[n];
-    mic.fftFile.getFftPeakData(audioData, n);
-    //mic.fftLive.getFftPeakData(audioData, n);
+    //mic.fftFile.getFftPeakData(audioData, n);
+    mic.fftLive.getFftPeakData(audioData, n);
     // populate levels for drawing
     for(int i=0; i<levels.size(); i++) {
         float audioValue = audioData[i];
@@ -84,8 +88,24 @@ void AudioMapper::update(){
 
 void AudioMapper::draw(){
     
-    if (isMaskOn) {
+    if (isMaskOn && bgImage != NULL) {
+        bgFbo.begin();
+        int x = sin(ofGetElapsedTimef());
+        if (isBgSlice)
+            bgImage->drawSubsection(0, 0, width, height, (width/2)+(x*10), 0, 1, height);
+        else
+            bgImage->draw(0, 0, width, height);
+        bgFbo.end();
+        
         ofSetColor(255);
+        // draw bars into mask fbo
+        alphaMask.beginMask();
+        drawBars(layout);
+        alphaMask.endMask();
+        // draw camera into contents fbo
+        alphaMask.begin();
+        bgFbo.draw(0,0);
+        alphaMask.end();
         alphaMask.draw();
     }
     else {
@@ -109,7 +129,18 @@ void AudioMapper::drawBars(Layout layout){
     
     int x = 0;
     int y = 0;
+    float barWidth;
+    float barHeight;
+    
     for (unsigned int i = 0; i < levels.size(); i++){
+        
+        barWidth = levels[i]*width;
+        barHeight = levels[i]*height;
+        
+        if (usePerlin) {
+            barWidth *= ofNoise(y, ofGetElapsedTimef()) + 0.1;
+            barHeight *= ofNoise(x, ofGetElapsedTimef()) + 0.1;
+        }
         
         // set colour
         if (isFadeOn) {
@@ -126,49 +157,49 @@ void AudioMapper::drawBars(Layout layout){
         
         // Top to bottom, or bottom to up only
         if (layout == UP_DOWN) {
-            ofRect(x, height, thick, -levels[i]*height);
+            ofRect(x, height, thick, -barHeight);
             x += thick + gap;
         }
         else if (layout == DOWN_UP){
-            ofRect(x, 0, thick, levels[i]*height);
+            ofRect(x, 0, thick, barHeight);
             x += thick + gap;
         }
         
         // left to right or right to left only
         else if (layout == LEFT_RIGHT){
-            ofRect(0, y, levels[i]*width, thick);
+            ofRect(0, y, barWidth, thick);
             y += thick + gap;
         }
         else if (layout == RIGHT_LEFT){
-            ofRect(width, y, -levels[i]*width, thick);
+            ofRect(width, y, -barWidth, thick);
             y += thick + gap;
         }
         
         // MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
         // Side mirrors, like teeth
         else if (layout == MIRROR_SIDE_V) {
-            ofRect(x, height, thick, -levels[i]*height);
-            ofRect(x, 0, thick, levels[i]*height);
+            ofRect(x, height, thick, -barHeight);
+            ofRect(x, 0, thick, barHeight);
             x += thick + gap;
             
         }
         else if (layout == MIRROR_SIDE_H) {
-            ofRect(0, y, levels[i]*width, thick);
-            ofRect(width, y, -levels[i]*width, thick);
+            ofRect(0, y, barWidth, thick);
+            ofRect(width, y, -barWidth, thick);
             y += thick + gap;
             
         }
         
         // centre mirrors, like ?
         else if (layout == MIRROR_CENTRE_V) {
-            ofRect(x, height/2, thick, -levels[i]*height/2);
-            ofRect(x, height/2, thick, levels[i]*height/2);
+            ofRect(x, height/2, thick, -barHeight/2);
+            ofRect(x, height/2, thick, barHeight/2);
             x += thick + gap;
             
         }
         else if (layout == MIRROR_CENTRE_H) {
-            ofRect(width/2, y, levels[i]*width/2, thick);
-            ofRect(width/2, y, -levels[i]*width/2, thick);
+            ofRect(width/2, y, barWidth/2, thick);
+            ofRect(width/2, y, -barWidth/2, thick);
             y += thick + gap;
             
         }
@@ -234,6 +265,12 @@ void AudioMapper::resetLevels(){
     levels.assign(n, 0.0);
 }
 
+void AudioMapper::allocateScenes() {
+    alphaMask.setup(ofGetWidth(), ofGetHeight());
+    bgFbo.allocate(ofGetWidth(), ofGetHeight());
+    resetLevels();
+}
+
 bool AudioMapper::getIsLayoutVertical(){
     if (layout==SOLID_V || layout==UP_DOWN || layout==DOWN_UP || layout==MIRROR_CENTRE_V || layout==MIRROR_SIDE_V) {
         return true;
@@ -253,4 +290,15 @@ void AudioMapper::clientDidSomething(RemoteUIServerCallBackArg &arg){
         default:
             break;
     }
+}
+
+void AudioMapper::keyPressed(int key){
+    switch (key) {
+        case 'a':
+            break;
+            
+        default:
+            break;
+    }
+    
 }

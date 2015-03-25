@@ -17,12 +17,14 @@ public:
     
     // visual states
     enum Layout {
-        LEFT_RIGHT, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
+        LEFT_RIGHT=1, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
     };
     Layout layout;
     bool isFadeOn;
     bool isScaleOn;
     bool isMaskOn;
+    bool isBgSlice;
+    bool usePerlin;
     
     // mic provides actual sound input
     Mic mic;
@@ -43,6 +45,7 @@ public:
     
     AlphaMask alphaMask;
     ofImage * bgImage;
+    ofFbo bgFbo;
     
     // audio sample settings
     float mapMin, mapMax;
@@ -56,8 +59,11 @@ public:
     void draw();
     void drawBars(Layout layout);
     void resetLevels();
+    void allocateScenes();
     bool getIsLayoutVertical();
     void clientDidSomething(RemoteUIServerCallBackArg & arg);
+    
+    void keyPressed(int key);
     
     
 };
