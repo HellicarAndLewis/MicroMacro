@@ -19,57 +19,61 @@ void AudioMapper::setup(){
     easeOut = 0.1;
     mapMin = 0.001;
     mapMax = 0.1;
-    resetLevels();
+    audioMirror = false;
+    audioThreshold = 0.5;
+    audioPeakDecay = 0.96;
+    audioMaxDecay = 0.995;
     mic.setup();
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // share controls
     string modeLabels[] = {"LEFT_RIGHT", "RIGHT_LEFT", "UP_DOWN", "DOWN_UP", "MIRROR_SIDE_V", "MIRROR_SIDE_H", "MIRROR_CENTRE_V", "MIRROR_CENTRE_H", "SOLID_V", "SOLID_H"};
-	RUI_NEW_GROUP("Audio Mapper");
+    RUI_NEW_GROUP("Audio Mapper");
     ofAddListener(RUI_GET_OF_EVENT(), this, &AudioMapper::clientDidSomething);
-	RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
+    // appearance
+    RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isFadeOn);
-    
-    //RUI_SHARE_PARAM(mapMin, 0, 1);
-    //RUI_SHARE_PARAM(mapMax, 0, 1);
-    
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
     RUI_SHARE_PARAM(gap, 0, 100);
-    
-    
-    RUI_SHARE_PARAM(audioThreshold, 0.0, 1.0);
-    RUI_SHARE_PARAM(audioPeakDecay, 0.0, 1.0);
-    RUI_SHARE_PARAM(audioMaxDecay, 0.0, 1.0);
-    
-	//RUI_SHARE_PARAM(easeIn, 0.0, 1.0);
-	//RUI_SHARE_PARAM(easeOut, 0.0, 1.0);
     RUI_SHARE_COLOR_PARAM(colour);
+    // sampling
+    RUI_SHARE_PARAM(audioThreshold, 0.0, 1.0);
+    RUI_SHARE_PARAM(audioPeakDecay, 0.9, 1.0);
+    RUI_SHARE_PARAM(audioMaxDecay, 0.9, 1.0);
+    RUI_SHARE_PARAM(audioMirror);
 }
 void AudioMapper::update(){
-    //mic.fftFile.setThreshold(audioThreshold);
-    //mic.fftFile.setPeakDecay(audioPeakDecay);
-    //mic.fftFile.setMaxDecay(audioMaxDecay);
+    mic.fftLive.setThreshold(audioThreshold);
+    mic.fftLive.setPeakDecay(audioPeakDecay);
+    mic.fftLive.setMaxDecay(audioMaxDecay);
+    mic.fftLive.setMirrorData(audioMirror);
+    
     mic.update();
-    for (unsigned int i = 0; i < levels.size(); i++){
-        int index = ofMap(i, 0, levels.size(), 0, mic.left.size());
-        float rate = (mic.left[index] > levels[i]) ? easeIn : easeOut;
-        float level = ofMap(mic.left[index], mapMin, mapMax, 0, 1);
-        levels[i] = ofLerp(levels[i], level, rate);
-    }
     
     int n  = levels.size();
+    if (!audioMirror) n *= 2;
     float * audioData = new float[n];
-    mic.fftFile.getFftPeakData(audioData, n);
-    //mic.fftLive.getFftPeakData(audioData, n);
-    for(int i=0; i<n; i++) {
+    //mic.fftFile.getFftPeakData(audioData, n);
+    mic.fftLive.getFftPeakData(audioData, n);
+    // populate levels for drawing
+    for(int i=0; i<levels.size(); i++) {
         float audioValue = audioData[i];
         levels[i] = audioValue;
     }
     delete[] audioData;
 }
+
 void AudioMapper::draw(){
+    
+    if (!getIsLayoutVertical()) {
+        // flip so base tones are at the bottom
+        ofPushMatrix();
+        ofScale(1, -1);
+        ofTranslate(0, -height, 0 );
+    }
+    
     int x = 0;
     int y = 0;
     for (unsigned int i = 0; i < levels.size(); i++){
@@ -142,6 +146,9 @@ void AudioMapper::draw(){
         }
         
     }
+    if (!getIsLayoutVertical()) {
+        ofPopMatrix();
+    }
     ofSetColor(255);
     
     //mic.draw();
@@ -162,11 +169,11 @@ void AudioMapper::resetLevels(){
         if (levelCount == 1) thick = thickDouble;
     }
     else {
-        if (layout == UP_DOWN || layout == DOWN_UP) {
-            n = width / int(thick + gap);
+        if (getIsLayoutVertical()) {
+            n = (width / int(thick + gap)) + 1;
         }
         else {
-            n = height / int(thick + gap);
+            n = (height / int(thick + gap)) + 1;
         }
     }
     levels.clear();
@@ -183,13 +190,13 @@ bool AudioMapper::getIsLayoutVertical(){
 }
 
 void AudioMapper::clientDidSomething(RemoteUIServerCallBackArg &arg){
-	switch (arg.action) {
-		case CLIENT_UPDATED_PARAM:
+    switch (arg.action) {
+        case CLIENT_UPDATED_PARAM:
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
             if (arg.paramName == "layout" || arg.paramName == "thick" || arg.paramName == "gap" || arg.paramName=="useLevelCount" || arg.paramName=="levelCount")
                 resetLevels();
-			break;
-		default:
-			break;
-	}
+            break;
+        default:
+            break;
+    }
 }

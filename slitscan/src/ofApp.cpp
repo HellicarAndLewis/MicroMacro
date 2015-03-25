@@ -34,6 +34,7 @@ void ofApp::setup(){
     // show the current mode once loaded from XML
     changeMode(appMode);
     enableDebug(isDebug);
+    audioMapper.resetLevels();
 }
 
 

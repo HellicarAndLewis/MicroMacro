@@ -11,26 +11,22 @@
 #include "ofxRemoteUIServer.h"
 
 // Takes audio input and visualises it in different ways
-// so far using left channel buffer to draw bars horizontally or vertically
 class AudioMapper {
 public:
     
+    // visual states
     enum Layout {
         LEFT_RIGHT, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
     };
     Layout layout;
-    
     bool isFadeOn;
     
-	void setup();
-    void update();
-    void draw();
-    void resetLevels();
-    bool getIsLayoutVertical();
-    void clientDidSomething(RemoteUIServerCallBackArg & arg);
-    
+    // mic provides actual sound input
     Mic mic;
-    int bufferSize;
+    
+    // sound input is mapped to visual levels
+    // number of levels is determined directly
+    // or by specifying a per level thickness and gap
     vector<float> levels;
     int levelCount;
     bool useLevelCount;
@@ -42,11 +38,19 @@ public:
     float easeOut;
     ofColor colour;
     
+    // audio sample settings
     float mapMin, mapMax;
     float audioThreshold;
     float audioPeakDecay;
     float audioMaxDecay;
+    bool audioMirror;
     
+    void setup();
+    void update();
+    void draw();
+    void resetLevels();
+    bool getIsLayoutVertical();
+    void clientDidSomething(RemoteUIServerCallBackArg & arg);
     
     
 };
