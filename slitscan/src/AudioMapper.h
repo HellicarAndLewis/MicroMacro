@@ -20,6 +20,7 @@ public:
     };
     Layout layout;
     bool isFadeOn;
+    bool isScaleOn;
     
     // mic provides actual sound input
     Mic mic;
@@ -38,6 +39,10 @@ public:
     float easeOut;
     ofColor colour;
     
+    ofMesh meshOriginal;
+    ofMesh meshWarped;
+    ofEasyCam cam;
+    
     // audio sample settings
     float mapMin, mapMax;
     float audioThreshold;
@@ -48,6 +53,7 @@ public:
     void setup();
     void update();
     void draw();
+    void drawBars(Layout layout);
     void resetLevels();
     bool getIsLayoutVertical();
     void clientDidSomething(RemoteUIServerCallBackArg & arg);

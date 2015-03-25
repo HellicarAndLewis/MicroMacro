@@ -15,6 +15,7 @@ void AudioMapper::setup(){
     gap = 20;
     levelCount = 20;
     useLevelCount = false;
+    isScaleOn = false;
     easeIn = 0.9;
     easeOut = 0.1;
     mapMin = 0.001;
@@ -25,6 +26,8 @@ void AudioMapper::setup(){
     audioMaxDecay = 0.995;
     mic.setup();
     
+    ofSetCircleResolution(200);
+    
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // share controls
     string modeLabels[] = {"LEFT_RIGHT", "RIGHT_LEFT", "UP_DOWN", "DOWN_UP", "MIRROR_SIDE_V", "MIRROR_SIDE_H", "MIRROR_CENTRE_V", "MIRROR_CENTRE_H", "SOLID_V", "SOLID_H"};
@@ -33,6 +36,7 @@ void AudioMapper::setup(){
     // appearance
     RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isFadeOn);
+    RUI_SHARE_PARAM(isScaleOn);
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
@@ -43,6 +47,9 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(audioPeakDecay, 0.9, 1.0);
     RUI_SHARE_PARAM(audioMaxDecay, 0.9, 1.0);
     RUI_SHARE_PARAM(audioMirror);
+    
+    meshOriginal = meshWarped = ofMesh::plane(400, 400, 40, 40);
+    //meshOriginal = meshWarped = ofMesh::sphere(200, 30);
 }
 void AudioMapper::update(){
     mic.fftLive.setThreshold(audioThreshold);
@@ -63,10 +70,45 @@ void AudioMapper::update(){
         levels[i] = audioValue;
     }
     delete[] audioData;
+    
+    
+    vector<ofVec3f> & vertsOriginal = meshOriginal.getVertices();
+    vector<ofVec3f> & vertsWarped = meshWarped.getVertices();
+    int numOfVerts = meshOriginal.getNumVertices();
+    float * audioDataMesh = new float[numOfVerts];
+    mic.fftLive.getFftPeakData(audioDataMesh, numOfVerts);
+    float meshDisplacement = 100;
+    for(int i=0; i<numOfVerts; i++) {
+        float audioValue = audioDataMesh[i];
+        ofVec3f & vertOriginal = vertsOriginal[i];
+        ofVec3f & vertWarped = vertsWarped[i];
+        ofVec3f direction = vertOriginal.getNormalized();
+        vertWarped = vertOriginal + direction * meshDisplacement * audioValue;
+    }
+    delete[] audioDataMesh;
+    
 }
 
 void AudioMapper::draw(){
     
+    ofEnableDepthTest();
+    
+    drawBars(layout);
+    //drawBars(LEFT_RIGHT);
+    
+    ofSetColor(255);
+    ofDisableDepthTest();
+    
+    /*
+    cam.begin();
+    meshWarped.drawWireframe();
+    cam.end();
+     */
+    
+    //mic.draw();
+}
+
+void AudioMapper::drawBars(Layout layout){
     if (!getIsLayoutVertical()) {
         // flip so base tones are at the bottom
         ofPushMatrix();
@@ -84,6 +126,11 @@ void AudioMapper::draw(){
         }
         else {
             ofSetColor(colour);
+        }
+        
+        if (isScaleOn) {
+            ofPushMatrix();
+            ofTranslate(0, 0, ofMap(levels[i], 0, 1, -100, 0));
         }
         
         // Top to bottom, or bottom to up only
@@ -145,13 +192,28 @@ void AudioMapper::draw(){
             y += thick + gap;
         }
         
+        if (isScaleOn) ofPopMatrix();
+        
+        // go nuts
+        //ofSetColor(255);
+        ofPushMatrix();
+        ofTranslate(0, 0, 10);
+        ofNoFill();
+        float halfHeight = height/2;
+        if (getIsLayoutVertical()) {
+            ofCircle(x-gap, height*.5, ofMap(levels[i], 0.5, 1, 0, thick*6, true));
+        }
+        else {
+            ofCircle(width/2, y+thick/2, ofMap(levels[i], 0, 1, 0, 200));
+        }
+        //ofCircle(width/2, height/2, ofMap(levels[i], 0, 1, 0, 200));
+        ofFill();
+        ofPopMatrix();
+        
     }
     if (!getIsLayoutVertical()) {
         ofPopMatrix();
     }
-    ofSetColor(255);
-    
-    //mic.draw();
 }
 
 void AudioMapper::resetLevels(){
