@@ -10,15 +10,15 @@
 
 void Mic::setup(){
 	
-    fftLive.setMirrorData(true);
+    fftLive.setMirrorData(false);
     fftLive.setup();
     
     fftFile.setMirrorData(false);
     fftFile.setup();
     
-    //soundPlayer.loadSound("sound/1085.mp3");
-    //soundPlayer.setLoop(true);
-    //soundPlayer.play();
+    soundPlayer.loadSound("sound/1085.mp3");
+    soundPlayer.setLoop(true);
+    soundPlayer.play();
     
 }
 

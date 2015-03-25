@@ -50,6 +50,21 @@ void ofApp::update(){
     }
     scenes[1].update();
     if (scenes[1].isVisible) {
+        
+        if (audioMapper.isMaskOn) {
+            // mask test
+            slitScan.update();
+            // draw bars into mask fbo
+            audioMapper.alphaMask.beginMask();
+            audioMapper.drawBars(audioMapper.layout);
+            audioMapper.alphaMask.endMask();
+            // draw camera into contents fbo
+            audioMapper.alphaMask.begin();
+            slitScan.drawSlitScan();
+            //slitScan.slitScan.getOutputImage().drawSubsection(0, 0, slitScan.width, slitScan.height, ofGetMouseX(), 0, 1, slitScan.height);
+            audioMapper.alphaMask.end();
+        }
+        
         audioMapper.update();
         scenes[1].begin();
         audioMapper.draw();

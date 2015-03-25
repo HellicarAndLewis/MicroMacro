@@ -16,6 +16,7 @@ void AudioMapper::setup(){
     levelCount = 20;
     useLevelCount = false;
     isScaleOn = false;
+    isMaskOn = false;
     easeIn = 0.9;
     easeOut = 0.1;
     mapMin = 0.001;
@@ -37,6 +38,7 @@ void AudioMapper::setup(){
     RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isFadeOn);
     RUI_SHARE_PARAM(isScaleOn);
+    RUI_SHARE_PARAM(isMaskOn);
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
@@ -48,10 +50,16 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(audioMaxDecay, 0.9, 1.0);
     RUI_SHARE_PARAM(audioMirror);
     
-    meshOriginal = meshWarped = ofMesh::plane(400, 400, 40, 40);
-    //meshOriginal = meshWarped = ofMesh::sphere(200, 30);
+    alphaMask.setup(ofGetWidth(), ofGetHeight());
 }
 void AudioMapper::update(){
+    
+    resetLevels();
+    
+    mic.fftFile.setThreshold(audioThreshold);
+    mic.fftFile.setPeakDecay(audioPeakDecay);
+    mic.fftFile.setMaxDecay(audioMaxDecay);
+    mic.fftFile.setMirrorData(audioMirror);
     mic.fftLive.setThreshold(audioThreshold);
     mic.fftLive.setPeakDecay(audioPeakDecay);
     mic.fftLive.setMaxDecay(audioMaxDecay);
@@ -59,11 +67,12 @@ void AudioMapper::update(){
     
     mic.update();
     
+    
     int n  = levels.size();
     if (!audioMirror) n *= 2;
     float * audioData = new float[n];
-    //mic.fftFile.getFftPeakData(audioData, n);
-    mic.fftLive.getFftPeakData(audioData, n);
+    mic.fftFile.getFftPeakData(audioData, n);
+    //mic.fftLive.getFftPeakData(audioData, n);
     // populate levels for drawing
     for(int i=0; i<levels.size(); i++) {
         float audioValue = audioData[i];
@@ -71,39 +80,21 @@ void AudioMapper::update(){
     }
     delete[] audioData;
     
-    
-    vector<ofVec3f> & vertsOriginal = meshOriginal.getVertices();
-    vector<ofVec3f> & vertsWarped = meshWarped.getVertices();
-    int numOfVerts = meshOriginal.getNumVertices();
-    float * audioDataMesh = new float[numOfVerts];
-    mic.fftLive.getFftPeakData(audioDataMesh, numOfVerts);
-    float meshDisplacement = 100;
-    for(int i=0; i<numOfVerts; i++) {
-        float audioValue = audioDataMesh[i];
-        ofVec3f & vertOriginal = vertsOriginal[i];
-        ofVec3f & vertWarped = vertsWarped[i];
-        ofVec3f direction = vertOriginal.getNormalized();
-        vertWarped = vertOriginal + direction * meshDisplacement * audioValue;
-    }
-    delete[] audioDataMesh;
-    
 }
 
 void AudioMapper::draw(){
     
-    ofEnableDepthTest();
-    
-    drawBars(layout);
-    //drawBars(LEFT_RIGHT);
-    
-    ofSetColor(255);
-    ofDisableDepthTest();
-    
-    /*
-    cam.begin();
-    meshWarped.drawWireframe();
-    cam.end();
-     */
+    if (isMaskOn) {
+        ofSetColor(255);
+        alphaMask.draw();
+    }
+    else {
+        ofEnableDepthTest();
+        drawBars(layout);
+        //drawBars(LEFT_RIGHT);
+        ofSetColor(255);
+        ofDisableDepthTest();
+    }
     
     //mic.draw();
 }
@@ -195,7 +186,7 @@ void AudioMapper::drawBars(Layout layout){
         if (isScaleOn) ofPopMatrix();
         
         // go nuts
-        //ofSetColor(255);
+        /*
         ofPushMatrix();
         ofTranslate(0, 0, 10);
         ofNoFill();
@@ -209,6 +200,7 @@ void AudioMapper::drawBars(Layout layout){
         //ofCircle(width/2, height/2, ofMap(levels[i], 0, 1, 0, 200));
         ofFill();
         ofPopMatrix();
+         */
         
     }
     if (!getIsLayoutVertical()) {
@@ -256,7 +248,7 @@ void AudioMapper::clientDidSomething(RemoteUIServerCallBackArg &arg){
         case CLIENT_UPDATED_PARAM:
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
             if (arg.paramName == "layout" || arg.paramName == "thick" || arg.paramName == "gap" || arg.paramName=="useLevelCount" || arg.paramName=="levelCount")
-                resetLevels();
+                //resetLevels();
             break;
         default:
             break;

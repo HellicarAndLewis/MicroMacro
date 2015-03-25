@@ -9,6 +9,7 @@
 #pragma once
 #include "Mic.h"
 #include "ofxRemoteUIServer.h"
+#include "AlphaMask.h"
 
 // Takes audio input and visualises it in different ways
 class AudioMapper {
@@ -21,6 +22,7 @@ public:
     Layout layout;
     bool isFadeOn;
     bool isScaleOn;
+    bool isMaskOn;
     
     // mic provides actual sound input
     Mic mic;
@@ -39,9 +41,8 @@ public:
     float easeOut;
     ofColor colour;
     
-    ofMesh meshOriginal;
-    ofMesh meshWarped;
-    ofEasyCam cam;
+    AlphaMask alphaMask;
+    ofImage * bgImage;
     
     // audio sample settings
     float mapMin, mapMax;
