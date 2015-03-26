@@ -1,0 +1,65 @@
+<OFX_REMOTE_UI>
+	<OFX_REMOTE_UI_V>2</OFX_REMOTE_UI_V>
+	<OFX_REMOTE_UI_PARAMS>
+		<P name="App" type="group"/>
+		<!-- # App ############################ -->
+		<P name="appMode" type="enum">1</P>
+		<P name="isDebug" type="bool">0</P>
+		<P c0.red="0" c1.green="0" c2.blue="0" c3.alpha="255" name="bgColour" type="color"/>
+		<P name="Slit Scan" type="group"/>
+		<!-- # Slit Scan ############################ -->
+		<P name="mode" type="enum">2</P>
+		<P name="currentSampleMapIndex" type="int">0</P>
+		<P name="slitScanTimeWidth" type="int">30</P>
+		<P name="slitScanTimeDelay" type="int">0</P>
+		<P name="Slicer (slice modes)" type="group"/>
+		<!-- # Slicer (slice modes) ############################ -->
+		<P name="sliceThickness" type="int">14</P>
+		<P name="sliceOffset" type="int">3</P>
+		<P name="sliceVertical" type="bool">1</P>
+		<P name="sliceWeave" type="bool">0</P>
+		<P name="Aberration" type="group"/>
+		<!-- # Aberration ############################ -->
+		<P name="aberrationROffset.x" type="float">0</P>
+		<P name="aberrationROffset.y" type="float">0</P>
+		<P name="aberrationGOffset.x" type="float">0</P>
+		<P name="aberrationGOffset.y" type="float">0</P>
+		<P name="aberrationBOffset.x" type="float">0</P>
+		<P name="aberrationBOffset.y" type="float">0</P>
+		<P name="Camo" type="group"/>
+		<!-- # Camo ############################ -->
+		<P name="cam.flowSize" type="int">9</P>
+		<P name="cam.blur" type="int">7</P>
+		<P name="isCamoEnabled" type="bool">0</P>
+		<P name="isCamoSquare" type="bool">1</P>
+		<P name="isCamoImage" type="bool">1</P>
+		<P name="camoMinFlow" type="float">9</P>
+		<P name="camoMaxFlow" type="float">15</P>
+		<P name="camoFlowRes" type="int">2</P>
+		<P name="camoBlockMin" type="int">4</P>
+		<P name="camoBlockMax" type="int">15</P>
+		<P name="camoFade" type="int">20</P>
+		<P name="camoImageIndex" type="int">0</P>
+		<P name="isDrawFlowDebugOn" type="bool">0</P>
+		<P name="Audio Mapper" type="group"/>
+		<!-- # Audio Mapper ############################ -->
+		<P name="layout" type="enum">5</P>
+		<P name="isFadeOn" type="bool">1</P>
+		<P name="isScaleOn" type="bool">0</P>
+		<P name="isMaskOn" type="bool">1</P>
+		<P name="isBgSlice" type="bool">1</P>
+		<P name="usePerlin" type="bool">1</P>
+		<P name="useLevelCount" type="bool">0</P>
+		<P name="levelCount" type="int">61</P>
+		<P name="thick" type="float">15.4349</P>
+		<P name="gap" type="float">3.27777</P>
+		<P name="peakToLengthRatio" type="float">0.698335</P>
+		<P c0.red="255" c1.green="243" c2.blue="250" c3.alpha="255" name="colour" type="color"/>
+		<P name="audioThreshold" type="float">0.921972</P>
+		<P name="audioPeakDecay" type="float">0.97349</P>
+		<P name="audioMaxDecay" type="float">0.994247</P>
+		<P name="audioMirror" type="bool">0</P>
+	</OFX_REMOTE_UI_PARAMS>
+	<OFX_REMOTE_UI_SERVER_PORT>4000</OFX_REMOTE_UI_SERVER_PORT>
+	<OFX_REMOTE_UI_SERVER_ENABLED>1</OFX_REMOTE_UI_SERVER_ENABLED>
+</OFX_REMOTE_UI>

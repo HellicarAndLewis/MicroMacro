@@ -92,7 +92,7 @@ void AudioMapper::draw(){
         bgFbo.begin();
         int x = sin(ofGetElapsedTimef());
         if (isBgSlice)
-            bgImage->drawSubsection(0, 0, width, height, (width/2)+(x*10), 0, 1, height);
+            bgImage->drawSubsection(0, 0, width, height, (bgImage->width/2)+(x*10), 0, 1, bgImage->height);
         else
             bgImage->draw(0, 0, width, height);
         bgFbo.end();
@@ -144,7 +144,7 @@ void AudioMapper::drawBars(Layout layout){
         
         // set colour
         if (isFadeOn) {
-            ofSetColor(colour * ofMap(levels[i], 0, 1, 0.5, 1.0, true));
+            ofSetColor(colour * ofMap(levels[i], 0, 1, 0.8, 1.0, true));
         }
         else {
             ofSetColor(colour);
