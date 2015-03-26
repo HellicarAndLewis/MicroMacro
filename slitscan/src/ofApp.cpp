@@ -50,7 +50,7 @@ void ofApp::update(){
     }
     scenes[1].update();
     if (scenes[1].isVisible) {
-        if (audioMapper.isMaskOn) {
+        if (audioMapper.bg >= AudioMapper::CAM) {
             slitScan.update();
             audioMapper.bgImage = &slitScan.slitScan.getOutputImage();
         }

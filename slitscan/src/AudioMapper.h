@@ -17,13 +17,17 @@ public:
     
     // visual states
     enum Layout {
-        LEFT_RIGHT=1, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
+        LEFT_RIGHT=0, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
     };
     Layout layout;
     bool isFadeOn;
     bool isScaleOn;
-    bool isMaskOn;
-    bool isBgSlice;
+    
+    enum BgType {
+        GREYSCALE=0, GREYSCALE_NOISE, CAM, CAM_SLICE_V, CAM_SLICE_H
+    };
+    BgType bg;
+    
     bool usePerlin;
     
     // mic provides actual sound input

@@ -16,8 +16,6 @@ void AudioMapper::setup(){
     levelCount = 20;
     useLevelCount = false;
     isScaleOn = false;
-    isMaskOn = false;
-    isBgSlice = false;
     usePerlin = false;
     mapMin = 0.001;
     mapMax = 0.1;
@@ -27,6 +25,7 @@ void AudioMapper::setup(){
     audioPeakDecay = 0.96;
     audioMaxDecay = 0.995;
     bgImage = NULL;
+    bg = CAM;
     mic.setup();
     
     ofSetCircleResolution(200);
@@ -40,10 +39,10 @@ void AudioMapper::setup(){
     RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isFadeOn);
     RUI_SHARE_PARAM(isScaleOn);
-    RUI_SHARE_PARAM(isMaskOn);
-    RUI_SHARE_PARAM(isBgSlice);
+    // BG drawing mode
+    string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
+    RUI_SHARE_ENUM_PARAM(bg, GREYSCALE, CAM_SLICE_H, bgLabels);
     RUI_SHARE_PARAM(usePerlin);
-    
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
@@ -88,11 +87,13 @@ void AudioMapper::update(){
 
 void AudioMapper::draw(){
     
-    if (isMaskOn && bgImage != NULL) {
+    if (bg >= CAM && bgImage != NULL) {
         bgFbo.begin();
-        int x = sin(ofGetElapsedTimef());
-        if (isBgSlice)
-            bgImage->drawSubsection(0, 0, width, height, (bgImage->width/2)+(x*10), 0, 1, bgImage->height);
+        int rnd = sin(ofGetElapsedTimef());
+        if (bg == CAM_SLICE_V)
+            bgImage->drawSubsection(0, 0, width, height, (bgImage->width/2)+(rnd*100), 0, 1, bgImage->height);
+        else if (bg == CAM_SLICE_H)
+            bgImage->drawSubsection(0, 0, width, height, 0, (bgImage->height/2)+(rnd*100), bgImage->width, 1);
         else
             bgImage->draw(0, 0, width, height);
         bgFbo.end();
@@ -143,11 +144,15 @@ void AudioMapper::drawBars(Layout layout){
         }
         
         // set colour
+        float brightness = 1.0;
         if (isFadeOn) {
-            ofSetColor(colour * ofMap(levels[i], 0, 1, 0.8, 1.0, true));
+            brightness = ofMap(levels[i], 0, 1, 0.8, 1.0, true);
+        }
+        if (bg == GREYSCALE_NOISE) {
+            ofSetColor( colour * levels[i] * ofRandomuf() );
         }
         else {
-            ofSetColor(colour);
+            ofSetColor(colour * brightness);
         }
         
         if (isScaleOn) {
