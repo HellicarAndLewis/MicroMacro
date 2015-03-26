@@ -19,10 +19,9 @@ void AudioMapper::setup(){
     isMaskOn = false;
     isBgSlice = false;
     usePerlin = false;
-    easeIn = 0.9;
-    easeOut = 0.1;
     mapMin = 0.001;
     mapMax = 0.1;
+    peakToLengthRatio = 1.0;
     audioMirror = false;
     audioThreshold = 0.5;
     audioPeakDecay = 0.96;
@@ -49,6 +48,7 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
     RUI_SHARE_PARAM(gap, 0, 100);
+    RUI_SHARE_PARAM(peakToLengthRatio, 0.1, 1);
     RUI_SHARE_COLOR_PARAM(colour);
     // sampling
     RUI_SHARE_PARAM(audioThreshold, 0.0, 1.0);
@@ -144,7 +144,7 @@ void AudioMapper::drawBars(Layout layout){
         
         // set colour
         if (isFadeOn) {
-            ofSetColor(colour * levels[i]);
+            ofSetColor(colour * ofMap(levels[i], 0, 1, 0.5, 1.0, true));
         }
         else {
             ofSetColor(colour);
@@ -157,49 +157,49 @@ void AudioMapper::drawBars(Layout layout){
         
         // Top to bottom, or bottom to up only
         if (layout == UP_DOWN) {
-            ofRect(x, height, thick, -barHeight);
+            ofRect(x, barHeight, thick, -barHeight*peakToLengthRatio);
             x += thick + gap;
         }
         else if (layout == DOWN_UP){
-            ofRect(x, 0, thick, barHeight);
+            ofRect(x, height - barHeight, thick, barHeight*peakToLengthRatio);
             x += thick + gap;
         }
         
         // left to right or right to left only
         else if (layout == LEFT_RIGHT){
-            ofRect(0, y, barWidth, thick);
+            ofRect(barWidth, y, -barWidth*peakToLengthRatio, thick);
             y += thick + gap;
         }
         else if (layout == RIGHT_LEFT){
-            ofRect(width, y, -barWidth, thick);
+            ofRect(width-barWidth, y, barWidth*peakToLengthRatio, thick);
             y += thick + gap;
         }
         
         // MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
         // Side mirrors, like teeth
         else if (layout == MIRROR_SIDE_V) {
-            ofRect(x, height, thick, -barHeight);
-            ofRect(x, 0, thick, barHeight);
+            ofRect(x, barHeight, thick, -barHeight*peakToLengthRatio);
+            ofRect(x, height - barHeight, thick, barHeight*peakToLengthRatio);
             x += thick + gap;
             
         }
         else if (layout == MIRROR_SIDE_H) {
-            ofRect(0, y, barWidth, thick);
-            ofRect(width, y, -barWidth, thick);
+            ofRect(barWidth, y, -barWidth*peakToLengthRatio, thick);
+            ofRect(width-barWidth, y, barWidth*peakToLengthRatio, thick);
             y += thick + gap;
             
         }
         
         // centre mirrors, like ?
         else if (layout == MIRROR_CENTRE_V) {
-            ofRect(x, height/2, thick, -barHeight/2);
-            ofRect(x, height/2, thick, barHeight/2);
+            ofRect(x, (height/2)-(barHeight/2), thick, barHeight*0.5*peakToLengthRatio);
+            ofRect(x, (height/2)+(barHeight/2), thick, -barHeight*0.5*peakToLengthRatio);
             x += thick + gap;
             
         }
         else if (layout == MIRROR_CENTRE_H) {
-            ofRect(width/2, y, barWidth/2, thick);
-            ofRect(width/2, y, -barWidth/2, thick);
+            ofRect((width/2)+(barWidth/2), y, -barWidth*0.5*peakToLengthRatio, thick);
+            ofRect((width/2)-(barWidth/2), y, barWidth*0.5*peakToLengthRatio, thick);
             y += thick + gap;
             
         }
@@ -216,7 +216,7 @@ void AudioMapper::drawBars(Layout layout){
         
         if (isScaleOn) ofPopMatrix();
         
-        // go nuts
+        // plus circles?
         /*
         ofPushMatrix();
         ofTranslate(0, 0, 10);
@@ -248,7 +248,7 @@ void AudioMapper::resetLevels(){
         if (getIsLayoutVertical()) max = width;
         n = levelCount;
         float thickDouble = (float)max/(float)n;
-        ofLogNotice() << "Use levels " << levelCount << " thick: " << thick;
+        //ofLogNotice() << "Use levels " << levelCount << " thick: " << thick;
         thick = thickDouble * 0.5;
         gap = thickDouble * 0.5;
         if (levelCount == 1) thick = thickDouble;
@@ -300,5 +300,4 @@ void AudioMapper::keyPressed(int key){
         default:
             break;
     }
-    
 }

@@ -39,8 +39,7 @@ public:
     int height;
     float thick;
     float gap;
-    float easeIn;
-    float easeOut;
+    float peakToLengthRatio;
     ofColor colour;
     
     AlphaMask alphaMask;
