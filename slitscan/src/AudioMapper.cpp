@@ -11,12 +11,14 @@
 void AudioMapper::setup(){
     
     layout = DOWN_UP;
+    layout2 = NONE;
     thick = 20;
     gap = 20;
     levelCount = 20;
     useLevelCount = false;
     isScaleOn = false;
     usePerlin = false;
+    isNebulaOn = false;
     mapMin = 0.001;
     mapMax = 0.1;
     peakToLengthRatio = 1.0;
@@ -28,20 +30,24 @@ void AudioMapper::setup(){
     bg = CAM;
     mic.setup();
     
+    textureImg.loadImage("textures/nebula1.jpg");
+    
     ofSetCircleResolution(200);
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // share controls
-    string modeLabels[] = {"LEFT_RIGHT", "RIGHT_LEFT", "UP_DOWN", "DOWN_UP", "MIRROR_SIDE_V", "MIRROR_SIDE_H", "MIRROR_CENTRE_V", "MIRROR_CENTRE_H", "SOLID_V", "SOLID_H"};
+    string modeLabels[] = {"NONE", "LEFT_RIGHT", "RIGHT_LEFT", "UP_DOWN", "DOWN_UP", "MIRROR_SIDE_V", "MIRROR_SIDE_H", "MIRROR_CENTRE_V", "MIRROR_CENTRE_H", "SOLID_V", "SOLID_H"};
     RUI_NEW_GROUP("Audio Mapper");
     ofAddListener(RUI_GET_OF_EVENT(), this, &AudioMapper::clientDidSomething);
     // appearance
-    RUI_SHARE_ENUM_PARAM(layout, LEFT_RIGHT, SOLID_H, modeLabels);
+    RUI_SHARE_ENUM_PARAM(layout, NONE, SOLID_H, modeLabels);
+    RUI_SHARE_ENUM_PARAM(layout2, NONE, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isFadeOn);
     RUI_SHARE_PARAM(isScaleOn);
     // BG drawing mode
     string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
     RUI_SHARE_ENUM_PARAM(bg, GREYSCALE, CAM_SLICE_H, bgLabels);
+    RUI_SHARE_PARAM(isNebulaOn);
     RUI_SHARE_PARAM(usePerlin);
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
@@ -87,6 +93,7 @@ void AudioMapper::update(){
 
 void AudioMapper::draw(){
     
+    ofSetColor(255);
     if (bg >= CAM && bgImage != NULL) {
         bgFbo.begin();
         int rnd = sin(ofGetElapsedTimef());
@@ -98,10 +105,11 @@ void AudioMapper::draw(){
             bgImage->draw(0, 0, width, height);
         bgFbo.end();
         
-        ofSetColor(255);
         // draw bars into mask fbo
         alphaMask.beginMask();
         drawBars(layout);
+        if (layout2 != NONE) drawBars(layout2);
+        ofSetColor(255);
         alphaMask.endMask();
         // draw camera into contents fbo
         alphaMask.begin();
@@ -112,7 +120,7 @@ void AudioMapper::draw(){
     else {
         ofEnableDepthTest();
         drawBars(layout);
-        //drawBars(LEFT_RIGHT);
+        if (layout2 != NONE) drawBars(layout2);
         ofSetColor(255);
         ofDisableDepthTest();
     }
@@ -143,10 +151,65 @@ void AudioMapper::drawBars(Layout layout){
             barHeight *= ofNoise(x, ofGetElapsedTimef()) + 0.1;
         }
         
-        // set colour
+        // Set the rectangle(s) to represent the level bar
+        // Top to bottom, or bottom to up only
+        ofRectangle bar, bar2;
+        if (layout == UP_DOWN) {
+            bar.set(x, barHeight, thick, -barHeight*peakToLengthRatio);
+            x += thick + gap;
+        }
+        else if (layout == DOWN_UP){
+            bar.set(x, height - barHeight, thick, barHeight*peakToLengthRatio);
+            x += thick + gap;
+        }
+        // left to right or right to left only
+        else if (layout == LEFT_RIGHT){
+            bar.set(barWidth, y, -barWidth*peakToLengthRatio, thick);
+            y += thick + gap;
+        }
+        else if (layout == RIGHT_LEFT){
+            bar.set(width-barWidth, y, barWidth*peakToLengthRatio, thick);
+            y += thick + gap;
+        }
+        // MIRROR_SIDE_V, MIRROR_SIDE_H
+        // Side mirrors, like teeth
+        else if (layout == MIRROR_SIDE_V) {
+            bar.set(x, barHeight, thick, -barHeight*peakToLengthRatio);
+            bar2.set(x, height - barHeight, thick, barHeight*peakToLengthRatio);
+            x += thick + gap;
+        }
+        else if (layout == MIRROR_SIDE_H) {
+            bar.set(barWidth, y, -barWidth*peakToLengthRatio, thick);
+            bar2.set(width-barWidth, y, barWidth*peakToLengthRatio, thick);
+            y += thick + gap;
+        }
+        // MIRROR_CENTRE_V, MIRROR_CENTRE_H
+        // centre mirrors, like ?
+        else if (layout == MIRROR_CENTRE_V) {
+            bar.set(x, (height/2)-(barHeight/2), thick, barHeight*0.5*peakToLengthRatio);
+            bar2.set(x, (height/2)+(barHeight/2), thick, -barHeight*0.5*peakToLengthRatio);
+            x += thick + gap;
+        }
+        else if (layout == MIRROR_CENTRE_H) {
+            bar.set((width/2)+(barWidth/2), y, -barWidth*0.5*peakToLengthRatio, thick);
+            bar2.set((width/2)-(barWidth/2), y, barWidth*0.5*peakToLengthRatio, thick);
+            y += thick + gap;
+        }
+        // SOLID_V, SOLID_H
+        // solid bars
+        else if (layout == SOLID_V){
+            bar.set(x, 0, thick, height);
+            x += thick + gap;
+        }
+        else if (layout == SOLID_H){
+            bar.set(0, y, width, thick);
+            y += thick + gap;
+        }
+        
+        // set colour / brightness
         float brightness = 1.0;
         if (isFadeOn) {
-            brightness = ofMap(levels[i], 0, 1, 0.8, 1.0, true);
+            brightness = ofMap(levels[i], 0, 1, 0.1, 1.3, true);
         }
         if (bg == GREYSCALE_NOISE) {
             ofSetColor( colour * levels[i] * ofRandomuf() );
@@ -155,92 +218,53 @@ void AudioMapper::drawBars(Layout layout){
             ofSetColor(colour * brightness);
         }
         
+        // Draw the bars
         if (isScaleOn) {
             ofPushMatrix();
             ofTranslate(0, 0, ofMap(levels[i], 0, 1, -100, 0));
         }
-        
-        // Top to bottom, or bottom to up only
-        if (layout == UP_DOWN) {
-            ofRect(x, barHeight, thick, -barHeight*peakToLengthRatio);
-            x += thick + gap;
+        if (isNebulaOn) {
+            drawNebula(bar, peakToLengthRatio);
+            drawNebula(bar2, peakToLengthRatio);
         }
-        else if (layout == DOWN_UP){
-            ofRect(x, height - barHeight, thick, barHeight*peakToLengthRatio);
-            x += thick + gap;
+        else {
+            ofRect(bar);
+            ofRect(bar2);
         }
-        
-        // left to right or right to left only
-        else if (layout == LEFT_RIGHT){
-            ofRect(barWidth, y, -barWidth*peakToLengthRatio, thick);
-            y += thick + gap;
-        }
-        else if (layout == RIGHT_LEFT){
-            ofRect(width-barWidth, y, barWidth*peakToLengthRatio, thick);
-            y += thick + gap;
-        }
-        
-        // MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
-        // Side mirrors, like teeth
-        else if (layout == MIRROR_SIDE_V) {
-            ofRect(x, barHeight, thick, -barHeight*peakToLengthRatio);
-            ofRect(x, height - barHeight, thick, barHeight*peakToLengthRatio);
-            x += thick + gap;
-            
-        }
-        else if (layout == MIRROR_SIDE_H) {
-            ofRect(barWidth, y, -barWidth*peakToLengthRatio, thick);
-            ofRect(width-barWidth, y, barWidth*peakToLengthRatio, thick);
-            y += thick + gap;
-            
-        }
-        
-        // centre mirrors, like ?
-        else if (layout == MIRROR_CENTRE_V) {
-            ofRect(x, (height/2)-(barHeight/2), thick, barHeight*0.5*peakToLengthRatio);
-            ofRect(x, (height/2)+(barHeight/2), thick, -barHeight*0.5*peakToLengthRatio);
-            x += thick + gap;
-            
-        }
-        else if (layout == MIRROR_CENTRE_H) {
-            ofRect((width/2)+(barWidth/2), y, -barWidth*0.5*peakToLengthRatio, thick);
-            ofRect((width/2)-(barWidth/2), y, barWidth*0.5*peakToLengthRatio, thick);
-            y += thick + gap;
-            
-        }
-        
-        // solid
-        else if (layout == SOLID_V){
-            ofRect(x, 0, thick, height);
-            x += thick + gap;
-        }
-        else if (layout == SOLID_H){
-            ofRect(0, y, width, thick);
-            y += thick + gap;
-        }
-        
         if (isScaleOn) ofPopMatrix();
         
         // plus circles?
         /*
-        ofPushMatrix();
-        ofTranslate(0, 0, 10);
-        ofNoFill();
-        float halfHeight = height/2;
-        if (getIsLayoutVertical()) {
-            ofCircle(x-gap, height*.5, ofMap(levels[i], 0.5, 1, 0, thick*6, true));
-        }
-        else {
-            ofCircle(width/2, y+thick/2, ofMap(levels[i], 0, 1, 0, 200));
-        }
-        //ofCircle(width/2, height/2, ofMap(levels[i], 0, 1, 0, 200));
-        ofFill();
-        ofPopMatrix();
+         ofPushMatrix();
+         ofTranslate(0, 0, 10);
+         ofNoFill();
+         float halfHeight = height/2;
+         if (getIsLayoutVertical()) {
+         ofCircle(x-gap, height*.5, ofMap(levels[i], 0.5, 1, 0, thick*6, true));
+         }
+         else {
+         ofCircle(width/2, y+thick/2, ofMap(levels[i], 0, 1, 0, 200));
+         }
+         //ofCircle(width/2, height/2, ofMap(levels[i], 0, 1, 0, 200));
+         ofFill();
+         ofPopMatrix();
          */
         
     }
     if (!getIsLayoutVertical()) {
         ofPopMatrix();
+    }
+}
+
+
+void AudioMapper::drawNebula(ofRectangle rect, float heightPercent){
+    if (getIsLayoutVertical()) {
+        textureImg.drawSubsection(rect.x, rect.y, rect.width, rect.height,
+                                  ofRandom(textureImg.getWidth()-thick), 0, thick, textureImg.getHeight()*heightPercent);
+    }
+    else {
+        textureImg.drawSubsection(rect.x, rect.y, rect.width, rect.height,
+                                  0, ofRandom(textureImg.getHeight()-thick), textureImg.getWidth()*heightPercent, thick);
     }
 }
 
@@ -291,7 +315,7 @@ void AudioMapper::clientDidSomething(RemoteUIServerCallBackArg &arg){
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
             if (arg.paramName == "layout" || arg.paramName == "thick" || arg.paramName == "gap" || arg.paramName=="useLevelCount" || arg.paramName=="levelCount")
                 //resetLevels();
-            break;
+                break;
         default:
             break;
     }

@@ -17,11 +17,12 @@ public:
     
     // visual states
     enum Layout {
-        LEFT_RIGHT=0, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
+        NONE=0, LEFT_RIGHT, RIGHT_LEFT, UP_DOWN, DOWN_UP, MIRROR_SIDE_V, MIRROR_SIDE_H, MIRROR_CENTRE_V, MIRROR_CENTRE_H, SOLID_V, SOLID_H
     };
-    Layout layout;
+    Layout layout, layout2;
     bool isFadeOn;
     bool isScaleOn;
+    bool isNebulaOn;
     
     enum BgType {
         GREYSCALE=0, GREYSCALE_NOISE, CAM, CAM_SLICE_V, CAM_SLICE_H
@@ -46,6 +47,8 @@ public:
     float peakToLengthRatio;
     ofColor colour;
     
+    ofImage textureImg;
+    
     AlphaMask alphaMask;
     ofImage * bgImage;
     ofFbo bgFbo;
@@ -61,6 +64,7 @@ public:
     void update();
     void draw();
     void drawBars(Layout layout);
+    void drawNebula(ofRectangle rect, float heightPercent=1.0);
     void resetLevels();
     void allocateScenes();
     bool getIsLayoutVertical();
