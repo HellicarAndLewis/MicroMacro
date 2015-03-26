@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
     bool isCapture720 = args->getBool("-capture720", true);
     
     // setup window
-    if (fullScreen) ofSetupOpenGL(1280, 720, OF_FULLSCREEN);
+    if (fullScreen) ofSetupOpenGL(1920, 1080, OF_FULLSCREEN);
     else ofSetupOpenGL(1280, 720, OF_WINDOW);
     
     // logging

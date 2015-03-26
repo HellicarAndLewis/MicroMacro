@@ -210,7 +210,7 @@ void AudioMapper::drawBars(Layout layout){
         // set colour / brightness
         float brightness = 1.0;
         if (isFadeOn) {
-            brightness = ofMap(levels[i], 0, 1, 0.1, 1.3, true);
+            brightness = ofMap(levels[i], 0, 1, 0.0, 1.0, true);
         }
         if (bg == GREYSCALE_NOISE) {
             ofSetColor( colour * levels[i] * ofRandomuf() );
