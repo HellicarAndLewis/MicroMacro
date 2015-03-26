@@ -92,11 +92,12 @@ void AudioMapper::update(){
 }
 
 void AudioMapper::draw(){
-    
     ofSetColor(255);
     if (bg >= CAM && bgImage != NULL) {
+        // This is a cam/slitscan texture mode, the bars act as a mask
         bgFbo.begin();
         int rnd = sin(ofGetElapsedTimef());
+        // Draw stretched slices of the camera texture or draw the whole thing
         if (bg == CAM_SLICE_V)
             bgImage->drawSubsection(0, 0, width, height, (bgImage->width/2)+(rnd*100), 0, 1, bgImage->height);
         else if (bg == CAM_SLICE_H)
