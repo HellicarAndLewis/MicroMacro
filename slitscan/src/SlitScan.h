@@ -14,6 +14,7 @@
 #include "Slicer.h"
 #include "Camo.h"
 #include "ofxRemoteUIServer.h"
+#include "AudioMapper.h"
 
 class SlitScan {
     
@@ -52,6 +53,9 @@ public:
     // Camo mode draws camo colours
     Camo camo;
     
+    bool doAudioMap;
+    AudioMapper * audioMap;
+    
     // dimensions
     int width, height;
     bool isCapture720;
@@ -61,6 +65,7 @@ public:
     void drawQuad(int w, int h);
     void draw(int w, int h);
     void drawSlitScan();
+    void resetDelayMap();
     
     void keyPressed(int key);
     void keyReleased(int key);

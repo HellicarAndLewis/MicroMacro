@@ -18,6 +18,9 @@ void SlitScan::setup(){
     sliceVertical = true;
     sliceWeave = false;
     
+    doAudioMap = true;
+    audioMap = NULL;
+    
     cam.setup(isCapture720, 0.4);
     width = cam.camWidth;
     height = cam.camHeight;
@@ -78,6 +81,7 @@ void SlitScan::setup(){
 	RUI_SHARE_PARAM(sliceOffset, 0, 30 );
     RUI_SHARE_PARAM(sliceVertical);
     RUI_SHARE_PARAM(sliceWeave);
+    RUI_SHARE_PARAM(doAudioMap);
     
     RUI_NEW_GROUP("Aberration");
     RUI_SHARE_PARAM(aberrationROffset.x, 0.0, 50.0);
@@ -208,6 +212,10 @@ void SlitScan::drawQuad(int w, int h){
     glEnd();
 }
 
+void SlitScan::resetDelayMap(){
+    slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
+}
+
 void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
     switch (arg.action) {
 		case CLIENT_UPDATED_PARAM:
@@ -226,11 +234,19 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
                 slicer[0].setVertical(true);
                 slicer[1].setVertical(false);
             }
-            else if (arg.paramName == "currentSampleMapIndex") slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
+            else if (arg.paramName == "currentSampleMapIndex") resetDelayMap();
             // Slight hack, listen to the isCamoEnabled param from Camo
-            else if (arg.paramName == "isCamoEnabled" && !camo.isCamoEnabled) slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
-			break;
-		default:
+            else if (arg.paramName == "isCamoEnabled" && !camo.isCamoEnabled) resetDelayMap();
+            else if (arg.paramName == "doAudioMap" && !doAudioMap) resetDelayMap();
+            break;
+        case CLIENT_DID_SET_PRESET:
+            if (!camo.isCamoEnabled || !doAudioMap) resetDelayMap();
+            slicer[0].setThickness(sliceThickness);
+            slicer[1].setThickness(sliceThickness);
+            slicer[0].setVertical(sliceVertical);
+            slicer[1].setVertical(sliceVertical);
+            break;
+        default:
 			break;
 	}
 }

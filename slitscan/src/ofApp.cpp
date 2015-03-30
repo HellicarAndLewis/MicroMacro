@@ -41,13 +41,25 @@ void ofApp::setup(){
 void ofApp::update(){
     oscReceiver.update();
     // update each scene and draw it if its visible
+    // Slit scan
     scenes[0].update();
     if (scenes[0].isVisible) {
+        if (slitScan.doAudioMap) {
+            audioMapper.update();
+            slitScan.audioMap = &audioMapper;
+            scenes[1].begin();
+            audioMapper.draw();
+            scenes[1].end();
+            ofPixels pixels;
+            scenes[1].fbo.readToPixels(pixels);
+            slitScan.slitScan.setDelayMap(pixels);
+        }
         slitScan.update();
         scenes[0].begin();
         slitScan.draw(scenes[0].fbo.getWidth(), scenes[0].fbo.getHeight());
         scenes[0].end();
     }
+    // Audio mapper
     scenes[1].update();
     if (scenes[1].isVisible) {
         if (audioMapper.bg >= AudioMapper::CAM) {
@@ -65,8 +77,8 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackground(bgColour);
     // draw both scenes to allow for cross fade transitions
-    scenes[0].draw();
-    scenes[1].draw();
+    if (scenes[0].isVisible) scenes[0].draw();
+    if (scenes[1].isVisible) scenes[1].draw();
     if (isDebug) {
         stringstream ss;
         ss << "ID:" << id << " " << ofToString(ofGetFrameRate()) << " FPS";
@@ -139,21 +151,15 @@ void ofApp::onRemoteEvent(RemoteEvent& e){
 }
 
 void ofApp::clientDidSomething(RemoteUIServerCallBackArg &arg){
-    
 	switch (arg.action) {
-		case CLIENT_CONNECTED: ofLogNotice() << "CLIENT_CONNECTED" << endl; break;
-		case CLIENT_DISCONNECTED: ofLogNotice() << "CLIENT_DISCONNECTED" << endl; break;
 		case CLIENT_UPDATED_PARAM:
             ofLogVerbose() << "CLIENT_UPDATED_PARAM: " << arg.paramName << " - " << arg.param.getValueAsString();
             if (arg.paramName == "isDebug") enableDebug(isDebug);
             else if (arg.paramName == "appMode") changeMode(appMode);
 			break;
-		case CLIENT_DID_SET_PRESET: ofLogNotice() << "CLIENT_DID_SET_PRESET" << endl; break;
-		case CLIENT_SAVED_PRESET: ofLogNotice() << "CLIENT_SAVED_PRESET" << endl; break;
-		case CLIENT_DELETED_PRESET: ofLogNotice() << "CLIENT_DELETED_PRESET" << endl; break;
-		case CLIENT_SAVED_STATE: ofLogNotice() << "CLIENT_SAVED_STATE" << endl; break;
-		case CLIENT_DID_RESET_TO_XML: ofLogNotice() << "CLIENT_DID_RESET_TO_XML" << endl; break;
-		case CLIENT_DID_RESET_TO_DEFAULTS: ofLogNotice() << "CLIENT_DID_RESET_TO_DEFAULTS" << endl; break;
+		case CLIENT_DID_SET_PRESET:
+            changeMode(appMode);
+            break;
 		default:
 			break;
 	}

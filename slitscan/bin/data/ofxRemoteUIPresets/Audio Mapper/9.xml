@@ -4,10 +4,11 @@
 		<P name="Audio Mapper" type="group"/>
 		<!-- # Audio Mapper ############################ -->
 		<P name="layout" type="enum">8</P>
+		<P name="layout2" type="enum">0</P>
 		<P name="isFadeOn" type="bool">1</P>
 		<P name="isScaleOn" type="bool">0</P>
-		<P name="isMaskOn" type="bool">1</P>
-		<P name="isBgSlice" type="bool">1</P>
+		<P name="bg" type="enum">3</P>
+		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">1</P>
 		<P name="useLevelCount" type="bool">0</P>
 		<P name="levelCount" type="int">61</P>

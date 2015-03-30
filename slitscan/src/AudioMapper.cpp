@@ -255,6 +255,7 @@ void AudioMapper::drawBars(Layout layout){
     if (!getIsLayoutVertical()) {
         ofPopMatrix();
     }
+    ofSetColor(255);
 }
 
 
@@ -317,6 +318,8 @@ void AudioMapper::clientDidSomething(RemoteUIServerCallBackArg &arg){
             if (arg.paramName == "layout" || arg.paramName == "thick" || arg.paramName == "gap" || arg.paramName=="useLevelCount" || arg.paramName=="levelCount")
                 //resetLevels();
                 break;
+        case CLIENT_DID_SET_PRESET:
+            break;
         default:
             break;
     }

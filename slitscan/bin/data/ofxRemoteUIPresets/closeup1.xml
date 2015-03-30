@@ -18,6 +18,7 @@
 		<P name="sliceOffset" type="int">3</P>
 		<P name="sliceVertical" type="bool">1</P>
 		<P name="sliceWeave" type="bool">0</P>
+		<P name="doAudioMap" type="bool">0</P>
 		<P name="Aberration" type="group"/>
 		<!-- # Aberration ############################ -->
 		<P name="aberrationROffset.x" type="float">0</P>
@@ -44,10 +45,11 @@
 		<P name="Audio Mapper" type="group"/>
 		<!-- # Audio Mapper ############################ -->
 		<P name="layout" type="enum">4</P>
+		<P name="layout2" type="enum">0</P>
 		<P name="isFadeOn" type="bool">0</P>
 		<P name="isScaleOn" type="bool">0</P>
-		<P name="isMaskOn" type="bool">0</P>
-		<P name="isBgSlice" type="bool">0</P>
+		<P name="bg" type="enum">0</P>
+		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">0</P>
 		<P name="useLevelCount" type="bool">1</P>
 		<P name="levelCount" type="int">71</P>

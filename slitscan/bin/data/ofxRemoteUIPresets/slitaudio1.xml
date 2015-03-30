@@ -4,29 +4,29 @@
 		<P name="App" type="group"/>
 		<!-- # App ############################ -->
 		<P name="appMode" type="enum">0</P>
-		<P name="isDebug" type="bool">0</P>
+		<P name="isDebug" type="bool">1</P>
 		<P c0.red="0" c1.green="0" c2.blue="0" c3.alpha="255" name="bgColour" type="color"/>
 		<P name="Slit Scan" type="group"/>
 		<!-- # Slit Scan ############################ -->
-		<P name="mode" type="enum">2</P>
+		<P name="mode" type="enum">1</P>
 		<P name="currentSampleMapIndex" type="int">0</P>
-		<P name="slitScanTimeWidth" type="int">30</P>
+		<P name="slitScanTimeWidth" type="int">41</P>
 		<P name="slitScanTimeDelay" type="int">0</P>
 		<P name="Slicer (slice modes)" type="group"/>
 		<!-- # Slicer (slice modes) ############################ -->
-		<P name="sliceThickness" type="int">6</P>
-		<P name="sliceOffset" type="int">3</P>
+		<P name="sliceThickness" type="int">4</P>
+		<P name="sliceOffset" type="int">2</P>
 		<P name="sliceVertical" type="bool">1</P>
 		<P name="sliceWeave" type="bool">0</P>
-		<P name="doAudioMap" type="bool">0</P>
+		<P name="doAudioMap" type="bool">1</P>
 		<P name="Aberration" type="group"/>
 		<!-- # Aberration ############################ -->
-		<P name="aberrationROffset.x" type="float">5.81683</P>
+		<P name="aberrationROffset.x" type="float">0</P>
 		<P name="aberrationROffset.y" type="float">0</P>
 		<P name="aberrationGOffset.x" type="float">0</P>
 		<P name="aberrationGOffset.y" type="float">0</P>
 		<P name="aberrationBOffset.x" type="float">0</P>
-		<P name="aberrationBOffset.y" type="float">4.82673</P>
+		<P name="aberrationBOffset.y" type="float">0</P>
 		<P name="Camo" type="group"/>
 		<!-- # Camo ############################ -->
 		<P name="cam.flowSize" type="int">9</P>
@@ -34,32 +34,32 @@
 		<P name="isCamoEnabled" type="bool">0</P>
 		<P name="isCamoSquare" type="bool">1</P>
 		<P name="isCamoImage" type="bool">1</P>
-		<P name="camoMinFlow" type="float">9</P>
-		<P name="camoMaxFlow" type="float">15</P>
-		<P name="camoFlowRes" type="int">2</P>
+		<P name="camoMinFlow" type="float">3.33888</P>
+		<P name="camoMaxFlow" type="float">13.1034</P>
+		<P name="camoFlowRes" type="int">4</P>
 		<P name="camoBlockMin" type="int">4</P>
-		<P name="camoBlockMax" type="int">15</P>
-		<P name="camoFade" type="int">20</P>
+		<P name="camoBlockMax" type="int">12</P>
+		<P name="camoFade" type="int">28</P>
 		<P name="camoImageIndex" type="int">0</P>
 		<P name="isDrawFlowDebugOn" type="bool">0</P>
 		<P name="Audio Mapper" type="group"/>
 		<!-- # Audio Mapper ############################ -->
-		<P name="layout" type="enum">4</P>
+		<P name="layout" type="enum">10</P>
 		<P name="layout2" type="enum">0</P>
-		<P name="isFadeOn" type="bool">0</P>
+		<P name="isFadeOn" type="bool">1</P>
 		<P name="isScaleOn" type="bool">0</P>
 		<P name="bg" type="enum">0</P>
 		<P name="isNebulaOn" type="bool">0</P>
-		<P name="usePerlin" type="bool">0</P>
+		<P name="usePerlin" type="bool">1</P>
 		<P name="useLevelCount" type="bool">1</P>
 		<P name="levelCount" type="int">71</P>
-		<P name="thick" type="float">9.01408</P>
-		<P name="gap" type="float">9.01408</P>
-		<P name="peakToLengthRatio" type="float">1</P>
-		<P c0.red="248" c1.green="255" c2.blue="241" c3.alpha="255" name="colour" type="color"/>
-		<P name="audioThreshold" type="float">0.844059</P>
-		<P name="audioPeakDecay" type="float">0.917241</P>
-		<P name="audioMaxDecay" type="float">0.97698</P>
+		<P name="thick" type="float">5.07042</P>
+		<P name="gap" type="float">5.07042</P>
+		<P name="peakToLengthRatio" type="float">0.844828</P>
+		<P c0.red="255" c1.green="255" c2.blue="255" c3.alpha="255" name="colour" type="color"/>
+		<P name="audioThreshold" type="float">0.876508</P>
+		<P name="audioPeakDecay" type="float">0.9917</P>
+		<P name="audioMaxDecay" type="float">0.993103</P>
 		<P name="audioMirror" type="bool">0</P>
 	</OFX_REMOTE_UI_PARAMS>
 	<OFX_REMOTE_UI_SERVER_PORT>4000</OFX_REMOTE_UI_SERVER_PORT>
