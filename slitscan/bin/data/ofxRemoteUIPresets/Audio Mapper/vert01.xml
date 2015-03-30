@@ -10,6 +10,7 @@
 		<P name="bg" type="enum">3</P>
 		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">0</P>
+		<P name="perlinMulti" type="float">1.00448</P>
 		<P name="useLevelCount" type="bool">0</P>
 		<P name="levelCount" type="int">61</P>
 		<P name="thick" type="float">15.4349</P>

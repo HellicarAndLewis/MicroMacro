@@ -21,6 +21,7 @@ void AudioMapper::setup(){
     isNebulaOn = false;
     mapMin = 0.001;
     mapMax = 0.1;
+    perlinMulti = 1.0;
     peakToLengthRatio = 1.0;
     audioMirror = false;
     audioThreshold = 0.5;
@@ -49,6 +50,7 @@ void AudioMapper::setup(){
     RUI_SHARE_ENUM_PARAM(bg, GREYSCALE, CAM_SLICE_H, bgLabels);
     RUI_SHARE_PARAM(isNebulaOn);
     RUI_SHARE_PARAM(usePerlin);
+    RUI_SHARE_PARAM(perlinMulti, 0.001, 2.0);
     RUI_SHARE_PARAM(useLevelCount);
     RUI_SHARE_PARAM(levelCount, 1, 99);
     RUI_SHARE_PARAM(thick, 1, 100);
@@ -141,6 +143,7 @@ void AudioMapper::drawBars(Layout layout){
     int y = 0;
     float barWidth;
     float barHeight;
+    float time = ofGetElapsedTimef();
     
     for (unsigned int i = 0; i < levels.size(); i++){
         
@@ -148,8 +151,8 @@ void AudioMapper::drawBars(Layout layout){
         barHeight = levels[i]*height;
         
         if (usePerlin) {
-            barWidth *= ofNoise(y, ofGetElapsedTimef()) + 0.1;
-            barHeight *= ofNoise(x, ofGetElapsedTimef()) + 0.1;
+            barWidth *= ofNoise(y, time*perlinMulti) + 0.1;
+            barHeight *= ofNoise(x, time*perlinMulti) + 0.1;
         }
         
         // Set the rectangle(s) to represent the level bar

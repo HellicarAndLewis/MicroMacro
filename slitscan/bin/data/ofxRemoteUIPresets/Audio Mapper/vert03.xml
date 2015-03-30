@@ -1,0 +1,26 @@
+<OFX_REMOTE_UI>
+	<OFX_REMOTE_UI_V>2</OFX_REMOTE_UI_V>
+	<OFX_REMOTE_UI_PARAMS>
+		<P name="Audio Mapper" type="group"/>
+		<!-- # Audio Mapper ############################ -->
+		<P name="layout" type="enum">4</P>
+		<P name="layout2" type="enum">0</P>
+		<P name="isFadeOn" type="bool">1</P>
+		<P name="isScaleOn" type="bool">0</P>
+		<P name="bg" type="enum">3</P>
+		<P name="isNebulaOn" type="bool">0</P>
+		<P name="usePerlin" type="bool">1</P>
+		<P name="perlinMulti" type="float">1.00448</P>
+		<P name="useLevelCount" type="bool">0</P>
+		<P name="levelCount" type="int">61</P>
+		<P name="thick" type="float">15.4349</P>
+		<P name="gap" type="float">3.27777</P>
+		<P name="peakToLengthRatio" type="float">1</P>
+		<P c0.red="255" c1.green="243" c2.blue="250" c3.alpha="255" name="colour" type="color"/>
+		<P name="audioThreshold" type="float">0.921972</P>
+		<P name="audioPeakDecay" type="float">0.97349</P>
+		<P name="audioMaxDecay" type="float">0.994247</P>
+		<P name="audioMirror" type="bool">0</P>
+	</OFX_REMOTE_UI_PARAMS>
+	<OFX_REMOTE_UI_SERVER_ENABLED>1</OFX_REMOTE_UI_SERVER_ENABLED>
+</OFX_REMOTE_UI>

@@ -4,7 +4,8 @@
 		<P name="App" type="group"/>
 		<!-- # App ############################ -->
 		<P name="appMode" type="enum">0</P>
-		<P name="isDebug" type="bool">1</P>
+		<P name="isDebug" type="bool">0</P>
+		<P name="isPortrait" type="bool">0</P>
 		<P c0.red="0" c1.green="0" c2.blue="0" c3.alpha="255" name="bgColour" type="color"/>
 		<P name="Slit Scan" type="group"/>
 		<!-- # Slit Scan ############################ -->
@@ -51,6 +52,7 @@
 		<P name="bg" type="enum">0</P>
 		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">1</P>
+		<P name="perlinMulti" type="float">1.03497</P>
 		<P name="useLevelCount" type="bool">1</P>
 		<P name="levelCount" type="int">71</P>
 		<P name="thick" type="float">5.07042</P>

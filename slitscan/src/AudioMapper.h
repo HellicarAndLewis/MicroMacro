@@ -30,6 +30,7 @@ public:
     BgType bg;
     
     bool usePerlin;
+    float perlinMulti;
     
     // mic provides actual sound input
     Mic mic;
