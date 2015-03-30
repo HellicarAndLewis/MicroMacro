@@ -59,6 +59,7 @@ public:
     
     SlitScan slitScan;
     AudioMapper audioMapper;
+    ofFbo delayMapFbo;
     
     enum Mode {
         SLIT_SCAN, AUDIO_MAP

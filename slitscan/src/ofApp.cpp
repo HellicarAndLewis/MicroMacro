@@ -22,6 +22,8 @@ void ofApp::setup(){
     
     slitScan.setup();
     audioMapper.setup();
+    // Allocate once only using camera capture dimensions
+    delayMapFbo.allocate(slitScan.width, slitScan.height);
     allocateScenes();
     
     // OSC Receiver listens for remote control events
@@ -51,8 +53,12 @@ void ofApp::update(){
             scenes[1].begin();
             audioMapper.draw();
             scenes[1].end();
+            delayMapFbo.begin();
+            ofClear(0,0,0,0);
+            scenes[1].fbo.draw(0, 0, delayMapFbo.getWidth(), delayMapFbo.getHeight());
+            delayMapFbo.end();
             ofPixels pixels;
-            scenes[1].fbo.readToPixels(pixels);
+            delayMapFbo.readToPixels(pixels);
             slitScan.slitScan.setDelayMap(pixels);
         }
         slitScan.update();
