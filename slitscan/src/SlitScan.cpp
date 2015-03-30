@@ -245,6 +245,8 @@ void SlitScan::clientDidSomething(RemoteUIServerCallBackArg &arg){
             slicer[1].setThickness(sliceThickness);
             slicer[0].setVertical(sliceVertical);
             slicer[1].setVertical(sliceVertical);
+            slitScan.setTimeWidth(slitScanTimeWidth);
+            slitScan.setTimeDelay(slitScanTimeDelay);
             break;
         default:
 			break;
