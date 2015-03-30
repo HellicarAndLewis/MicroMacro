@@ -17,6 +17,7 @@ void ofApp::setup(){
     string modeLabels[] = {"SLIT_SCAN", "AUDIO_MAP"};
 	RUI_SHARE_ENUM_PARAM(appMode, SLIT_SCAN, AUDIO_MAP, modeLabels);
     RUI_SHARE_PARAM(isDebug);
+    RUI_SHARE_PARAM(isPortrait);
     RUI_SHARE_COLOR_PARAM(bgColour);
     
     slitScan.setup();
@@ -56,7 +57,16 @@ void ofApp::update(){
         }
         slitScan.update();
         scenes[0].begin();
-        slitScan.draw(scenes[0].fbo.getWidth(), scenes[0].fbo.getHeight());
+        if (isPortrait) {
+            ofPushMatrix();
+            glRotatef(-90, 0, 0, 1);
+            glTranslatef(-scenes[0].fbo.getHeight(), 0, 0);
+            slitScan.draw(scenes[0].fbo.getHeight(), scenes[0].fbo.getWidth());
+            ofPopMatrix();
+        }
+        else {
+            slitScan.draw(scenes[0].fbo.getWidth(), scenes[0].fbo.getHeight());
+        }
         scenes[0].end();
     }
     // Audio mapper

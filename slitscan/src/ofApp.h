@@ -64,6 +64,7 @@ public:
         SLIT_SCAN, AUDIO_MAP
     };
     Mode appMode;
+    bool isPortrait;
     
     Scene scenes[2];
     bool isDebug;
