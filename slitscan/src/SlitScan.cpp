@@ -21,7 +21,7 @@ void SlitScan::setup(){
     doAudioMap = true;
     audioMap = NULL;
     
-    cam.setup(isCapture720, 0.4);
+    cam.setup(isCapture1080, 0.4);
     width = cam.camWidth;
     height = cam.camHeight;
     
@@ -107,7 +107,7 @@ void SlitScan::setup(){
 
 void SlitScan::update(){
     cam.update();
-    if (mode > 0) {
+    if (mode > CAM) {
         // all modes above 0 use slitscan
         if (cam.isFrameNew) {
             // if camo is enabled, force the camera to do flow calculations
@@ -120,7 +120,7 @@ void SlitScan::update(){
             slitScan.addImage(cam.getImage());
         }
     }
-    if (mode > 1) {
+    if (mode > SLIT_SCAN) {
         // all modes above 1 use slicer
         slicer[0].begin();
         drawSlitScan();

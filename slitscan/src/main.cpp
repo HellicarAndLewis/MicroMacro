@@ -6,16 +6,15 @@
 int main(int argc, char *argv[]){
     // read in arguments
     ofxArgs* args = new ofxArgs(argc, argv);
-    bool antiAlias = args->getBool("-antiAlias", false);
     bool fullScreen = args->getBool("-fullScreen", false);
+    bool isCapture1080 = args->getBool("-capture1080", false);
     bool logToFile  = args->getInt("-logToFile", false);
     bool appendToLog  = args->getInt("-appendToLog", false);
     int logLevel = args->getInt("-logLevel", 1); //OF_LOG_VERBOSE,OF_LOG_NOTICE,OF_LOG_WARNING,OF_LOG_ERROR,OF_LOG_FATAL_ERROR,OF_LOG_SILENT
     int id = args->getInt("-id", 1);
-    bool isCapture720 = args->getBool("-capture720", true);
     
     // setup window
-    if (fullScreen) ofSetupOpenGL(1920, 1080, OF_FULLSCREEN);
+    if (fullScreen) ofSetupOpenGL(1920, 1080, OF_WINDOW);
     else ofSetupOpenGL(1280, 720, OF_WINDOW);
     
     // logging
@@ -32,7 +31,7 @@ int main(int argc, char *argv[]){
     // run app
     ofApp* app = new ofApp();
     app->id = id;
-    app->slitScan.isCapture720 = isCapture720;
+    app->slitScan.isCapture1080 = isCapture1080;
     ofRunApp(app);
     delete args;
 }

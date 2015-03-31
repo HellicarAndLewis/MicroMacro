@@ -26,7 +26,7 @@ public:
     Cam();
     ~Cam();
     
-	void setup(bool isCapture720=false, float cvRatio=0.3);
+	void setup(bool isCapture1080=false, float cvRatio=0.3);
 	void update();
 	void draw(int x=0, int y=0);
     void drawFlow();
@@ -51,7 +51,7 @@ public:
     float vidGrabberDeviceId;
     
     // grab paramters
-    bool isCapture720;
+    bool isCapture1080;
     float camWidth, camHeight, cvWidth, cvHeight, cvRatio;
     bool isCapturing, useBlackmagic;
     

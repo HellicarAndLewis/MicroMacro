@@ -58,7 +58,7 @@ public:
     
     // dimensions
     int width, height;
-    bool isCapture720;
+    bool isCapture1080;
     
     void setup();
     void update();

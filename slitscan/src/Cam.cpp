@@ -14,7 +14,7 @@ Cam::Cam() {
     isCapturing = false;
     useBlackmagic = false;
     isFrameNew = false;
-    doFlow = true;
+    doFlow = false;
     camWidth = BLACKMAGIC_W;
 	camHeight = BLACKMAGIC_H;
     cvRatio = .3;
@@ -46,16 +46,16 @@ void Cam::startCapture(){
     }
     else {
         // try the blackmagic first
-        // Grab at 720 if specified in app args or 1080p if not
-        if (isCapture720) {
-            success = blackmagic.setup(BLACKMAGIC720_W, BLACKMAGIC720_H, 60);
-            camWidth = BLACKMAGIC720_W;
-            camHeight = BLACKMAGIC720_H;
-        }
-        else {
+        // Grab at 1080 if specified in app args or 720 if not
+        if (isCapture1080) {
             success = blackmagic.setup(BLACKMAGIC_W, BLACKMAGIC_H, 30);
             camWidth = BLACKMAGIC_W;
             camHeight = BLACKMAGIC_H;
+        }
+        else {
+            success = blackmagic.setup(BLACKMAGIC720_W, BLACKMAGIC720_H, 60);
+            camWidth = BLACKMAGIC720_W;
+            camHeight = BLACKMAGIC720_H;
         }
         // Check for blackmagic setup success, fall back to ofVideoGrabber
         if (success) {
@@ -96,9 +96,9 @@ void Cam::stopCapture(){
     flowCombined.clear();
 }
 
-void Cam::setup(bool isCapture720, float cvRatio){
+void Cam::setup(bool isCapture1080, float cvRatio){
     
-    this->isCapture720 = isCapture720;
+    this->isCapture1080 = isCapture1080;
     
     // Start capturing first to work out camera resultion
     startCapture();
