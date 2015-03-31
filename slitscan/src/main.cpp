@@ -14,7 +14,7 @@ int main(int argc, char *argv[]){
     int id = args->getInt("-id", 1);
     
     // setup window
-    if (fullScreen) ofSetupOpenGL(1920, 1080, OF_WINDOW);
+    if (fullScreen) ofSetupOpenGL(1920, 1080, OF_FULLSCREEN);
     else ofSetupOpenGL(1280, 720, OF_WINDOW);
     
     // logging
