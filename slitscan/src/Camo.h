@@ -34,6 +34,7 @@ public:
     int camoFlowRes;
     int camoBlockMin;
     int camoBlockMax;
+    int camoAlphaMin;
     int camoFade;
     bool isCamoEnabled;
     bool isDrawFlowDebugOn;
