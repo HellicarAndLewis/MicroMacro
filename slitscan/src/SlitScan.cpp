@@ -21,7 +21,7 @@ void SlitScan::setup(){
     doAudioMap = true;
     audioMap = NULL;
     
-    cam.setup(isCapture1080, 0.4);
+    cam.setup(isCapture1080, 0.3);
     width = cam.camWidth;
     height = cam.camHeight;
     

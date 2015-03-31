@@ -141,13 +141,13 @@ void Cam::update() {
         isFrameNew = vidGrabber.isFrameNew();
     }
     
+    // cache the fresh colour pixels for use in opticalflow and in Cam::getImage()
     if (isFrameNew) {
         if (useVideoPlayer) colourPixels.setFromPixels(videoPlayer.getPixels(), camWidth, camHeight, OF_IMAGE_COLOR);
         else if (useBlackmagic) colourPixels = blackmagic.getColorPixels();
         else colourPixels.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight, OF_IMAGE_COLOR);
     }
 	
-    
 	if (doFlow && isFrameNew){
         
         colorImage.setFromPixels(colourPixels.getPixels(), camWidth, camHeight);

@@ -24,6 +24,7 @@ void Camo::setup(Cam* cam, int w, int h){
     camoFlowRes = 2;
     camoBlockMin = 4;
     camoBlockMax = 15;
+    camoAlphaMin = 150;
     camoFade = 20;
     
     // camo images for when isCamoImage is true
@@ -55,6 +56,7 @@ void Camo::setup(Cam* cam, int w, int h){
     RUI_SHARE_PARAM(camoFlowRes, 1, 10);
     RUI_SHARE_PARAM(camoBlockMin, 1, 10);
     RUI_SHARE_PARAM(camoBlockMax, 2, 40);
+    RUI_SHARE_PARAM(camoAlphaMin, 0, 255);
     RUI_SHARE_PARAM(camoFade, 2, 255);
     RUI_SHARE_PARAM(camoImageIndex, 0, nFiles-1);
     RUI_SHARE_PARAM(isDrawFlowDebugOn);
@@ -80,7 +82,7 @@ void Camo::update(){
                 ofVec2f vec = cam->opticalFlowLk.flowAtPoint(x, y);
                 if (vec.length() > camoMinFlow) {
                     // movement detected, draw a square here
-                    float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, 220, 255, true);
+                    float grey = ofMap(vec.length(), camoMinFlow, camoMaxFlow, camoAlphaMin, 255, true);
                     ofSetColor(grey);
                     // offset the z to force smaller squares to the front
                     ofPoint p = ofPoint(x*xratio, y*yratio);
