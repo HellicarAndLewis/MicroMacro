@@ -81,6 +81,7 @@ void Cam::startCapture(){
             success = vidGrabber.initGrabber(WEBCAM_W, WEBCAM_H);
         }
     }
+    colourPixels.allocate(camWidth, camHeight, OF_IMAGE_COLOR);
     isCapturing = true;
 }
 void Cam::stopCapture(){
@@ -139,16 +140,19 @@ void Cam::update() {
         vidGrabber.update();
         isFrameNew = vidGrabber.isFrameNew();
     }
+    
+    if (isFrameNew) {
+        if (useVideoPlayer) colourPixels.setFromPixels(videoPlayer.getPixels(), camWidth, camHeight, OF_IMAGE_COLOR);
+        else if (useBlackmagic) colourPixels = blackmagic.getColorPixels();
+        else colourPixels.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight, OF_IMAGE_COLOR);
+    }
 	
     
-	if ((doFlow) && isFrameNew){
+	if (doFlow && isFrameNew){
         
-        if (useVideoPlayer) colorImage.setFromPixels(videoPlayer.getPixels(), camWidth, camHeight);
-        else if (useBlackmagic) colorImage.setFromPixels(blackmagic.getColorPixels());
-        else colorImage.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight);
-        
+        colorImage.setFromPixels(colourPixels.getPixels(), camWidth, camHeight);
 		lastGrayImage = thisGrayImage;
-		thisGrayImage = colorImage;
+        thisGrayImage = colorImage;
         ofxCvGrayscaleImage tempGrey = thisGrayImage;
         ofxCvGrayscaleImage tempGreyLast = lastGrayImage;
         tempGrey.resize(cvWidth, cvHeight);
@@ -194,8 +198,8 @@ void Cam::update() {
         }
         
         // update textures for drawing
-        colorImage.updateTexture();
-        thisGrayImage.updateTexture();
+        //colorImage.updateTexture();
+        //thisGrayImage.updateTexture();
         delayMap.updateTexture();
 	}
     
@@ -232,15 +236,7 @@ void Cam::drawDebug(){
 
 
 ofPixels& Cam::getImage(){
-    if (useVideoPlayer) {
-        return videoPlayer.getPixelsRef();
-    }
-    else if (useBlackmagic) {
-        return blackmagic.getColorPixels();
-    }
-    else {
-        return vidGrabber.getPixelsRef();
-    }
+    return colourPixels;
 }
 
 ofColor Cam::getColourAt(int x, int y){

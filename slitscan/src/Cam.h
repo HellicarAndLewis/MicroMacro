@@ -78,6 +78,8 @@ public:
     ofVideoPlayer videoPlayer;
     bool useVideoPlayer;
     
+    ofPixels colourPixels;
+    
     
 private:
     
