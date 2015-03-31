@@ -21,6 +21,7 @@ public:
     };
     Layout layout, layout2;
     bool isFadeOn;
+    bool isAlphaOn;
     bool isScaleOn;
     bool isNebulaOn;
     
@@ -46,7 +47,7 @@ public:
     float thick;
     float gap;
     float peakToLengthRatio;
-    ofColor colour;
+    ofColor colour, colour2;
     
     ofImage textureImg;
     

@@ -19,17 +19,20 @@ void AudioMapper::setup(){
     isScaleOn = false;
     usePerlin = false;
     isNebulaOn = false;
+    isAlphaOn = false;
+    isFadeOn = true;
+    audioMirror = false;
     mapMin = 0.001;
     mapMax = 0.1;
     perlinMulti = 1.0;
     peakToLengthRatio = 1.0;
-    audioMirror = false;
     audioThreshold = 0.5;
     audioPeakDecay = 0.96;
     audioMaxDecay = 0.995;
     bgImage = NULL;
     bg = CAM;
     mic.setup();
+    ofEnableAlphaBlending();
     
     textureImg.loadImage("textures/nebula1.jpg");
     
@@ -43,7 +46,7 @@ void AudioMapper::setup(){
     // appearance
     RUI_SHARE_ENUM_PARAM(layout, NONE, SOLID_H, modeLabels);
     RUI_SHARE_ENUM_PARAM(layout2, NONE, SOLID_H, modeLabels);
-    RUI_SHARE_PARAM(isFadeOn);
+    RUI_SHARE_PARAM(isAlphaOn);
     RUI_SHARE_PARAM(isScaleOn);
     // BG drawing mode
     string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
@@ -98,6 +101,7 @@ void AudioMapper::draw(){
     if (bg >= CAM && bgImage != NULL) {
         // This is a cam/slitscan texture mode, the bars act as a mask
         bgFbo.begin();
+        ofSetColor(colour);
         int rnd = sin(ofGetElapsedTimef());
         // Draw stretched slices of the camera texture or draw the whole thing
         if (bg == CAM_SLICE_V)
@@ -106,6 +110,7 @@ void AudioMapper::draw(){
             bgImage->drawSubsection(0, 0, width, height, 0, (bgImage->height/2)+(rnd*100), bgImage->width, 1);
         else
             bgImage->draw(0, 0, width, height);
+        ofSetColor(255);
         bgFbo.end();
         
         // draw bars into mask fbo
@@ -121,11 +126,9 @@ void AudioMapper::draw(){
         alphaMask.draw();
     }
     else {
-        ofEnableDepthTest();
         drawBars(layout);
         if (layout2 != NONE) drawBars(layout2);
         ofSetColor(255);
-        ofDisableDepthTest();
     }
     
     //mic.draw();
@@ -212,14 +215,15 @@ void AudioMapper::drawBars(Layout layout){
         
         // set colour / brightness
         float brightness = 1.0;
-        if (isFadeOn) {
-            brightness = ofMap(levels[i], 0, 1, 0.0, 1.0, true);
-        }
+        float alpha = 1.0;
+        ofColor tempColour = (bg < CAM) ? colour : ofColor(255);
+        if (isFadeOn) brightness = ofMap(levels[i], 0, 1, 0.0, 1.0, true);
+        if (isAlphaOn) alpha = levels[i];
         if (bg == GREYSCALE_NOISE) {
-            ofSetColor( colour * levels[i] * ofRandomuf() );
+            ofSetColor(tempColour * levels[i] * ofRandomuf(), alpha*255 );
         }
         else {
-            ofSetColor(colour * brightness);
+            ofSetColor(tempColour*brightness, alpha*255);
         }
         
         // Draw the bars
