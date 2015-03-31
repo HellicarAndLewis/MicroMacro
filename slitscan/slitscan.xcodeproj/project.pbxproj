@@ -31,6 +31,7 @@
 		83877D271AC1D41D00344C89 /* ofxFFTBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D201AC1D41D00344C89 /* ofxFFTBase.cpp */; };
 		83877D281AC1D41D00344C89 /* ofxFFTFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D221AC1D41D00344C89 /* ofxFFTFile.cpp */; };
 		83877D291AC1D41D00344C89 /* ofxFFTLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D241AC1D41D00344C89 /* ofxFFTLive.cpp */; };
+		83D9D4121ACAE5BB0050E212 /* ofxPSLevels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83D9D4101ACAE5BB0050E212 /* ofxPSLevels.cpp */; };
 		83FAAF0B1AB6DD59003C0759 /* OscReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */; };
 		83FAAF141AB6E0FF003C0759 /* RemoteEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */; };
 		83FAAF1F1AB6FA7E003C0759 /* ofxArgs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF1D1AB6FA7E003C0759 /* ofxArgs.cpp */; };
@@ -200,6 +201,8 @@
 		83877D231AC1D41D00344C89 /* ofxFFTFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTFile.h; sourceTree = "<group>"; };
 		83877D241AC1D41D00344C89 /* ofxFFTLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTLive.cpp; sourceTree = "<group>"; };
 		83877D251AC1D41D00344C89 /* ofxFFTLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTLive.h; sourceTree = "<group>"; };
+		83D9D4101ACAE5BB0050E212 /* ofxPSLevels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxPSLevels.cpp; sourceTree = "<group>"; };
+		83D9D4111ACAE5BB0050E212 /* ofxPSLevels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxPSLevels.h; sourceTree = "<group>"; };
 		83FAAF091AB6DD1F003C0759 /* OscReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscReceiver.h; sourceTree = "<group>"; };
 		83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscReceiver.cpp; sourceTree = "<group>"; };
 		83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteEvent.cpp; sourceTree = "<group>"; };
@@ -694,6 +697,24 @@
 			path = ../../../addons/ofxFFT/src;
 			sourceTree = "<group>";
 		};
+		83D9D40E1ACAE5AB0050E212 /* ofxPSLevels */ = {
+			isa = PBXGroup;
+			children = (
+				83D9D40F1ACAE5BB0050E212 /* src */,
+			);
+			name = ofxPSLevels;
+			sourceTree = "<group>";
+		};
+		83D9D40F1ACAE5BB0050E212 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				83D9D4101ACAE5BB0050E212 /* ofxPSLevels.cpp */,
+				83D9D4111ACAE5BB0050E212 /* ofxPSLevels.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxPSLevels/src;
+			sourceTree = "<group>";
+		};
 		83FAAF081AB6DCED003C0759 /* comms */ = {
 			isa = PBXGroup;
 			children = (
@@ -812,6 +833,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				83D9D40E1ACAE5AB0050E212 /* ofxPSLevels */,
 				83877D1B1AC1D41100344C89 /* ofxFFT */,
 				83FAAF1B1AB6FA71003C0759 /* ofxArgs */,
 				E8C66A491AAF08F300F145CB /* ofxRemoteUI */,
@@ -1216,6 +1238,7 @@
 			files = (
 				83FAAF141AB6E0FF003C0759 /* RemoteEvent.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				83D9D4121ACAE5BB0050E212 /* ofxPSLevels.cpp in Sources */,
 				83FAAF1F1AB6FA7E003C0759 /* ofxArgs.cpp in Sources */,
 				E8C0D3391AB082470097FBC0 /* AudioMapper.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,

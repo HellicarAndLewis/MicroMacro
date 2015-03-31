@@ -56,6 +56,11 @@ cd ofxFFT
 git checkout f33c6d581b9a912eb3d24d2413c5aced866cf5b9
 cd ..
 
+${CLONE}outsidecontext/ofxPSLevels
+cd ofxPSLevels
+git checkout ed248e911fb51ae544acc4e59a497c44c2b5b422
+cd ..
+
 
 # final step is to cd back to the start dir
 cd ../apps/MicroMacro
