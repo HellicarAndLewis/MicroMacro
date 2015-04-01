@@ -9,6 +9,7 @@
 #pragma once
 #include "Mic.h"
 #include "ofxRemoteUIServer.h"
+#include "ParticleSystem.h"
 #include "AlphaMask.h"
 
 // Takes audio input and visualises it in different ways
@@ -40,6 +41,7 @@ public:
     // number of levels is determined directly
     // or by specifying a per level thickness and gap
     vector<float> levels;
+    vector<float> previousLevels;
     int levelCount;
     bool useLevelCount;
     int width;
@@ -54,6 +56,9 @@ public:
     AlphaMask alphaMask;
     ofImage * bgImage;
     ofFbo bgFbo;
+    
+    bool particleMode;
+    ParticleSystem particleSystem;
     
     // audio sample settings
     float mapMin, mapMax;

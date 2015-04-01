@@ -22,6 +22,7 @@ void AudioMapper::setup(){
     isAlphaOn = false;
     isFadeOn = true;
     audioMirror = false;
+    particleMode = false;
     mapMin = 0.001;
     mapMax = 0.1;
     perlinMulti = 1.0;
@@ -36,6 +37,7 @@ void AudioMapper::setup(){
     
     textureImg.loadImage("textures/nebula1.jpg");
     
+    particleSystem.setup(3000);
     ofSetCircleResolution(200);
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
@@ -48,6 +50,8 @@ void AudioMapper::setup(){
     RUI_SHARE_ENUM_PARAM(layout2, NONE, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isAlphaOn);
     RUI_SHARE_PARAM(isScaleOn);
+    RUI_SHARE_PARAM(particleMode);
+    
     // BG drawing mode
     string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
     RUI_SHARE_ENUM_PARAM(bg, GREYSCALE, CAM_SLICE_H, bgLabels);
@@ -81,6 +85,9 @@ void AudioMapper::update(){
     
     mic.update();
     
+    // reset forces on particles
+    particleSystem.resetForces();
+    
     
     int n  = levels.size();
     if (!audioMirror) n *= 2;
@@ -89,6 +96,7 @@ void AudioMapper::update(){
     mic.fftLive.getFftPeakData(audioData, n);
     // populate levels for drawing
     for(int i=0; i<levels.size(); i++) {
+        previousLevels[i] = levels[i];
         float audioValue = audioData[i];
         levels[i] = audioValue;
     }
@@ -236,10 +244,17 @@ void AudioMapper::drawBars(Layout layout){
             drawNebula(bar2, peakToLengthRatio);
         }
         else {
-            ofRect(bar);
-            ofRect(bar2);
+            if (!particleMode) {
+                ofRect(bar);
+                ofRect(bar2);
+            }
         }
         if (isScaleOn) ofPopMatrix();
+        
+        if (levels[i] > previousLevels[i]) {
+            Particle* p = particleSystem.birth(ofVec3f(bar.getMinX(), bar.y), ofVec3f(30, 0));
+            if (p != NULL) p->bounds.set(bar.getMinX(), bar.getMinY(), -bar.getWidth(), bar.getHeight());
+        }
         
         // plus circles?
         /*
@@ -262,6 +277,29 @@ void AudioMapper::drawBars(Layout layout){
     if (!getIsLayoutVertical()) {
         ofPopMatrix();
     }
+    
+    if (particleMode) {
+        particleSystem.updatePool();
+        for(int i = 0; i < particleSystem.size(); i++) {
+            Particle* p = particleSystem[i];
+            // damping
+            p->addDampingForce();
+            // bounds check, TODO: split this out into a bounds effector
+            if (p->position.x > p->bounds.getMaxX() && p->getState()==Particle::ALIVE){
+                p->setState(Particle::DEAD);
+            }
+            float rate = ofMap(p->position.x, 0, p->bounds.getMaxX(), 1, 0, true);
+            //ofLogNotice() << rate;
+            ofSetColor(255 * rate);
+            //p->draw();
+            if (p->state!=Particle::DEAD) ofRect(p->position, 100, thick);
+        }
+        // update
+        particleSystem.update();
+    }
+    
+    
+    
     ofSetColor(255);
 }
 
@@ -299,8 +337,12 @@ void AudioMapper::resetLevels(){
             n = (height / int(thick + gap)) + 1;
         }
     }
-    levels.clear();
-    levels.assign(n, 0.0);
+    if (n != levels.size()) {
+        levels.clear();
+        levels.assign(n, 0.0);
+        previousLevels.clear();
+        previousLevels.assign(n, 0.0);
+    }
 }
 
 void AudioMapper::allocateScenes() {

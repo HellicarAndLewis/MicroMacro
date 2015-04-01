@@ -31,6 +31,7 @@
 		83877D271AC1D41D00344C89 /* ofxFFTBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D201AC1D41D00344C89 /* ofxFFTBase.cpp */; };
 		83877D281AC1D41D00344C89 /* ofxFFTFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D221AC1D41D00344C89 /* ofxFFTFile.cpp */; };
 		83877D291AC1D41D00344C89 /* ofxFFTLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83877D241AC1D41D00344C89 /* ofxFFTLive.cpp */; };
+		83B041D91ACC43AF001040FA /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83B041D71ACC43AF001040FA /* ParticleSystem.cpp */; };
 		83D9D4121ACAE5BB0050E212 /* ofxPSLevels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83D9D4101ACAE5BB0050E212 /* ofxPSLevels.cpp */; };
 		83FAAF0B1AB6DD59003C0759 /* OscReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF0A1AB6DD59003C0759 /* OscReceiver.cpp */; };
 		83FAAF141AB6E0FF003C0759 /* RemoteEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83FAAF121AB6E0FF003C0759 /* RemoteEvent.cpp */; };
@@ -201,6 +202,11 @@
 		83877D231AC1D41D00344C89 /* ofxFFTFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTFile.h; sourceTree = "<group>"; };
 		83877D241AC1D41D00344C89 /* ofxFFTLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTLive.cpp; sourceTree = "<group>"; };
 		83877D251AC1D41D00344C89 /* ofxFFTLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTLive.h; sourceTree = "<group>"; };
+		83B041D51ACC42BD001040FA /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
+		83B041D61ACC42BD001040FA /* ParticlePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticlePool.h; sourceTree = "<group>"; };
+		83B041D71ACC43AF001040FA /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
+		83B041D81ACC43AF001040FA /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
+		83B041DA1ACC43E0001040FA /* ParticleEffector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEffector.h; sourceTree = "<group>"; };
 		83D9D4101ACAE5BB0050E212 /* ofxPSLevels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxPSLevels.cpp; sourceTree = "<group>"; };
 		83D9D4111ACAE5BB0050E212 /* ofxPSLevels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxPSLevels.h; sourceTree = "<group>"; };
 		83FAAF091AB6DD1F003C0759 /* OscReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscReceiver.h; sourceTree = "<group>"; };
@@ -697,6 +703,18 @@
 			path = ../../../addons/ofxFFT/src;
 			sourceTree = "<group>";
 		};
+		83B041D41ACC42AB001040FA /* particles */ = {
+			isa = PBXGroup;
+			children = (
+				83B041DA1ACC43E0001040FA /* ParticleEffector.h */,
+				83B041D71ACC43AF001040FA /* ParticleSystem.cpp */,
+				83B041D81ACC43AF001040FA /* ParticleSystem.h */,
+				83B041D51ACC42BD001040FA /* Particle.h */,
+				83B041D61ACC42BD001040FA /* ParticlePool.h */,
+			);
+			name = particles;
+			sourceTree = "<group>";
+		};
 		83D9D40E1ACAE5AB0050E212 /* ofxPSLevels */ = {
 			isa = PBXGroup;
 			children = (
@@ -1013,6 +1031,7 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				83B041D41ACC42AB001040FA /* particles */,
 				836A3CCC1ABC48650046B796 /* util */,
 				83FAAF081AB6DCED003C0759 /* comms */,
 				E8C0D3361AB082110097FBC0 /* audiomap */,
@@ -1286,6 +1305,7 @@
 				E6ADFAF5B64F107FD970E6E7 /* ColorConversion.cpp in Sources */,
 				DD6B7D26B640FE59CC56C615 /* DeckLinkController.cpp in Sources */,
 				E8C0D3341AB06E520097FBC0 /* SlitScan.cpp in Sources */,
+				83B041D91ACC43AF001040FA /* ParticleSystem.cpp in Sources */,
 				0FC43B3D38A4D41A1AD95D39 /* ofxBlackMagic.cpp in Sources */,
 				E8C66A5C1AAF090600F145CB /* ofxRemoteUINeigbors.cpp in Sources */,
 				E8C66A5D1AAF090600F145CB /* ofxRemoteUIServer.cpp in Sources */,
