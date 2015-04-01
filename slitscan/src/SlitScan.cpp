@@ -65,9 +65,23 @@ void SlitScan::setup(){
     aberrationGOffset.set(0);
     aberrationBOffset.set(0);
     
+    levels.setup(width, height);
+    
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
 	ofAddListener(RUI_GET_OF_EVENT(), this, &SlitScan::clientDidSomething);
+    
+    
+    RUI_NEW_GROUP("Levels");
+    RUI_SHARE_PARAM(levelsEnabled);
+    RUI_SHARE_PARAM(levels.brightness, 0, 2);
+    RUI_SHARE_PARAM(levels.contrast, 0, 2);
+    RUI_SHARE_PARAM(levels.saturation, 0, 2);
+    RUI_SHARE_PARAM(levels.gamma, 0, 2);
+    RUI_SHARE_PARAM(levels.minInput, 0, 1);
+    RUI_SHARE_PARAM(levels.maxInput, 0, 1);
+    RUI_SHARE_PARAM(levels.minOutput, 0, 1);
+    RUI_SHARE_PARAM(levels.maxOutput, 0, 1);
     
     RUI_NEW_GROUP("Slit Scan");
     string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE"};
@@ -94,10 +108,6 @@ void SlitScan::setup(){
     RUI_NEW_GROUP("Camo");
     RUI_SHARE_PARAM(cam.flowSize, 0, 10);
     RUI_SHARE_PARAM(cam.blur, 0, 9);
-    // not needed for custom squares pattern
-    //RUI_SHARE_PARAM(cam.opticalFlowSensitivity, 0.00, 1.00);
-    //RUI_SHARE_PARAM(cam.opticalFlowSmoothing, 0.00, 1.00);
-    
     
     // camo
     camo.setup(&cam, width, height);
@@ -130,8 +140,41 @@ void SlitScan::update(){
         slicer[1].end();
     }
     
-    aberrationFbo.begin();
-    ofClear(0, 0, 0, 0);
+    if (levelsEnabled) {
+        levels.begin();
+        drawCurrentMode();
+        levels.end();
+        aberrationFbo.begin();
+        ofClear(0, 0, 0, 0);
+        levels.draw();
+        aberrationFbo.end();
+    }
+    else {
+        aberrationFbo.begin();
+        ofClear(0, 0, 0, 0);
+        drawCurrentMode();
+        aberrationFbo.end();
+    }
+    
+}
+
+void SlitScan::draw(int w, int h){
+    // Use shader to draw whole scene with aberration effect
+    aberrationShader.begin();
+    aberrationShader.setUniform2f("rOffset", aberrationROffset.x, aberrationROffset.y);
+    aberrationShader.setUniform2f("gOffset", aberrationGOffset.x, aberrationGOffset.y);
+    aberrationShader.setUniform2f("bOffset", aberrationBOffset.x, aberrationBOffset.y);
+    aberrationFbo.draw(0, 0, w, h);
+    aberrationShader.end();
+    // draw debug over the top if its on
+    if (camo.isDrawFlowDebugOn) {
+        cam.drawFlowDebug(cam.camWidth, cam.camHeight);
+        camo.drawFlow();
+    }
+    
+}
+
+void SlitScan::drawCurrentMode() {
     // Flip the whole scene to mirror camera input
     ofPushMatrix();
     ofScale(-1, 1);
@@ -166,23 +209,6 @@ void SlitScan::update(){
             break;
     }
     ofPopMatrix();
-    aberrationFbo.end();
-}
-
-void SlitScan::draw(int w, int h){
-    // Use shader to draw whole scene with aberration effect
-    aberrationShader.begin();
-    aberrationShader.setUniform2f("rOffset", aberrationROffset.x, aberrationROffset.y);
-    aberrationShader.setUniform2f("gOffset", aberrationGOffset.x, aberrationGOffset.y);
-    aberrationShader.setUniform2f("bOffset", aberrationBOffset.x, aberrationBOffset.y);
-    aberrationFbo.draw(0, 0, w, h);
-    aberrationShader.end();
-    // draw debug over the top if its on
-    if (camo.isDrawFlowDebugOn) {
-        cam.drawFlowDebug(cam.camWidth, cam.camHeight);
-        camo.drawFlow();
-    }
-    
 }
 
 void SlitScan::drawSlitScan(){

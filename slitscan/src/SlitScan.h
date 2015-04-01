@@ -15,6 +15,7 @@
 #include "Camo.h"
 #include "ofxRemoteUIServer.h"
 #include "AudioMapper.h"
+#include "ofxPSLevels.h"
 
 class SlitScan {
     
@@ -50,6 +51,9 @@ public:
     ofVec2f aberrationGOffset;
     ofVec2f aberrationBOffset;
     
+    ofxPSLevels levels;
+    bool levelsEnabled;
+    
     // Camo mode draws camo colours
     Camo camo;
     
@@ -62,6 +66,7 @@ public:
     
     void setup();
     void update();
+    void drawCurrentMode();
     void drawQuad(int w, int h);
     void draw(int w, int h);
     void drawSlitScan();
