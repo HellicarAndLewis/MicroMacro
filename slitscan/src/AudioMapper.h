@@ -54,10 +54,13 @@ public:
     ofImage textureImg;
     
     AlphaMask alphaMask;
-    ofImage * bgImage;
+    ofImage bgImage;
     ofFbo bgFbo;
     
     bool particleMode;
+    float particleVel;
+    float particleLength;
+    float particleThreshold;
     ParticleSystem particleSystem;
     
     // audio sample settings
@@ -71,6 +74,7 @@ public:
     void update();
     void draw();
     void drawBars(Layout layout);
+    void drawParticles(Layout layout);
     void drawNebula(ofRectangle rect, float heightPercent=1.0);
     void resetLevels();
     void allocateScenes();

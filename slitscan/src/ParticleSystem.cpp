@@ -70,7 +70,7 @@ void ParticleSystem::update() {
     vector<Particle*>& particles = pool.getAlive();
 	for(int i = 0; i < particles.size(); i++)
         particles[i]->updatePosition(timeStep);
-    //ofLogVerbose() << "particles: " << pool.getTotalCount() << " alive: " << pool.getAliveCount();
+    //ofLogNotice() << "particles: " << pool.getTotalCount() << " alive: " << pool.getAliveCount();
 }
 
 void ParticleSystem::updatePool() {

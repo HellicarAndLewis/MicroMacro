@@ -7,6 +7,17 @@
 		<P name="isDebug" type="bool">0</P>
 		<P name="isPortrait" type="bool">0</P>
 		<P c0.red="0" c1.green="0" c2.blue="0" c3.alpha="255" name="bgColour" type="color"/>
+		<P name="Levels" type="group"/>
+		<!-- # Levels ############################ -->
+		<P name="levelsEnabled" type="bool">0</P>
+		<P name="levels.brightness" type="float">0.996442</P>
+		<P name="levels.contrast" type="float">1.00248</P>
+		<P name="levels.saturation" type="float">1.00128</P>
+		<P name="levels.gamma" type="float">0.996597</P>
+		<P name="levels.minInput" type="float">0</P>
+		<P name="levels.maxInput" type="float">1</P>
+		<P name="levels.minOutput" type="float">0</P>
+		<P name="levels.maxOutput" type="float">1</P>
 		<P name="Slit Scan" type="group"/>
 		<!-- # Slit Scan ############################ -->
 		<P name="mode" type="enum">1</P>
@@ -40,6 +51,7 @@
 		<P name="camoFlowRes" type="int">4</P>
 		<P name="camoBlockMin" type="int">4</P>
 		<P name="camoBlockMax" type="int">12</P>
+		<P name="camoAlphaMin" type="int">114</P>
 		<P name="camoFade" type="int">28</P>
 		<P name="camoImageIndex" type="int">0</P>
 		<P name="isDrawFlowDebugOn" type="bool">0</P>
@@ -47,8 +59,12 @@
 		<!-- # Audio Mapper ############################ -->
 		<P name="layout" type="enum">10</P>
 		<P name="layout2" type="enum">0</P>
-		<P name="isFadeOn" type="bool">1</P>
+		<P name="isAlphaOn" type="bool">0</P>
 		<P name="isScaleOn" type="bool">0</P>
+		<P name="particleMode" type="bool">0</P>
+		<P name="particleVel" type="float">40</P>
+		<P name="particleLength" type="float">183.526</P>
+		<P name="particleThreshold" type="float">0.310345</P>
 		<P name="bg" type="enum">0</P>
 		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">1</P>

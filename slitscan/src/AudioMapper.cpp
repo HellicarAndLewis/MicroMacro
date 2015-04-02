@@ -30,9 +30,12 @@ void AudioMapper::setup(){
     audioThreshold = 0.5;
     audioPeakDecay = 0.96;
     audioMaxDecay = 0.995;
-    bgImage = NULL;
+    //bgImage = NULL;
     bg = CAM;
     mic.setup();
+    particleVel = 20;
+    particleLength = 20;
+    particleThreshold = 0.4;
     ofEnableAlphaBlending();
     
     textureImg.loadImage("textures/nebula1.jpg");
@@ -50,7 +53,11 @@ void AudioMapper::setup(){
     RUI_SHARE_ENUM_PARAM(layout2, NONE, SOLID_H, modeLabels);
     RUI_SHARE_PARAM(isAlphaOn);
     RUI_SHARE_PARAM(isScaleOn);
+    
     RUI_SHARE_PARAM(particleMode);
+    RUI_SHARE_PARAM(particleVel, 1, 40);
+    RUI_SHARE_PARAM(particleLength, 1, 200);
+    RUI_SHARE_PARAM(particleThreshold, 0, 1);
     
     // BG drawing mode
     string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
@@ -85,10 +92,6 @@ void AudioMapper::update(){
     
     mic.update();
     
-    // reset forces on particles
-    particleSystem.resetForces();
-    
-    
     int n  = levels.size();
     if (!audioMirror) n *= 2;
     float * audioData = new float[n];
@@ -106,25 +109,30 @@ void AudioMapper::update(){
 
 void AudioMapper::draw(){
     ofSetColor(255);
-    if (bg >= CAM && bgImage != NULL) {
+    if (bg >= CAM) {
         // This is a cam/slitscan texture mode, the bars act as a mask
         bgFbo.begin();
-        ofSetColor(colour);
+        //ofSetColor(255);
         int rnd = sin(ofGetElapsedTimef());
         // Draw stretched slices of the camera texture or draw the whole thing
         if (bg == CAM_SLICE_V)
-            bgImage->drawSubsection(0, 0, width, height, (bgImage->width/2)+(rnd*100), 0, 1, bgImage->height);
+            bgImage.drawSubsection(0, 0, width, height, (bgImage.width/2)+(rnd*100), 0, 1, bgImage.height);
         else if (bg == CAM_SLICE_H)
-            bgImage->drawSubsection(0, 0, width, height, 0, (bgImage->height/2)+(rnd*100), bgImage->width, 1);
+            bgImage.drawSubsection(0, 0, width, height, 0, (bgImage.height/2)+(rnd*100), bgImage.width, 1);
         else
-            bgImage->draw(0, 0, width, height);
+            bgImage.draw(0, 0, width, height);
         ofSetColor(255);
         bgFbo.end();
         
         // draw bars into mask fbo
         alphaMask.beginMask();
-        drawBars(layout);
-        if (layout2 != NONE) drawBars(layout2);
+        if (particleMode) {
+            drawParticles(layout);
+        }
+        else {
+            drawBars(layout);
+            if (layout2 != NONE) drawBars(layout2);
+        }
         ofSetColor(255);
         alphaMask.endMask();
         // draw camera into contents fbo
@@ -134,8 +142,13 @@ void AudioMapper::draw(){
         alphaMask.draw();
     }
     else {
-        drawBars(layout);
-        if (layout2 != NONE) drawBars(layout2);
+        if (particleMode) {
+            drawParticles(layout);
+        }
+        else {
+            drawBars(layout);
+            if (layout2 != NONE) drawBars(layout2);
+        }
         ofSetColor(255);
     }
     
@@ -251,11 +264,6 @@ void AudioMapper::drawBars(Layout layout){
         }
         if (isScaleOn) ofPopMatrix();
         
-        if (levels[i] > previousLevels[i]) {
-            Particle* p = particleSystem.birth(ofVec3f(bar.getMinX(), bar.y), ofVec3f(30, 0));
-            if (p != NULL) p->bounds.set(bar.getMinX(), bar.getMinY(), -bar.getWidth(), bar.getHeight());
-        }
-        
         // plus circles?
         /*
          ofPushMatrix();
@@ -278,27 +286,128 @@ void AudioMapper::drawBars(Layout layout){
         ofPopMatrix();
     }
     
-    if (particleMode) {
-        particleSystem.updatePool();
-        for(int i = 0; i < particleSystem.size(); i++) {
-            Particle* p = particleSystem[i];
-            // damping
-            p->addDampingForce();
-            // bounds check, TODO: split this out into a bounds effector
-            if (p->position.x > p->bounds.getMaxX() && p->getState()==Particle::ALIVE){
-                p->setState(Particle::DEAD);
-            }
-            float rate = ofMap(p->position.x, 0, p->bounds.getMaxX(), 1, 0, true);
-            //ofLogNotice() << rate;
-            ofSetColor(255 * rate);
-            //p->draw();
-            if (p->state!=Particle::DEAD) ofRect(p->position, 100, thick);
+    ofSetColor(255);
+}
+
+void AudioMapper::drawParticles(Layout layout) {
+    
+    
+    int x = 0;
+    int y = 0;
+    float barWidth;
+    float barHeight;
+    float time = ofGetElapsedTimef();
+    ofVec2f direction;
+    ofVec2f pos;
+    
+    for (unsigned int i = 0; i < levels.size(); i++){
+        
+        barWidth = levels[i]*width*.4;
+        barHeight = levels[i]*height*.4;
+        
+        // Set the rectangle(s) to represent the level bar
+        // Top to bottom, or bottom to up only
+        ofRectangle bar, bar2;
+        if (layout == UP_DOWN) {
+            direction.set(0, 1);
+            bar.set(x, 0, thick, barHeight);
+            pos.set(x - particleLength, 0);
+            x += thick + gap;
         }
-        // update
-        particleSystem.update();
+        else if (layout == DOWN_UP){
+            direction.set(0, -1);
+            bar.set(x, height - barHeight, thick, barHeight);
+            pos.set(x + particleLength, height);
+            x += thick + gap;
+        }
+        // left to right or right to left only
+        else if (layout == LEFT_RIGHT){
+            direction.set(1, 0);
+            bar.set(0, y, barWidth, thick);
+            bar.translateX(-particleLength);
+            pos.set(0, y);
+            y += thick + gap;
+        }
+        else if (layout == RIGHT_LEFT){
+            direction.set(-1, 0);
+            bar.set(width+particleLength, y, barWidth, thick);
+            pos.set(width+particleLength, y);
+            y += thick + gap;
+        }
+        // MIRROR_SIDE_V, MIRROR_SIDE_H
+        // Side mirrors, like teeth
+        else if (layout == MIRROR_SIDE_V) {
+            bar.set(x, barHeight, thick, -barHeight*peakToLengthRatio);
+            bar2.set(x, height - barHeight, thick, barHeight*peakToLengthRatio);
+            x += thick + gap;
+        }
+        else if (layout == MIRROR_SIDE_H) {
+            bar.set(barWidth, y, -barWidth*peakToLengthRatio, thick);
+            bar2.set(width-barWidth, y, barWidth*peakToLengthRatio, thick);
+            y += thick + gap;
+        }
+        // MIRROR_CENTRE_V, MIRROR_CENTRE_H
+        // centre mirrors, like ?
+        else if (layout == MIRROR_CENTRE_V) {
+            bar.set(x, (height/2)-(barHeight/2), thick, barHeight*0.5*peakToLengthRatio);
+            bar2.set(x, (height/2)+(barHeight/2), thick, -barHeight*0.5*peakToLengthRatio);
+            x += thick + gap;
+        }
+        else if (layout == MIRROR_CENTRE_H) {
+            bar.set((width/2)+(barWidth/2), y, -barWidth*0.5*peakToLengthRatio, thick);
+            bar2.set((width/2)-(barWidth/2), y, barWidth*0.5*peakToLengthRatio, thick);
+            y += thick + gap;
+        }
+        // SOLID_V, SOLID_H
+        // solid bars
+        else if (layout == SOLID_V){
+            bar.set(x, 0, thick, height);
+            x += thick + gap;
+        }
+        else if (layout == SOLID_H){
+            bar.set(0, y, width, thick);
+            y += thick + gap;
+        }
+        
+        bar.scaleFromCenter(1.2);
+        if (levels[i] > (previousLevels[i] + particleThreshold)) {
+            Particle* p = particleSystem.birth(pos, direction * particleVel);
+            if (p != NULL) p->bounds.set(bar.x, bar.y, bar.getWidth(), bar.getHeight());
+        }
+        
     }
     
-    
+    if (!getIsLayoutVertical()) {
+        // flip so base tones are at the bottom
+        ofPushMatrix();
+        ofScale(1, -1);
+        ofTranslate(0, -height, 0 );
+    }
+    // reset forces on particles
+    particleSystem.resetForces();
+    particleSystem.updatePool();
+    for(int i = 0; i < particleSystem.size(); i++) {
+        Particle* p = particleSystem[i];
+        // damping
+        p->addDampingForce();
+        if (!p->bounds.inside(p->position)){
+            p->setDying();
+        }
+        //float rate = ofMap(p->position.x, 0, p->bounds.getMaxX(), 1, 0, true);
+        float rate = ofMap(p->dying, 0, p->maxDying, 1, 0, true);
+        if (p->state != Particle::DEAD) {
+            ofNoFill();
+            ofSetColor(255, 0, 0);
+            //ofRect(p->bounds);
+            ofFill();
+            ofSetColor(255 * rate);
+            ofRect(p->position, particleLength, thick);
+        }
+    }
+    particleSystem.update();
+    if (!getIsLayoutVertical()) {
+        ofPopMatrix();
+    }
     
     ofSetColor(255);
 }

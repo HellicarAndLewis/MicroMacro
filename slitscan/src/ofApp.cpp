@@ -80,7 +80,7 @@ void ofApp::update(){
     if (scenes[1].isVisible) {
         if (audioMapper.bg >= AudioMapper::CAM) {
             slitScan.update();
-            audioMapper.bgImage = &slitScan.slitScan.getOutputImage();
+            audioMapper.bgImage.setFromPixels(slitScan.cam.getImage());
         }
         audioMapper.update();
         scenes[1].begin();
@@ -175,6 +175,7 @@ void ofApp::clientDidSomething(RemoteUIServerCallBackArg &arg){
 			break;
 		case CLIENT_DID_SET_PRESET:
             changeMode(appMode);
+            enableDebug(isDebug);
             break;
 		default:
 			break;
