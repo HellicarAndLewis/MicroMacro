@@ -154,7 +154,6 @@ void AudioMapper::draw(){
         ofSetColor(255);
     }
     
-    //mic.draw();
 }
 
 void AudioMapper::drawBars(Layout layout){
@@ -313,13 +312,15 @@ void AudioMapper::drawParticles(Layout layout) {
         if (layout == UP_DOWN) {
             direction.set(0, 1);
             bar.set(x, 0, thick, barHeight);
-            pos.set(x - particleLength, 0);
+            bar.translateY(-particleLength);
+            pos.set(x, 0);
             x += thick + gap;
         }
         else if (layout == DOWN_UP){
             direction.set(0, -1);
-            bar.set(x, height - barHeight, thick, barHeight);
-            pos.set(x + particleLength, height);
+            bar.set(x, height, thick, barHeight);
+            bar.translateY(particleLength);
+            pos.set(x, height);
             x += thick + gap;
         }
         // left to right or right to left only
@@ -332,8 +333,9 @@ void AudioMapper::drawParticles(Layout layout) {
         }
         else if (layout == RIGHT_LEFT){
             direction.set(-1, 0);
-            bar.set(width+particleLength, y, barWidth, thick);
-            pos.set(width+particleLength, y);
+            bar.set(width, y, barWidth, thick);
+            bar.translateX(particleLength);
+            pos.set(width, y);
             y += thick + gap;
         }
         // MIRROR_SIDE_V, MIRROR_SIDE_H
@@ -374,7 +376,13 @@ void AudioMapper::drawParticles(Layout layout) {
         bar.scaleFromCenter(1.2);
         if (levels[i] > (previousLevels[i] + particleThreshold)) {
             Particle* p = particleSystem.birth(pos, direction * particleVel);
-            if (p != NULL) p->bounds.set(bar.x, bar.y, bar.getWidth(), bar.getHeight());
+            if (p != NULL) {
+                p->bounds.set(bar.x, bar.y, bar.getWidth(), bar.getHeight());
+                if (getIsLayoutVertical())
+                    p->shape.set(0, 0, thick, particleLength);
+                else
+                    p->shape.set(0, 0, particleLength, thick);
+            }
         }
         
     }
@@ -402,7 +410,7 @@ void AudioMapper::drawParticles(Layout layout) {
             //ofRect(p->bounds);
             ofFill();
             ofSetColor(255 * rate);
-            ofRect(p->position, particleLength, thick);
+            p->draw();
         }
     }
     particleSystem.update();

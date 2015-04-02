@@ -17,6 +17,7 @@ public:
     ofVec3f position;
     ofColor color;
     ofRectangle bounds;
+    ofRectangle shape;
     float damping;
     int life, dying;
     bool isDying;
@@ -76,8 +77,7 @@ public:
 	}
 	virtual void draw() {
         // default draw
-        ofCircle(position, 10);
-        //ofRect(position, 10, 10);
+        ofRect(position, shape.width, shape.height);
 	}
     
     
