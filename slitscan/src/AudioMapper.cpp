@@ -30,13 +30,13 @@ void AudioMapper::setup(){
     audioThreshold = 0.5;
     audioPeakDecay = 0.96;
     audioMaxDecay = 0.995;
-    //bgImage = NULL;
     bg = CAM;
     mic.setup();
     particleVel = 20;
     particleLength = 20;
     particleThreshold = 0.4;
     particleDecayFrames = 100;
+    particleDamping = 0.01;
     ofEnableAlphaBlending();
     
     textureImg.loadImage("textures/nebula1.jpg");
@@ -60,6 +60,8 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(particleLength, 1, 200);
     RUI_SHARE_PARAM(particleThreshold, 0, 1);
     RUI_SHARE_PARAM(particleDecayFrames, 1, 300);
+    RUI_SHARE_PARAM(particleDecayFrames, 1, 300);
+    RUI_SHARE_PARAM(particleDamping, 0.01, 0.08);
     
     // BG drawing mode
     string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
@@ -107,6 +109,9 @@ void AudioMapper::update(){
     }
     delete[] audioData;
     
+    if (particleMode) {
+        updateParticles();
+    }
 }
 
 void AudioMapper::draw(){
@@ -152,6 +157,151 @@ void AudioMapper::draw(){
             if (layout2 != NONE) drawBars(layout2);
         }
         ofSetColor(255);
+    }
+    
+}
+
+void AudioMapper::updateParticles(){
+    int x = 0;
+    int y = 0;
+    float barWidth;
+    float barHeight;
+    float time = ofGetElapsedTimef();
+    ofVec2f direction, direction2;
+    ofVec2f pos, pos2;
+    
+    for (unsigned int i = 0; i < levels.size(); i++){
+        
+        barWidth = levels[i]*width*.4;
+        barHeight = levels[i]*height*.4;
+        
+        // Set the rectangle(s) to represent the level bar
+        // Top to bottom, or bottom to up only
+        ofRectangle bar, bar2;
+        bar2.setHeight(0);
+        if (layout == UP_DOWN) {
+            direction.set(0, 1);
+            bar.set(x, 0, thick, barHeight);
+            bar.translateY(-particleLength);
+            pos.set(x, 0);
+            x += thick + gap;
+        }
+        else if (layout == DOWN_UP){
+            direction.set(0, -1);
+            bar.set(x, height-barHeight, thick, barHeight);
+            bar.translateY(particleLength);
+            pos.set(x, height-particleLength);
+            x += thick + gap;
+        }
+        // left to right or right to left only
+        else if (layout == LEFT_RIGHT){
+            direction.set(1, 0);
+            bar.set(0, y, barWidth, thick);
+            bar.translateX(-particleLength);
+            pos.set(0, y);
+            y += thick + gap;
+        }
+        else if (layout == RIGHT_LEFT){
+            direction.set(-1, 0);
+            bar.set(width-barWidth, y, barWidth, thick);
+            bar.translateX(particleLength);
+            pos.set(width-particleLength, y);
+            y += thick + gap;
+        }
+        // MIRROR_SIDE_V, MIRROR_SIDE_H
+        // Side mirrors, like teeth
+        else if (layout == MIRROR_SIDE_V) {
+            direction.set(0, 1);
+            bar.set(x, 0, thick, barHeight);
+            bar.translateY(-particleLength);
+            pos.set(x, 0);
+            direction2.set(0, -1);
+            bar2.set(x, height/2, thick, barHeight);
+            bar2.translateY(particleLength);
+            pos2.set(x, height-particleLength);
+            x += thick + gap;
+        }
+        else if (layout == MIRROR_SIDE_H) {
+            direction.set(1, 0);
+            bar.set(0, y, barWidth, thick);
+            bar.translateX(-particleLength);
+            pos.set(0, y);
+            direction2.set(-1, 0);
+            bar2.set(width-barWidth, y, barWidth, thick);
+            bar2.translateX(particleLength);
+            pos2.set(width-particleLength, y);
+            y += thick + gap;
+        }
+        // MIRROR_CENTRE_V, MIRROR_CENTRE_H
+        // centre mirrors, like ?
+        else if (layout == MIRROR_CENTRE_V || layout == SOLID_V) {
+            direction.set(0, -1);
+            bar.set(x, 0, thick, barHeight/2);
+            bar.translateY(particleLength);
+            pos.set(x, (height/2)-particleLength);
+            
+            direction2.set(0, 1);
+            bar2.set(x, height/2, thick, barHeight/2);
+            bar2.translateY(-particleLength);
+            pos2.set(x, height/2);
+            
+            x += thick + gap;
+        }
+        else if (layout == MIRROR_CENTRE_H || layout == SOLID_H) {
+            direction.set(1, 0);
+            bar.set(width/2, y, barWidth/2, thick);
+            bar.translateX(-particleLength);
+            pos.set(width/2, y);
+            
+            direction2.set(-1, 0);
+            bar2.set((width/2)-(barWidth/2), y, barWidth/2, thick);
+            bar2.translateX(particleLength);
+            pos2.set((width/2)-particleLength, y);
+            
+            y += thick + gap;
+        }
+        
+        // Birth particles
+        bar.scaleFromCenter(1.2);
+        bar2.scaleFromCenter(1.2);
+        if (levels[i] > (previousLevels[i] + particleThreshold)) {
+            Particle* p = particleSystem.birth(pos, direction * particleVel);
+            if (p != NULL) {
+                p->bounds.set(bar.x, bar.y, bar.getWidth(), bar.getHeight());
+                if (getIsLayoutVertical())
+                    p->shape.set(0, 0, thick, particleLength);
+                else
+                    p->shape.set(0, 0, particleLength, thick);
+            }
+            if (bar2.height != 0) {
+                p = particleSystem.birth(pos2, direction2 * particleVel);
+                if (p != NULL) {
+                    p->bounds.set(bar2.x, bar2.y, bar2.getWidth(), bar2.getHeight());
+                    if (getIsLayoutVertical())
+                        p->shape.set(0, 0, thick, particleLength);
+                    else
+                        p->shape.set(0, 0, particleLength, thick);
+                }
+            }
+        }
+        
+    }
+    
+    // reset forces on particles
+    particleSystem.resetForces();
+    particleSystem.updatePool();
+    for(int i = 0; i < particleSystem.size(); i++) {
+        Particle* p = particleSystem[i];
+        p->maxDying = particleDecayFrames;
+        p->damping = particleDamping;
+        p->addDampingForce();
+        if (!p->bounds.inside(p->position) || p->velocity.length() < 0.001){
+            p->setDying();
+        }
+    }
+    particleSystem.update();
+    if (!getIsLayoutVertical()) {
+        ofPopMatrix();
     }
     
 }
@@ -291,149 +441,15 @@ void AudioMapper::drawBars(Layout layout){
 }
 
 void AudioMapper::drawParticles(Layout layout) {
-    
-    
-    int x = 0;
-    int y = 0;
-    float barWidth;
-    float barHeight;
-    float time = ofGetElapsedTimef();
-    ofVec2f direction, direction2;
-    ofVec2f pos, pos2;
-    
-    for (unsigned int i = 0; i < levels.size(); i++){
-        
-        barWidth = levels[i]*width*.4;
-        barHeight = levels[i]*height*.4;
-        
-        // Set the rectangle(s) to represent the level bar
-        // Top to bottom, or bottom to up only
-        ofRectangle bar, bar2;
-        bar2.setHeight(0);
-        if (layout == UP_DOWN) {
-            direction.set(0, 1);
-            bar.set(x, 0, thick, barHeight);
-            bar.translateY(-particleLength);
-            pos.set(x, 0);
-            x += thick + gap;
-        }
-        else if (layout == DOWN_UP){
-            direction.set(0, -1);
-            bar.set(x, height, thick, barHeight);
-            bar.translateY(particleLength);
-            pos.set(x, height-particleLength);
-            x += thick + gap;
-        }
-        // left to right or right to left only
-        else if (layout == LEFT_RIGHT){
-            direction.set(1, 0);
-            bar.set(0, y, barWidth, thick);
-            bar.translateX(-particleLength);
-            pos.set(0, y);
-            y += thick + gap;
-        }
-        else if (layout == RIGHT_LEFT){
-            direction.set(-1, 0);
-            bar.set(width, y, barWidth, thick);
-            bar.translateX(particleLength);
-            pos.set(width-particleLength, y);
-            y += thick + gap;
-        }
-        // MIRROR_SIDE_V, MIRROR_SIDE_H
-        // Side mirrors, like teeth
-        else if (layout == MIRROR_SIDE_V) {
-            direction.set(0, 1);
-            bar.set(x, 0, thick, barHeight);
-            bar.translateY(-particleLength);
-            pos.set(x, 0);
-            direction2.set(0, -1);
-            bar2.set(x, height/2, thick, barHeight);
-            bar2.translateY(particleLength);
-            pos2.set(x, height-particleLength);
-            x += thick + gap;
-        }
-        else if (layout == MIRROR_SIDE_H) {
-            direction.set(1, 0);
-            bar.set(0, y, barWidth, thick);
-            bar.translateX(-particleLength);
-            pos.set(0, y);
-            direction2.set(-1, 0);
-            bar2.set(width-barWidth, y, barWidth, thick);
-            bar2.translateX(particleLength);
-            pos2.set(width-particleLength, y);
-            y += thick + gap;
-        }
-        // MIRROR_CENTRE_V, MIRROR_CENTRE_H
-        // centre mirrors, like ?
-        else if (layout == MIRROR_CENTRE_V || layout == SOLID_V) {
-            direction.set(0, -1);
-            bar.set(x, 0, thick, barHeight/2);
-            bar.translateY(particleLength);
-            pos.set(x, (height/2)-particleLength);
-            
-            direction2.set(0, 1);
-            bar2.set(x, height/2, thick, barHeight/2);
-            bar2.translateY(-particleLength);
-            pos2.set(x, height/2);
-            
-            x += thick + gap;
-        }
-        else if (layout == MIRROR_CENTRE_H || layout == SOLID_H) {
-            direction.set(1, 0);
-            bar.set(width/2, y, barWidth/2, thick);
-            bar.translateX(-particleLength);
-            pos.set(width/2, y);
-            
-            direction2.set(-1, 0);
-            bar2.set((width/2)-(barWidth/2), y, barWidth/2, thick);
-            bar2.translateX(particleLength);
-            pos2.set((width/2)-particleLength, y);
-            
-            y += thick + gap;
-        }
-        
-        // Birth particles
-        bar.scaleFromCenter(1.2);
-        bar2.scaleFromCenter(1.2);
-        if (levels[i] > (previousLevels[i] + particleThreshold)) {
-            Particle* p = particleSystem.birth(pos, direction * particleVel);
-            if (p != NULL) {
-                p->bounds.set(bar.x, bar.y, bar.getWidth(), bar.getHeight());
-                if (getIsLayoutVertical())
-                    p->shape.set(0, 0, thick, particleLength);
-                else
-                    p->shape.set(0, 0, particleLength, thick);
-            }
-            if (bar2.height != 0) {
-                p = particleSystem.birth(pos2, direction2 * particleVel);
-                if (p != NULL) {
-                    p->bounds.set(bar2.x, bar2.y, bar2.getWidth(), bar2.getHeight());
-                    if (getIsLayoutVertical())
-                        p->shape.set(0, 0, thick, particleLength);
-                    else
-                        p->shape.set(0, 0, particleLength, thick);
-                }
-            }
-        }
-        
-    }
-    
     if (!getIsLayoutVertical()) {
         // flip so base tones are at the bottom
         ofPushMatrix();
         ofScale(1, -1);
         ofTranslate(0, -height, 0 );
     }
-    // reset forces on particles
-    particleSystem.resetForces();
-    particleSystem.updatePool();
-    for(int i = 0; i < particleSystem.size(); i++) {
+    for (int i = 0; i < particleSystem.size(); i++) {
         Particle* p = particleSystem[i];
         p->maxDying = particleDecayFrames;
-        p->addDampingForce();
-        if (!p->bounds.inside(p->position)){
-            p->setDying();
-        }
         float rate = ofMap(p->dying, 0, p->maxDying, 1, 0, true);
         if (p->state != Particle::DEAD) {
             ofNoFill();
@@ -444,11 +460,9 @@ void AudioMapper::drawParticles(Layout layout) {
             p->draw();
         }
     }
-    particleSystem.update();
     if (!getIsLayoutVertical()) {
         ofPopMatrix();
     }
-    
     ofSetColor(255);
 }
 

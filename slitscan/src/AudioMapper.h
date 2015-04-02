@@ -61,6 +61,7 @@ public:
     float particleVel;
     float particleLength;
     float particleThreshold;
+    float particleDamping;
     int particleDecayFrames;
     ParticleSystem particleSystem;
     
@@ -73,6 +74,7 @@ public:
     
     void setup();
     void update();
+    void updateParticles();
     void draw();
     void drawBars(Layout layout);
     void drawParticles(Layout layout);
