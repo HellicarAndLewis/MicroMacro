@@ -62,17 +62,18 @@
 		<P name="isAlphaOn" type="bool">0</P>
 		<P name="isScaleOn" type="bool">0</P>
 		<P name="particleMode" type="bool">1</P>
-		<P name="particleVel" type="float">40</P>
-		<P name="particleLength" type="float">183.526</P>
-		<P name="particleThreshold" type="float">0.310345</P>
+		<P name="particleVel" type="float">29.2414</P>
+		<P name="particleLength" type="float">200</P>
+		<P name="particleThreshold" type="float">0.198175</P>
+		<P name="particleDecayFrames" type="int">104</P>
 		<P name="bg" type="enum">3</P>
 		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">1</P>
 		<P name="perlinMulti" type="float">1.03497</P>
 		<P name="useLevelCount" type="bool">0</P>
 		<P name="levelCount" type="int">61</P>
-		<P name="thick" type="float">15.4349</P>
-		<P name="gap" type="float">3.27777</P>
+		<P name="thick" type="float">4.19904</P>
+		<P name="gap" type="float">23.306</P>
 		<P name="peakToLengthRatio" type="float">0.698335</P>
 		<P c0.red="255" c1.green="243" c2.blue="250" c3.alpha="255" name="colour" type="color"/>
 		<P name="audioThreshold" type="float">0.921972</P>

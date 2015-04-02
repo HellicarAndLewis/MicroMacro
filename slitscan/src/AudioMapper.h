@@ -61,6 +61,7 @@ public:
     float particleVel;
     float particleLength;
     float particleThreshold;
+    int particleDecayFrames;
     ParticleSystem particleSystem;
     
     // audio sample settings

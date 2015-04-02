@@ -36,6 +36,7 @@ void AudioMapper::setup(){
     particleVel = 20;
     particleLength = 20;
     particleThreshold = 0.4;
+    particleDecayFrames = 100;
     ofEnableAlphaBlending();
     
     textureImg.loadImage("textures/nebula1.jpg");
@@ -58,6 +59,7 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(particleVel, 1, 40);
     RUI_SHARE_PARAM(particleLength, 1, 200);
     RUI_SHARE_PARAM(particleThreshold, 0, 1);
+    RUI_SHARE_PARAM(particleDecayFrames, 1, 300);
     
     // BG drawing mode
     string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
@@ -112,7 +114,7 @@ void AudioMapper::draw(){
     if (bg >= CAM) {
         // This is a cam/slitscan texture mode, the bars act as a mask
         bgFbo.begin();
-        //ofSetColor(255);
+        ofSetColor(colour);
         int rnd = sin(ofGetElapsedTimef());
         // Draw stretched slices of the camera texture or draw the whole thing
         if (bg == CAM_SLICE_V)
@@ -388,12 +390,11 @@ void AudioMapper::drawParticles(Layout layout) {
     particleSystem.updatePool();
     for(int i = 0; i < particleSystem.size(); i++) {
         Particle* p = particleSystem[i];
-        // damping
+        p->maxDying = particleDecayFrames;
         p->addDampingForce();
         if (!p->bounds.inside(p->position)){
             p->setDying();
         }
-        //float rate = ofMap(p->position.x, 0, p->bounds.getMaxX(), 1, 0, true);
         float rate = ofMap(p->dying, 0, p->maxDying, 1, 0, true);
         if (p->state != Particle::DEAD) {
             ofNoFill();

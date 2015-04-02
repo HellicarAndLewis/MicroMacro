@@ -80,7 +80,10 @@ void ofApp::update(){
     if (scenes[1].isVisible) {
         if (audioMapper.bg >= AudioMapper::CAM) {
             slitScan.update();
-            audioMapper.bgImage.setFromPixels(slitScan.cam.getImage());
+            //audioMapper.bgImage.setFromPixels(slitScan.cam.getImage());
+            ofPixels pixels;
+            slitScan.aberrationFbo.readToPixels(pixels);
+            audioMapper.bgImage.setFromPixels(pixels);
         }
         audioMapper.update();
         scenes[1].begin();
