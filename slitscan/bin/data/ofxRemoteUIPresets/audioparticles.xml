@@ -57,7 +57,7 @@
 		<P name="isDrawFlowDebugOn" type="bool">0</P>
 		<P name="Audio Mapper" type="group"/>
 		<!-- # Audio Mapper ############################ -->
-		<P name="layout" type="enum">3</P>
+		<P name="layout" type="enum">8</P>
 		<P name="layout2" type="enum">0</P>
 		<P name="isAlphaOn" type="bool">0</P>
 		<P name="isScaleOn" type="bool">0</P>
@@ -65,15 +65,15 @@
 		<P name="particleVel" type="float">13.8006</P>
 		<P name="particleLength" type="float">183.526</P>
 		<P name="particleThreshold" type="float">0.137931</P>
-		<P name="particleDecayFrames" type="int">124</P>
+		<P name="particleDecayFrames" type="int">62</P>
 		<P name="bg" type="enum">3</P>
 		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">1</P>
 		<P name="perlinMulti" type="float">1.03497</P>
 		<P name="useLevelCount" type="bool">1</P>
 		<P name="levelCount" type="int">78</P>
-		<P name="thick" type="float">9.23077</P>
-		<P name="gap" type="float">9.23077</P>
+		<P name="thick" type="float">5.76923</P>
+		<P name="gap" type="float">5.76923</P>
 		<P name="peakToLengthRatio" type="float">0.698335</P>
 		<P c0.red="247" c1.green="243" c2.blue="241" c3.alpha="255" name="colour" type="color"/>
 		<P name="audioThreshold" type="float">0.921972</P>
