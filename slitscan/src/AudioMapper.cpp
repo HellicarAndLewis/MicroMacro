@@ -55,14 +55,6 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(isAlphaOn);
     RUI_SHARE_PARAM(isScaleOn);
     
-    RUI_SHARE_PARAM(particleMode);
-    RUI_SHARE_PARAM(particleVel, 1, 40);
-    RUI_SHARE_PARAM(particleLength, 1, 200);
-    RUI_SHARE_PARAM(particleThreshold, 0, 1);
-    RUI_SHARE_PARAM(particleDecayFrames, 1, 300);
-    RUI_SHARE_PARAM(particleDecayFrames, 1, 300);
-    RUI_SHARE_PARAM(particleDamping, 0.01, 0.08);
-    
     // BG drawing mode
     string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
     RUI_SHARE_ENUM_PARAM(bg, GREYSCALE, CAM_SLICE_H, bgLabels);
@@ -80,6 +72,16 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(audioPeakDecay, 0.9, 1.0);
     RUI_SHARE_PARAM(audioMaxDecay, 0.9, 1.0);
     RUI_SHARE_PARAM(audioMirror);
+    
+    RUI_NEW_GROUP("Audio Mapper Particles");
+    RUI_SHARE_PARAM(particleMode);
+    RUI_SHARE_PARAM(particleVel, 1, 40);
+    RUI_SHARE_PARAM(particleLength, 1, 400);
+    RUI_SHARE_PARAM(particleThreshold, 0, 1);
+    RUI_SHARE_PARAM(particleDecayFrames, 1, 300);
+    RUI_SHARE_PARAM(particleDecayFrames, 1, 300);
+    RUI_SHARE_PARAM(particleDamping, 0.01, 0.08);
+    
 }
 void AudioMapper::update(){
     
