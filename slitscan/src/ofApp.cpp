@@ -80,10 +80,11 @@ void ofApp::update(){
     if (scenes[1].isVisible) {
         if (audioMapper.bg >= AudioMapper::CAM) {
             slitScan.update();
-            //audioMapper.bgImage.setFromPixels(slitScan.cam.getImage());
-            ofPixels pixels;
+            // need to read in aberration FBO which is the final output from slitscan
             slitScan.aberrationFbo.readToPixels(pixels);
-            audioMapper.bgImage.setFromPixels(pixels);
+            audioMapper.bgImage.loadData(pixels);
+            // This would be faster but doesn't give any of the levels post from slitscan
+            //audioMapper.bgImage = &slitScan.cam.getTexture();
         }
         audioMapper.update();
         scenes[1].begin();

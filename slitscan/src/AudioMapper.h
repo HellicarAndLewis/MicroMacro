@@ -54,7 +54,7 @@ public:
     ofImage textureImg;
     
     AlphaMask alphaMask;
-    ofImage bgImage;
+    ofTexture bgImage;
     ofFbo bgFbo;
     
     bool particleMode;

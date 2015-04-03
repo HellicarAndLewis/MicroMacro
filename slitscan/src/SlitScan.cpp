@@ -127,7 +127,7 @@ void SlitScan::update(){
                 camo.update();
                 slitScan.setDelayMap(cam.delayMap);
             }
-            slitScan.addImage(cam.getImage());
+            slitScan.addImage(cam.getPixels());
         }
     }
     if (mode > SLIT_SCAN) {

@@ -125,9 +125,9 @@ void AudioMapper::draw(){
         int rnd = sin(ofGetElapsedTimef());
         // Draw stretched slices of the camera texture or draw the whole thing
         if (bg == CAM_SLICE_V)
-            bgImage.drawSubsection(0, 0, width, height, (bgImage.width/2)+(rnd*100), 0, 1, bgImage.height);
+            bgImage.drawSubsection(0, 0, width, height, (bgImage.getWidth()/2)+(rnd*100), 0, 1, bgImage.getHeight());
         else if (bg == CAM_SLICE_H)
-            bgImage.drawSubsection(0, 0, width, height, 0, (bgImage.height/2)+(rnd*100), bgImage.width, 1);
+            bgImage.drawSubsection(0, 0, width, height, 0, (bgImage.getHeight()/2)+(rnd*100), bgImage.getWidth(), 1);
         else
             bgImage.draw(0, 0, width, height);
         ofSetColor(255);

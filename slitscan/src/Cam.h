@@ -38,7 +38,8 @@ public:
     // Cam specific
     void startCapture();
     void stopCapture();
-    ofPixels& getImage();
+    ofPixels& getPixels();
+    ofTexture& getTexture();
     ofColor getColourAt(int x, int y);
     float getFlowGreyAt(int x, int y);
     

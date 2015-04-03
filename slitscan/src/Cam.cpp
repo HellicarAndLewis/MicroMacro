@@ -235,8 +235,14 @@ void Cam::drawDebug(){
 }
 
 
-ofPixels& Cam::getImage(){
+ofPixels& Cam::getPixels(){
     return colourPixels;
+}
+
+ofTexture& Cam::getTexture(){
+    if (useVideoPlayer) videoPlayer.getTexture();
+    else if (useBlackmagic) blackmagic.getColorTexture();
+    else vidGrabber.getTextureReference();
 }
 
 ofColor Cam::getColourAt(int x, int y){
