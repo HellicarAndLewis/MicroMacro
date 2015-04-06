@@ -26,11 +26,6 @@ void ofApp::setup(){
     delayMapFbo.allocate(slitScan.width, slitScan.height);
     allocateScenes();
     
-    // OSC Receiver listens for remote control events
-    // unlike granular ofxRemoteUI settings, these control high level mode/state changes across multiple clients
-    oscReceiver.setup();
-    ofAddListener(RemoteEvent::events, this, &ofApp::onRemoteEvent);
-    
     // load ofxRemoteUI saved settings, these will override defaults
     RUI_LOAD_FROM_XML();
     
@@ -42,7 +37,7 @@ void ofApp::setup(){
 
 
 void ofApp::update(){
-    oscReceiver.update();
+    //if (isDebug) ofHideCursor();
     // update each scene and draw it if its visible
     // Slit scan
     scenes[0].update();
@@ -57,7 +52,7 @@ void ofApp::update(){
             ofClear(0,0,0,0);
             scenes[1].fbo.draw(0, 0, delayMapFbo.getWidth(), delayMapFbo.getHeight());
             delayMapFbo.end();
-            ofPixels pixels;
+            //ofPixels pixels;
             delayMapFbo.readToPixels(pixels);
             slitScan.slitScan.setDelayMap(pixels);
         }
@@ -101,9 +96,8 @@ void ofApp::draw(){
     if (scenes[1].isVisible) scenes[1].draw();
     if (isDebug) {
         stringstream ss;
-        ss << "ID:" << id << " " << ofToString(ofGetFrameRate()) << " FPS";
+        ss << ofToString(ofGetFrameRate()) << " FPS";
         ofSetColor(160, 160, 255);
-        oscReceiver.draw();
         ofDrawBitmapString(ss.str(), ofGetWidth() - 100, ofGetHeight() - 20);
     }
     ofSetColor(255);
@@ -133,6 +127,8 @@ void ofApp::allocateScenes() {
 void ofApp::enableDebug(bool isDebug){
     RUI_GET_INSTANCE()->setVerbose(isDebug);
     RUI_GET_INSTANCE()->setDrawsNotificationsAutomaticallly(isDebug);
+    if (isDebug) ofShowCursor();
+    else ofHideCursor();
 }
 
 void ofApp::changeMode(Mode mode){
@@ -151,25 +147,6 @@ void ofApp::changeMode(Mode mode){
 //////////////////////////////////////////////////////////////////////////////////
 // custom event handlers
 //////////////////////////////////////////////////////////////////////////////////
-void ofApp::onRemoteEvent(RemoteEvent& e){
-    if(e.type == RemoteEvent::SWITCH_MODE ) {
-        bool idMatch = false;
-        ofLogNotice() << "Switch mode for IDs " << e.groupIdsString;
-        if (e.groupIdsString != "") {
-            vector<string> ids = ofSplitString(e.groupIdsString, "|");
-            for (int i=0; i<ids.size(); i++) {
-                if (ofToInt(ids[i]) == id) idMatch = true;
-            }
-        }
-        if (idMatch) {
-            // do something! just toggle mode for now
-            if (appMode == SLIT_SCAN) changeMode(AUDIO_MAP);
-            else changeMode(SLIT_SCAN);
-        }
-        
-    }
-}
-
 void ofApp::clientDidSomething(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
 		case CLIENT_UPDATED_PARAM:

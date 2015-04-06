@@ -21,10 +21,10 @@ if [ -d "$dir" ]; then
 fi
 echo "Waiting to start script..."
 # wait before starting commands of this script in seconds
-sleep $initial_wait_time
+# sleep $initial_wait_time
 # start master application
 echo "Launching application"
 # logLevel: 0=verbose, 1=notice, 2=warning, 3=error, 4=fatal, 5=silent
-../slitscan/bin/slitscan.app/Contents/MacOS/slitscan --args -capture1080=true -fullScreen=true -logLevel=3
+../slitscan/bin/slitscan.app/Contents/MacOS/slitscan --args -capture1080=true -fullScreen=true -logLevel=3 -logToFile=true -appendToLog=true
 
 exit 0

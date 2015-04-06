@@ -4,7 +4,6 @@
 #include "SlitScan.h"
 #include "AudioMapper.h"
 #include "ofxRemoteUIServer.h"
-#include "OscReceiver.h"
 
 // TODO: add quad warper to match projection surface?
 // TODO: add portrait mode support
@@ -71,8 +70,6 @@ public:
     Scene scenes[2];
     bool isDebug;
     
-    OscReceiver oscReceiver;
-    
     void setup();
     void update();
     void draw();
@@ -92,5 +89,4 @@ public:
     void gotMessage(ofMessage msg);
     
     void clientDidSomething(RemoteUIServerCallBackArg & arg);
-    void onRemoteEvent(RemoteEvent& e);
 };
