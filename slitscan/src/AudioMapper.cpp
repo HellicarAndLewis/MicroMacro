@@ -41,6 +41,20 @@ void AudioMapper::setup(){
     
     textureImg.loadImage("textures/nebula1.jpg");
     
+    ofDirectory dir;
+    int nFiles = dir.listDir("audioBGs");
+    if(nFiles) {
+        for(int i=0; i<dir.numFiles(); i++) {
+            // add the image to the vector
+            string filePath = dir.getPath(i);
+            bgImages.push_back(ofImage());
+            bgImages.back().loadImage(filePath);
+            
+        }
+    }
+    else ofLogError("Couldn't find audio mapper images folder");
+    bgImagesIndex = 0;
+    
     particleSystem.setup(3000);
     ofSetCircleResolution(200);
     
@@ -56,8 +70,9 @@ void AudioMapper::setup(){
     RUI_SHARE_PARAM(isScaleOn);
     
     // BG drawing mode
-    string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H"};
-    RUI_SHARE_ENUM_PARAM(bg, GREYSCALE, CAM_SLICE_H, bgLabels);
+    string bgLabels[] = {"GREYSCALE", "GREYSCALE_NOISE", "CAM", "CAM_SLICE_V", "CAM_SLICE_H", "IMG", "IMG_SLICE_V", "IMG_SLICE_H"};
+    RUI_SHARE_ENUM_PARAM(bg, GREYSCALE, IMG_SLICE_H, bgLabels);
+    RUI_SHARE_PARAM(bgImagesIndex, 0, nFiles-1);
     RUI_SHARE_PARAM(isNebulaOn);
     RUI_SHARE_PARAM(usePerlin);
     RUI_SHARE_PARAM(perlinMulti, 0.001, 2.0);
@@ -119,17 +134,21 @@ void AudioMapper::update(){
 void AudioMapper::draw(){
     ofSetColor(255);
     if (bg >= CAM) {
+        ofTexture * img = &bgImage;
+        if (bg >= IMG) {
+            img = &bgImages[bgImagesIndex].getTextureReference();
+        }
         // This is a cam/slitscan texture mode, the bars act as a mask
         bgFbo.begin();
         ofSetColor(colour);
         int rnd = sin(ofGetElapsedTimef());
         // Draw stretched slices of the camera texture or draw the whole thing
-        if (bg == CAM_SLICE_V)
-            bgImage.drawSubsection(0, 0, width, height, (bgImage.getWidth()/2)+(rnd*100), 0, 1, bgImage.getHeight());
-        else if (bg == CAM_SLICE_H)
-            bgImage.drawSubsection(0, 0, width, height, 0, (bgImage.getHeight()/2)+(rnd*100), bgImage.getWidth(), 1);
+        if (bg == CAM_SLICE_V || bg == IMG_SLICE_V)
+            img->drawSubsection(0, 0, width, height, (img->getWidth()/2)+(rnd*500), 0, 1, img->getHeight());
+        else if (bg == CAM_SLICE_H || bg == IMG_SLICE_H)
+            img->drawSubsection(0, 0, width, height, 0, (img->getHeight()/2)+(rnd*300), img->getWidth(), 1);
         else
-            bgImage.draw(0, 0, width, height);
+            img->draw(0, 0, width, height);
         ofSetColor(255);
         bgFbo.end();
         
