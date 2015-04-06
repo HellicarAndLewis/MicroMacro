@@ -84,8 +84,8 @@ void SlitScan::setup(){
     RUI_SHARE_PARAM(levels.maxOutput, 0, 1);
     
     RUI_NEW_GROUP("Slit Scan");
-    string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE"};
-	RUI_SHARE_ENUM_PARAM(mode, CAM, SLICE_DOUBLE, modeLabels);
+    string modeLabels[] = {"CAM", "SLIT_SCAN", "SLICE_SINGLE", "SLICE_DOUBLE", "SLICE_ONLY"};
+	RUI_SHARE_ENUM_PARAM(mode, CAM, SLICE_ONLY, modeLabels);
     RUI_SHARE_PARAM(currentSampleMapIndex, 0, sampleMapStrings.size()-1);
 	RUI_SHARE_PARAM(slitScanTimeWidth, 0, 120);
 	RUI_SHARE_PARAM(slitScanTimeDelay, 0, 120);
@@ -204,6 +204,9 @@ void SlitScan::drawCurrentMode() {
                 slicer[0].draw(0, -sliceOffset);
                 slicer[0].draw(0, sliceOffset);
             }
+            break;
+        case SLICE_ONLY:
+            slicer[0].draw(0);
             break;
         default:
             break;

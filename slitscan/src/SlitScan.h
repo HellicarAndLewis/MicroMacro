@@ -40,7 +40,7 @@ public:
     // SLIT_SCAN is output from ofxSlitScan which can be camo if enabled
     // SLICE_SINGLE and SLICE_DOUBLE use 1 or 2 layered Slicers
     enum Mode {
-        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE
+        CAM=0, SLIT_SCAN, SLICE_SINGLE, SLICE_DOUBLE, SLICE_ONLY
     };
     Mode mode;
     

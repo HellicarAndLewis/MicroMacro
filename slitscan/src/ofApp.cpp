@@ -73,7 +73,7 @@ void ofApp::update(){
     // Audio mapper
     scenes[1].update();
     if (scenes[1].isVisible) {
-        if (audioMapper.bg >= AudioMapper::CAM) {
+        if (audioMapper.bg >= AudioMapper::CAM && audioMapper.bg < AudioMapper::IMG) {
             slitScan.update();
             // need to read in aberration FBO which is the final output from slitscan
             //slitScan.aberrationFbo.readToPixels(pixels);

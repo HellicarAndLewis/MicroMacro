@@ -27,7 +27,7 @@ public:
     bool isNebulaOn;
     
     enum BgType {
-        GREYSCALE=0, GREYSCALE_NOISE, CAM, CAM_SLICE_V, CAM_SLICE_H
+        GREYSCALE=0, GREYSCALE_NOISE, CAM, CAM_SLICE_V, CAM_SLICE_H, IMG, IMG_SLICE_V, IMG_SLICE_H
     };
     BgType bg;
     
@@ -52,6 +52,10 @@ public:
     ofColor colour, colour2;
     
     ofImage textureImg;
+    
+    // camo textures loaded from data/camo
+    vector <ofImage> bgImages;
+    int bgImagesIndex;
     
     AlphaMask alphaMask;
     ofTexture bgImage;
