@@ -436,23 +436,6 @@ void AudioMapper::drawBars(Layout layout){
         }
         if (isScaleOn) ofPopMatrix();
         
-        // plus circles?
-        /*
-         ofPushMatrix();
-         ofTranslate(0, 0, 10);
-         ofNoFill();
-         float halfHeight = height/2;
-         if (getIsLayoutVertical()) {
-         ofCircle(x-gap, height*.5, ofMap(levels[i], 0.5, 1, 0, thick*6, true));
-         }
-         else {
-         ofCircle(width/2, y+thick/2, ofMap(levels[i], 0, 1, 0, 200));
-         }
-         //ofCircle(width/2, height/2, ofMap(levels[i], 0, 1, 0, 200));
-         ofFill();
-         ofPopMatrix();
-         */
-        
     }
     if (!getIsLayoutVertical()) {
         ofPopMatrix();
@@ -473,10 +456,10 @@ void AudioMapper::drawParticles(Layout layout) {
         p->maxDying = particleDecayFrames;
         float rate = ofMap(p->dying, 0, p->maxDying, 1, 0, true);
         if (p->state != Particle::DEAD) {
-            ofNoFill();
-            ofSetColor(255, 0, 0);
-            ofRect(p->bounds);
-            ofFill();
+            //ofNoFill();
+            //ofSetColor(255, 0, 0);
+            //ofRect(p->bounds);
+            //ofFill();
             ofSetColor(255, 255 * rate);
             p->draw();
         }
