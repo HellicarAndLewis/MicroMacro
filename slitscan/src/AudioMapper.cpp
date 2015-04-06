@@ -198,7 +198,7 @@ void AudioMapper::updateParticles(){
         // left to right or right to left only
         else if (layout == LEFT_RIGHT){
             direction.set(1, 0);
-            bar.set(0, y, barWidth, thick);
+            bar.set(0, y, barWidth-particleLength, thick);
             bar.translateX(-particleLength);
             pos.set(0, y);
             y += thick + gap;
@@ -225,7 +225,7 @@ void AudioMapper::updateParticles(){
         }
         else if (layout == MIRROR_SIDE_H) {
             direction.set(1, 0);
-            bar.set(0, y, barWidth, thick);
+            bar.set(0, y, barWidth-particleLength, thick);
             bar.translateX(-particleLength);
             pos.set(0, y);
             direction2.set(-1, 0);
@@ -456,7 +456,7 @@ void AudioMapper::drawParticles(Layout layout) {
         if (p->state != Particle::DEAD) {
             ofNoFill();
             ofSetColor(255, 0, 0);
-            //ofRect(p->bounds);
+            ofRect(p->bounds);
             ofFill();
             ofSetColor(255, 255 * rate);
             p->draw();

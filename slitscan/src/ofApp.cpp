@@ -37,12 +37,12 @@ void ofApp::setup(){
 
 
 void ofApp::update(){
-    //if (isDebug) ofHideCursor();
     // update each scene and draw it if its visible
     // Slit scan
     scenes[0].update();
     if (scenes[0].isVisible) {
         if (slitScan.doAudioMap) {
+            // Use audio mapper as the delay map for slitscan
             audioMapper.update();
             slitScan.audioMap = &audioMapper;
             scenes[1].begin();
@@ -76,10 +76,10 @@ void ofApp::update(){
         if (audioMapper.bg >= AudioMapper::CAM) {
             slitScan.update();
             // need to read in aberration FBO which is the final output from slitscan
-            slitScan.aberrationFbo.readToPixels(pixels);
-            audioMapper.bgImage.loadData(pixels);
+            //slitScan.aberrationFbo.readToPixels(pixels);
+            //audioMapper.bgImage.loadData(pixels);
             // This would be faster but doesn't give any of the levels post from slitscan
-            //audioMapper.bgImage = &slitScan.cam.getTexture();
+            audioMapper.bgImage = slitScan.cam.getTexture();
         }
         audioMapper.update();
         scenes[1].begin();
