@@ -7,6 +7,12 @@ void ofApp::setup(){
     isDebug = true;
     bgColour.set(0);
     appMode == SLIT_SCAN;
+    rotation = LANDSCAPE;
+    tl.set(0);
+    tr.set(0);
+    bl.set(0);
+    br.set(0);
+    quadWarp = false;
     
     // Using ofxRemoteUI https://github.com/armadillu/ofxRemoteUI/
     // optionaly specify port here, otherwise random
@@ -17,7 +23,8 @@ void ofApp::setup(){
     string modeLabels[] = {"SLIT_SCAN", "AUDIO_MAP"};
 	RUI_SHARE_ENUM_PARAM(appMode, SLIT_SCAN, AUDIO_MAP, modeLabels);
     RUI_SHARE_PARAM(isDebug);
-    RUI_SHARE_PARAM(isPortrait);
+    string rotationLabels[] = {"LANDSCAPE", "PORTRAIT_90", "PORTRAIT_270"};
+    RUI_SHARE_ENUM_PARAM(rotation, LANDSCAPE, PORTRAIT_270, rotationLabels);
     RUI_SHARE_COLOR_PARAM(bgColour);
     
     slitScan.setup();
@@ -25,6 +32,17 @@ void ofApp::setup(){
     // Allocate once only using camera capture dimensions
     delayMapFbo.allocate(slitScan.width, slitScan.height);
     allocateScenes();
+    
+    RUI_NEW_GROUP("Quad Warper");
+    RUI_SHARE_PARAM(quadWarp);
+    RUI_SHARE_PARAM(tl.x, -40, 40);
+    RUI_SHARE_PARAM(tl.y, -40, 40);
+    RUI_SHARE_PARAM(tr.x, -40, 40);
+    RUI_SHARE_PARAM(tr.y, -40, 40);
+    RUI_SHARE_PARAM(bl.x, -40, 40);
+    RUI_SHARE_PARAM(bl.y, -40, 40);
+    RUI_SHARE_PARAM(br.x, -40, 40);
+    RUI_SHARE_PARAM(br.y, -40, 40);
     
     // load ofxRemoteUI saved settings, these will override defaults
     RUI_LOAD_FROM_XML();
@@ -52,21 +70,26 @@ void ofApp::update(){
             ofClear(0,0,0,0);
             scenes[1].fbo.draw(0, 0, delayMapFbo.getWidth(), delayMapFbo.getHeight());
             delayMapFbo.end();
-            //ofPixels pixels;
             delayMapFbo.readToPixels(pixels);
             slitScan.slitScan.setDelayMap(pixels);
         }
         slitScan.update();
         scenes[0].begin();
-        if (isPortrait) {
-            ofPushMatrix();
-            glRotatef(-90, 0, 0, 1);
-            glTranslatef(-scenes[0].fbo.getHeight(), 0, 0);
-            slitScan.draw(scenes[0].fbo.getHeight(), scenes[0].fbo.getWidth());
-            ofPopMatrix();
+        if (rotation == LANDSCAPE) {
+            slitScan.draw(scenes[0].fbo.getWidth(), scenes[0].fbo.getHeight());
         }
         else {
-            slitScan.draw(scenes[0].fbo.getWidth(), scenes[0].fbo.getHeight());
+            ofPushMatrix();
+            if (rotation == PORTRAIT_270) {
+                glRotatef(-90, 0, 0, 1);
+                glTranslatef(-scenes[0].fbo.getHeight(), 0, 0);
+            }
+            else {
+                glRotatef(90, 0, 0, 1);
+                glTranslatef(0, -scenes[0].fbo.getWidth(), 0);
+            }
+            slitScan.draw(scenes[0].fbo.getHeight(), scenes[0].fbo.getWidth());
+            ofPopMatrix();
         }
         scenes[0].end();
     }
@@ -92,8 +115,16 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackground(bgColour);
     // draw both scenes to allow for cross fade transitions
-    if (scenes[0].isVisible) scenes[0].draw();
-    if (scenes[1].isVisible) scenes[1].draw();
+    for (int i=0; i<2; i++) {
+        if (scenes[i].isVisible) {
+            if (quadWarp) {
+                scenes[i].fbo.getTextureReference().bind();
+                drawQuad(scenes[i].fbo.getWidth(), scenes[i].fbo.getHeight());
+                scenes[i].fbo.getTextureReference().unbind();
+            }
+            else scenes[i].draw();
+        }
+    }
     if (isDebug) {
         stringstream ss;
         ss << ofToString(ofGetFrameRate()) << " FPS";
@@ -103,6 +134,22 @@ void ofApp::draw(){
     ofSetColor(255);
 }
 
+void ofApp::drawQuad(int w, int h){
+    glBegin(GL_QUADS);
+    //bottom left
+    glMultiTexCoord2f(GL_TEXTURE0, 0.0f, h);
+    glVertex3f(0.0f + bl.x, h + bl.y, 0);
+    //top left
+    glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 0.0f);
+    glVertex3f(0.0f + tl.x, 0.0f + tl.y, 0);
+    //top right
+    glMultiTexCoord2f(GL_TEXTURE0, w, 0.0f);
+    glVertex3f(w + tr.x, 0.0f + tr.y, 0);
+    //bottom right
+    glMultiTexCoord2f(GL_TEXTURE0, w, h);
+    glVertex3f(w + br.x, h + br.y, 0);
+    glEnd();
+}
 
 void ofApp::keyPressed(int key){
     switch (key) {

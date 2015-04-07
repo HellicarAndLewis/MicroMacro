@@ -228,19 +228,6 @@ void SlitScan::drawSlitScan(){
     }
 }
 
-void SlitScan::drawQuad(int w, int h){
-    glBegin(GL_QUADS);
-    glMultiTexCoord2f(GL_TEXTURE0, 0.0f, cam.camHeight);
-    glVertex3f(0, h, 0);
-    glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 0.0f);
-    glVertex3f(0, 0, 0);
-    glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, 0.0f);
-    glVertex3f(w, 0, 0);
-    glMultiTexCoord2f(GL_TEXTURE0, cam.camWidth, cam.camHeight);
-    glVertex3f(w, h, 0);
-    glEnd();
-}
-
 void SlitScan::resetDelayMap(){
     slitScan.setDelayMap(*(sampleMaps[currentSampleMapIndex]));
 }

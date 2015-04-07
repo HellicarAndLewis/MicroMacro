@@ -67,7 +67,6 @@ public:
     void setup();
     void update();
     void drawCurrentMode();
-    void drawQuad(int w, int h);
     void draw(int w, int h);
     void drawSlitScan();
     void resetDelayMap();

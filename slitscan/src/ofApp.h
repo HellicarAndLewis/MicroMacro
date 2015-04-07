@@ -24,7 +24,7 @@ public:
         targetAlpha = 0;
     }
     void update() {
-        alpha = ofLerp(alpha, targetAlpha, 0.2);
+        alpha = ofLerp(alpha, targetAlpha, 0.9);
         if (alpha < 0.001) {
             isVisible = false;
         } else {
@@ -65,14 +65,21 @@ public:
         SLIT_SCAN, AUDIO_MAP
     };
     Mode appMode;
-    bool isPortrait;
+    enum Rotation {
+        LANDSCAPE, PORTRAIT_90, PORTRAIT_270
+    };
+    Rotation rotation;
     
     Scene scenes[2];
     bool isDebug;
     
+    bool quadWarp;
+    ofPoint tl, tr, bl, br;
+    
     void setup();
     void update();
     void draw();
+    void drawQuad(int w, int h);
     
     void allocateScenes();
     void enableDebug(bool isDebug);
