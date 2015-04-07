@@ -51,6 +51,10 @@ public:
     ofVec2f aberrationGOffset;
     ofVec2f aberrationBOffset;
     
+    ofVec2f aberrationROffsetOut;
+    ofVec2f aberrationGOffsetOut;
+    ofVec2f aberrationBOffsetOut;
+    
     ofxPSLevels levels;
     bool levelsEnabled;
     

@@ -64,6 +64,9 @@ void SlitScan::setup(){
     aberrationROffset.set(0);
     aberrationGOffset.set(0);
     aberrationBOffset.set(0);
+    aberrationROffsetOut.set(0);;
+    aberrationGOffsetOut.set(0);;
+    aberrationBOffsetOut.set(0);;
     
     levels.setup(width, height);
     
@@ -117,6 +120,15 @@ void SlitScan::setup(){
 
 void SlitScan::update(){
     cam.update();
+    
+    float amount = 0.1;
+    aberrationROffsetOut.x = ofLerp(aberrationROffsetOut.x, aberrationROffset.x, 0.1);
+    aberrationROffsetOut.y = ofLerp(aberrationROffsetOut.y, aberrationROffset.y, 0.1);
+    aberrationGOffsetOut.x = ofLerp(aberrationGOffsetOut.x, aberrationGOffset.x, 0.1);
+    aberrationGOffsetOut.y = ofLerp(aberrationGOffsetOut.y, aberrationGOffset.y, 0.1);
+    aberrationBOffsetOut.x = ofLerp(aberrationBOffsetOut.x, aberrationBOffset.x, 0.1);
+    aberrationBOffsetOut.y = ofLerp(aberrationBOffsetOut.y, aberrationBOffset.y, 0.1);
+    
     if (mode > CAM) {
         // all modes above 0 use slitscan
         if (cam.isFrameNew) {
@@ -161,9 +173,9 @@ void SlitScan::update(){
 void SlitScan::draw(int w, int h){
     // Use shader to draw whole scene with aberration effect
     aberrationShader.begin();
-    aberrationShader.setUniform2f("rOffset", aberrationROffset.x, aberrationROffset.y);
-    aberrationShader.setUniform2f("gOffset", aberrationGOffset.x, aberrationGOffset.y);
-    aberrationShader.setUniform2f("bOffset", aberrationBOffset.x, aberrationBOffset.y);
+    aberrationShader.setUniform2f("rOffset", aberrationROffsetOut.x, aberrationROffsetOut.y);
+    aberrationShader.setUniform2f("gOffset", aberrationGOffsetOut.x, aberrationGOffsetOut.y);
+    aberrationShader.setUniform2f("bOffset", aberrationBOffsetOut.x, aberrationBOffsetOut.y);
     aberrationFbo.draw(0, 0, w, h);
     aberrationShader.end();
     // draw debug over the top if its on
