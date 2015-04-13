@@ -1,5 +1,0 @@
-ofxGui
-ofxNetwork
-ofxOsc
-ofxXmlSettings
-ofxMSAInteractiveObject

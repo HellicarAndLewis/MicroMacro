@@ -3,7 +3,7 @@ A series of camera and audio reactive installations for a fashion brand.
 
 
 ## Summary
-Built using openFrameworks 0.84 on OSX 10.10. Slitscan uses a Blackmagic Ultra Studio Mini Recorder to capture video but will fall back to using ofVideoGrabber if no device is present. Slitscan also uses [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI) as a remote GUI and can be launched with various arguments (see Settings & Control below). Controller is an app for controlling individual or groups of clients over OSC.
+Built using openFrameworks 0.84 on OSX 10.10. Slitscan uses a Blackmagic Ultra Studio Mini Recorder to capture video but will fall back to using ofVideoGrabber if no device is present. Slitscan also uses [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI) as a remote GUI and can be launched with various arguments (see Settings & Control below). The same app is configurable to run in different modes including Slitscan, Camo Slitscan and Audio Reactive.
 
 
 ## Local Dev
@@ -22,9 +22,7 @@ Use the ofxRemoteUI OSX client to change app modes and settings locally for a si
 
 Drop a video into data named "test.mp4" to use a video for local testing. Connect a blackmgic recorder to use blackmagic. Or do neither to use an inbuilt webcam (device ID 0).
 
-Use the controller app to control multiple client apps. Clients can be started with arguments to specify unique IDs from terminal or using the scripts in /scripts. Spawn multiple clients locally with different IDs (1-9) and control them via controller. The controller uses a broadcast address which defaults to 192.168.1.255 but can be set using app arguments e.g. `{path to app} --args -address="192.168.11.255"`
-
-Slit scan can also be forced to capture from Blackmagic at 720p instead of the default 1080p by passing in the argument `-capture720=true` or by launching '720capture.command' in /scripts.
+Video is captured at 1280x720 unless specified in app arguments (-capture1080=true). The micro.command startup script uses this flag for the Micro app mode which captures video at 1080p.
 
 
 ## Dependencies
@@ -32,9 +30,3 @@ Slit scan can also be forced to capture from Blackmagic at 720p instead of the d
 -   An [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI) client
 -   Blackmagic [Desktop Video 10.3.7](https://www.blackmagicdesign.com/uk/support/family/capture-and-playback)
 -   The control application makes use of the LANs broadcast address and will not work if this feature is disabled or blocked on the local network.
-
-
-## Install notes
-All clients and the controller must be connected to the same network on the same IP range. The control application makes use of the LANs broadcast address and will not work if this feature is disabled or blocked on the local network.
-
-Each client application should be configured to start up with a unique numerical ID using the provided scripts in the /scripts directory.
