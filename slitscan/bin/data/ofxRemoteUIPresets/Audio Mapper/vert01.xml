@@ -5,9 +5,10 @@
 		<!-- # Audio Mapper ############################ -->
 		<P name="layout" type="enum">4</P>
 		<P name="layout2" type="enum">0</P>
-		<P name="isFadeOn" type="bool">1</P>
+		<P name="isAlphaOn" type="bool">0</P>
 		<P name="isScaleOn" type="bool">0</P>
-		<P name="bg" type="enum">3</P>
+		<P name="bg" type="enum">7</P>
+		<P name="bgImagesIndex" type="int">0</P>
 		<P name="isNebulaOn" type="bool">0</P>
 		<P name="usePerlin" type="bool">0</P>
 		<P name="perlinMulti" type="float">1.00448</P>
